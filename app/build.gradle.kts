@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.team25.neety"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.team25.neety"
