@@ -1,23 +1,21 @@
 package com.team25.neety;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ListView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.team25.neety.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private ListView lv;
+    private ArrayList<Item> itemsList = new ArrayList<Item>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,15 +24,31 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
+
+        itemsList.add(new Item("Apple", "iPhone 13 Pro Max", (float) 255.32));
+        itemsList.add(new Item("Google", "Pixel 8 Pro", (float) 343.32));
+        itemsList.add(new Item(
+                new Date(),
+                "Samsung",
+                "Galaxy S23 5G Ultra Pro",
+                "This is a description for the Samsung S23 Ultra smartphone.",
+                "A233F1827G",
+                (float) 1312.45,
+                "This is a long winded comment for the Samsung Galaxy " +
+                "S23 Ultra item stored in the Neety app. Here is some more text."));
+
+        ItemsLvAdapter adapter = new ItemsLvAdapter(this, itemsList);
+
+        lv = findViewById(R.id.items_list_view);
+        lv.setAdapter(adapter);
+
+        lv.setOnItemClickListener((parent, view, position, id) -> {
+            Intent intent = new Intent(this, ViewItemActivity.class);
+            intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
+            startActivity(intent);
+        });
+
+
     }
 
 }

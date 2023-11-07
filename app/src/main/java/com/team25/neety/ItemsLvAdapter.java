@@ -34,7 +34,7 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
         titleText.setText(itemList.get(position).getModel());
         subtitleText.setText(itemList.get(position).getMake());
 
-        estimatedText.setText(String.format("$%.2f", itemList.get(position).getEstimatedValue()));
+        estimatedText.setText(itemList.get(position).getEstimatedValueString());
 
         return rowView;
 
