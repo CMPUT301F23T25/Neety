@@ -19,7 +19,7 @@ public class ViewItemActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);   //show back button
 
 
-        item = (Item) getIntent().getSerializableExtra(Constants.INTENT_ITEM_KEY);
+        item = getIntent().getSerializableExtra(Constants.INTENT_ITEM_KEY, Item.class);
 
         tvMake = findViewById(R.id.make_textview);
         tvModel = findViewById(R.id.model_textview);
