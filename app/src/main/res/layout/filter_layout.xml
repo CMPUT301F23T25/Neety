@@ -10,10 +10,9 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginTop="156dp"
+        android:layout_marginTop="160dp"
         android:text="Filter Items"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.523"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -41,7 +40,7 @@
                 android:text="Filter By Date" />
 
             <com.google.android.material.chip.ChipGroup
-                android:id="@+id/cg_sort_types"
+                android:id="@+id/cg_sort_date"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -49,18 +48,16 @@
                 app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/chipAlphabeticalSort"
+                    android:id="@+id/date_old"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:checked="@{ viewModel.uiState.chipAlphabeticalSortIsChecked }"
                     android:text="Oldest"
                     tools:checked="true" />
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/s"
+                    android:id="@+id/date_new"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:checked="@{ viewModel.uiState.chipAlphabeticalSortIsChecked }"
                     android:text="Latest"
                     tools:checked="true" />
             </com.google.android.material.chip.ChipGroup>
@@ -88,7 +85,7 @@
             <!--                android:text="Cheese"/>-->
 
             <com.google.android.material.chip.ChipGroup
-                android:id="@+id/sick"
+                android:id="@+id/cg_sort_price"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -96,18 +93,16 @@
                 app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/prick"
+                    android:id="@+id/price_high_low"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:checked="@{ viewModel.uiState.chipAlphabeticalSortIsChecked }"
                     android:text="High to Low"
                     tools:checked="true" />
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/lick"
+                    android:id="@+id/price_low_high"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:checked="@{ viewModel.uiState.chipAlphabeticalSortIsChecked }"
                     android:text="Low to High"
                     tools:checked="true" />
             </com.google.android.material.chip.ChipGroup>

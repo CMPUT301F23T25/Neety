@@ -5,10 +5,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.team25.neety.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
@@ -63,6 +67,69 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
     }
+
+    public void sort_item_date(View view){
+        ChipGroup chip_sort_date = findViewById(R.id.cg_sort_date);
+        Chip sort_date_new = findViewById(R.id.date_new);
+        Chip sort_date_old = findViewById(R.id.date_old);
+        ChipGroup chip_sort_price = findViewById(R.id.cg_sort_price);
+        Chip sort_price_highlow = findViewById(R.id.price_high_low);
+        Chip sort_price_lowhigh = findViewById(R.id.price_low_high);
+
+
+        sort_date_old.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    System.out.println("");
+                }
+            }
+        });
+
+        sort_date_new.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Chip 2 is selected
+                    // Perform actions when Chip 2 is selected
+                } else {
+                    // Chip 2 is deselected
+                    // Perform actions when Chip 2 is deselected
+                }
+            }
+        });
+        sort_price_highlow.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Chip 1 is selected
+                    // Perform actions when Chip 1 is selected
+                } else {
+                    // Chip 1 is deselected
+                    // Perform actions when Chip 1 is deselected
+                }
+            }
+        });
+
+        sort_price_lowhigh.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Chip 2 is selected
+                    // Perform actions when Chip 2 is selected
+                } else {
+                    // Chip 2 is deselected
+                    // Perform actions when Chip 2 is deselected
+                }
+            }
+        });
+
+    }
+
+
+
+
 
 }
