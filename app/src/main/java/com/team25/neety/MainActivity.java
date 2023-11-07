@@ -2,6 +2,9 @@ package com.team25.neety;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private ListView lv;
+
+    private Button filterButton;
     private ArrayList<Item> itemsList = new ArrayList<Item>();
 
     @Override
@@ -38,6 +43,15 @@ public class MainActivity extends AppCompatActivity {
                 "S23 Ultra item stored in the Neety app. Here is some more text."));
 
         ItemsLvAdapter adapter = new ItemsLvAdapter(this, itemsList);
+
+        //      For sorting item by specification and updating the screen according to it
+        filterButton=findViewById(R.id.filter_button);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("Filter_Button_click", "clicked ");
+            }
+        });
 
         lv = findViewById(R.id.items_list_view);
         lv.setAdapter(adapter);
