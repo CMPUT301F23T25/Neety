@@ -59,6 +59,15 @@ public class MainActivity extends AppCompatActivity {
                 popUp.setFocusable(true);
                 popUp.setOutsideTouchable(true);
                 popUp.showAsDropDown(findViewById(R.id.filter_button));
+
+                // This code is for clicking apply button
+                Button applyButton=mView.findViewById(R.id.btnApply);
+                applyButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        popUp.dismiss(); // Close the popup when the close button is clicked
+                    }
+                });
             }
         });
 
