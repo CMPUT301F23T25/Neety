@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <!--  EditView Name -->
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLength="15"
+        android:ems="10"
+        android:hint="@string/model_hint"
+        android:id="@+id/model_edittext"
+        android:inputType="textPersonName"></EditText>
+    <!--  EditView Date -->
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/make_hint"
+        android:id="@+id/make_edittext"
+        android:inputType="textPersonName"></EditText>
+    <!--  EditView Price -->
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/estimated_value_hint"
+        android:id="@+id/estimated_value_edittext"
+        android:inputType="textPersonName"></EditText>
+    <!--  EditView Comment -->
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLength="20"
+        android:ems="10"
+        android:hint="@string/description_hint"
+        android:id="@+id/description_edittext"
+        android:inputType="textPersonName"></EditText>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLength="20"
+        android:ems="10"
+        android:hint="@string/purchase_date_hint"
+        android:id="@+id/purchase_date_edittext"
+        android:inputType="textPersonName"></EditText>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLength="20"
+        android:ems="10"
+        android:hint="@string/serial_number_hint"
+        android:id="@+id/serial_number_edittext"
+        android:inputType="textPersonName"></EditText>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLength="20"
+        android:ems="10"
+        android:hint="@string/comments_hint"
+        android:id="@+id/comments_edittext"
+        android:inputType="textPersonName"></EditText>
+</LinearLayout>
