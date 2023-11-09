@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class Item implements Serializable {
     private Date purchaseDate;
@@ -13,6 +14,7 @@ public class Item implements Serializable {
     private String serial;
     private float estimatedValue;
     private String comments;
+    private boolean isSelected;
 
     public Item(Date purchaseDate, String make, String model, String description, String serial, float estimatedValue, String comments) {
         this.purchaseDate = purchaseDate;
@@ -94,6 +96,22 @@ public class Item implements Serializable {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Item item = (Item) obj;
+        return Objects.equals(model, item.model); // replace 'model' with your actual fields
     }
 
 }

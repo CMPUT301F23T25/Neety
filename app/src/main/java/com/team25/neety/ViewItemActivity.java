@@ -2,13 +2,17 @@ package com.team25.neety;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class ViewItemActivity extends AppCompatActivity {
 
     private Item item;
     private TextView tvMake, tvModel, tvEstimatedValue, tvDescription, tvPurchaseDate, tvSerial, tvComments;
+    private Button del_button;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,12 @@ public class ViewItemActivity extends AppCompatActivity {
         tvPurchaseDate.setText(item.getPurchaseDateString());
         tvSerial.setText((item.getSerial() != null) ? item.getSerial() : "No serial");
         tvComments.setText((item.getComments() != null) ? item.getComments() : "No comments");
+
+        del_button = findViewById(R.id.del_button_item_view);
+        del_button.setOnClickListener(v -> {
+            DataHolder.getInstance().setData(item);
+            finish();
+        });
 
     }
 
