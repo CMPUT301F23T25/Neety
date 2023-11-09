@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -13,11 +14,11 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
 
     private final Activity context;
     private final ArrayList<Item> itemList;
+    private boolean isDeleting;
 
     public ItemsLvAdapter(Activity context, ArrayList<Item> list) {
         super(context, R.layout.listitem, list);
         // TODO Auto-generated constructor stub
-
         this.context=context;
         this.itemList=list;
 
@@ -36,7 +37,25 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
 
         estimatedText.setText(itemList.get(position).getEstimatedValueString());
 
+        CheckBox checkBox = rowView.findViewById(R.id.item_checkbox);
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            Item item = itemList.get(position);
+            item.setSelected(isChecked);
+        });
+
+        if (isDeleting) {
+            checkBox.setVisibility(View.VISIBLE);
+            estimatedText.setVisibility(View.INVISIBLE);
+            checkBox.setChecked(itemList.get(position).isSelected());
+        } else {
+            checkBox.setVisibility(View.GONE);
+            estimatedText.setVisibility(View.VISIBLE);
+        }
         return rowView;
 
     };
+    public void setDeleting(boolean isDeleting) {
+        this.isDeleting = isDeleting;
+    }
+
 }
