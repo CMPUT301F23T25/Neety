@@ -6,10 +6,9 @@
     android:layout_width="450dp"
     android:id="@+id/filter_layout"
     android:layout_height="match_parent"
-    android:background="@drawable/woof"
+    android:background="@drawable/filter_layout_border"
     android:gravity="center"
    >
-
 
     <TextView
         android:id="@+id/textView3"
@@ -17,6 +16,8 @@
         android:layout_height="0dp"
         android:layout_marginTop="28dp"
         android:text="Filter Items"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.518"
         app:layout_constraintStart_toStartOf="parent"

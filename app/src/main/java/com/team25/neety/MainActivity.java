@@ -3,6 +3,7 @@ package com.team25.neety;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -58,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
                 popUp.setTouchable(true);
                 popUp.setFocusable(true);
                 popUp.setOutsideTouchable(true);
-                popUp.showAsDropDown(findViewById(R.id.filter_button));
+                popUp.showAtLocation(v, Gravity.BOTTOM,0,500);// location of pop ip
+//                popUp.showAsDropDown(findViewById(R.id.filter_button)
 
                 // This code is for clicking apply button
                 Button applyButton=mView.findViewById(R.id.btnApply);
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                         popUp.dismiss(); // Close the popup when the close button is clicked
                     }
                 });
+                popUp.showAsDropDown(findViewById(R.id.filter_button));
             }
         });
 
