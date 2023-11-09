@@ -24,6 +24,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/add_item_text" />
+
+        <Button
+        android:id="@+id/button_deleteitem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/delete_item_text" />
+
+
         <Space
             android:layout_width="150dp"
             android:layout_height="wrap_content" />

@@ -13,4 +13,6 @@
     <string name="description">Description</string>
     <string name="serial">Serial</string>
     <string name="Comments">Comments</string>
+    <string name="delete_item_text">Delete</string>
+    <string name="done_text">Done</string>
 </resources>
