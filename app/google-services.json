@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "635873842577",
+    "project_id": "neety-f2d24",
+    "storage_bucket": "neety-f2d24.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635873842577:android:ff404ed44189223aff7630",
+        "android_client_info": {
+          "package_name": "com.team25.neety"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAC4XAst8WgoeKRUm9ZK_CCIS6p7-Hbhpw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
