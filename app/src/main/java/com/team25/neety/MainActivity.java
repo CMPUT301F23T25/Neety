@@ -99,9 +99,15 @@ public class MainActivity extends AppCompatActivity {
         ChipGroup chip_sort_date = findViewById(R.id.cg_sort_date);
         Chip sort_date_new = findViewById(R.id.date_new);
         Chip sort_date_old = findViewById(R.id.date_old);
+
         ChipGroup chip_sort_price = findViewById(R.id.cg_sort_price);
         Chip sort_price_highlow = findViewById(R.id.price_high_low);
         Chip sort_price_lowhigh = findViewById(R.id.price_low_high);
+
+        ChipGroup chip_sort_make=findViewById(R.id.cg_sort_make);
+        Chip sort_make_A_Z = findViewById(R.id.cg_make_ascending);
+        Chip sort_make_Z_A = findViewById(R.id.cg_make_descending);
+
 
 
         sort_date_old.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
