@@ -166,103 +166,103 @@ public class MainActivity extends AppCompatActivity {
 
             DataHolder.getInstance().setData(null);
 
-    }
-            CharSequence text = String.format("%s is deleted.", item_to_delete.getModel()) ;
+            CharSequence text = String.format("%s is deleted.", item_to_delete.getModel());
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(MainActivity.this, text, duration);
             toast.show();
         }
-
-public  void sort_by_make(View view,ItemsLvAdapter lv){
-    Chip sort_make_A_Z = view.findViewById(R.id.cg_make_ascending);
-    Chip sort_make_Z_A = view.findViewById(R.id.cg_make_descending);
-    // sort by ascending alphabet (A-Z)
-    if(sort_make_A_Z.isChecked()){
-        Collections.sort(itemsList, new Comparator<Item>() {
-            @Override
-            public int compare(Item item1, Item item2) {
-                return item1.getMake().compareTo(item2.getMake());
-            }
-        });
-        lv.notifyDataSetChanged();
     }
-    // sort by descending alphabet (Z-A)
-    if(sort_make_Z_A.isChecked()){
-        Collections.sort(itemsList, new Comparator<Item>() {
-            @Override
-            public int compare(Item item1, Item item2) {
-                    return item2.getMake().compareTo(item1.getMake());
-            }
-        });
-        lv.notifyDataSetChanged();
+
+    public  void sort_by_make(View view,ItemsLvAdapter lv){
+        Chip sort_make_A_Z = view.findViewById(R.id.cg_make_ascending);
+        Chip sort_make_Z_A = view.findViewById(R.id.cg_make_descending);
+        // sort by ascending alphabet (A-Z)
+        if(sort_make_A_Z.isChecked()){
+            Collections.sort(itemsList, new Comparator<Item>() {
+                @Override
+                public int compare(Item item1, Item item2) {
+                    return item1.getMake().compareTo(item2.getMake());
+                }
+            });
+            lv.notifyDataSetChanged();
+        }
+        // sort by descending alphabet (Z-A)
+        if(sort_make_Z_A.isChecked()){
+            Collections.sort(itemsList, new Comparator<Item>() {
+                @Override
+                public int compare(Item item1, Item item2) {
+                        return item2.getMake().compareTo(item1.getMake());
+                }
+            });
+            lv.notifyDataSetChanged();
+        }
     }
-}
 
 
 
-    public void sort_item_date(View view){
-        ChipGroup chip_sort_date = findViewById(R.id.cg_sort_date);
-        Chip sort_date_new = findViewById(R.id.date_new);
-        Chip sort_date_old = findViewById(R.id.date_old);
-
-        ChipGroup chip_sort_price = findViewById(R.id.cg_sort_price);
-        Chip sort_price_highlow = findViewById(R.id.price_high_low);
-        Chip sort_price_lowhigh = findViewById(R.id.price_low_high);
-
-        ChipGroup chip_sort_make=findViewById(R.id.cg_sort_make);
-        Chip sort_make_A_Z = findViewById(R.id.cg_make_ascending);
-        Chip sort_make_Z_A = findViewById(R.id.cg_make_descending);
-
-
-
-        sort_date_old.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    System.out.println("");
-                }
-            }
-        });
-
-        sort_date_new.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // Chip 2 is selected
-                    // Perform actions when Chip 2 is selected
-                } else {
-                    // Chip 2 is deselected
-                    // Perform actions when Chip 2 is deselected
-                }
-            }
-        });
-        sort_price_highlow.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // Chip 1 is selected
-                    // Perform actions when Chip 1 is selected
-                } else {
-                    // Chip 1 is deselected
-                    // Perform actions when Chip 1 is deselected
-                }
-            }
-        });
-
-        sort_price_lowhigh.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // Chip 2 is selected
-                    // Perform actions when Chip 2 is selected
-                } else {
-                    // Chip 2 is deselected
-                    // Perform actions when Chip 2 is deselected
-                }
-            }
-        });
-
-    }
+//    public void sort_item_date(View view){
+//        ChipGroup chip_sort_date = findViewById(R.id.cg_sort_date);
+//        Chip sort_date_new = findViewById(R.id.date_new);
+//        Chip sort_date_old = findViewById(R.id.date_old);
+//
+//        ChipGroup chip_sort_price = findViewById(R.id.cg_sort_price);
+//        Chip sort_price_highlow = findViewById(R.id.price_high_low);
+//        Chip sort_price_lowhigh = findViewById(R.id.price_low_high);
+//
+//        ChipGroup chip_sort_make=findViewById(R.id.cg_sort_make);
+//        Chip sort_make_A_Z = findViewById(R.id.cg_make_ascending);
+//        Chip sort_make_Z_A = findViewById(R.id.cg_make_descending);
+//
+//
+//
+//        sort_date_old.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    System.out.println("");
+//                }
+//            }
+//        });
+//
+//        sort_date_new.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    // Chip 2 is selected
+//                    // Perform actions when Chip 2 is selected
+//                } else {
+//                    // Chip 2 is deselected
+//                    // Perform actions when Chip 2 is deselected
+//                }
+//            }
+//        });
+//        sort_price_highlow.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    // Chip 1 is selected
+//                    // Perform actions when Chip 1 is selected
+//                } else {
+//                    // Chip 1 is deselected
+//                    // Perform actions when Chip 1 is deselected
+//                }
+//            }
+//        });
+//
+//        sort_price_lowhigh.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    // Chip 2 is selected
+//                    // Perform actions when Chip 2 is selected
+//                } else {
+//                    // Chip 2 is deselected
+//                    // Perform actions when Chip 2 is deselected
+//                }
+//            }
+//        });
+//
+//    }
 
 
 
