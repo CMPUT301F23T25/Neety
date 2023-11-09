@@ -3,13 +3,23 @@ package com.team25.neety;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+
 import android.widget.Button;
+
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+
 import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.team25.neety.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
@@ -22,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView lv;
     private Button del_button;
     private Boolean is_deleting = Boolean.FALSE;
+
+    private Button filterButton;
     private ArrayList<Item> itemsList = new ArrayList<Item>();
     private Item item_to_delete;
     private ItemsLvAdapter adapter;
@@ -48,6 +60,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         adapter = new ItemsLvAdapter(this, itemsList);
+
+        //      For sorting item by specification and updating the screen according to it
+        filterButton=findViewById(R.id.filter_button);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("Filter_Button_click", "clicked ");
+            }
+        });
+
         lv = findViewById(R.id.items_list_view);
         lv.setAdapter(adapter);
 
@@ -124,6 +146,69 @@ public class MainActivity extends AppCompatActivity {
             Toast toast = Toast.makeText(MainActivity.this, text, duration);
             toast.show();
         }
+
     }
+
+    public void sort_item_date(View view){
+        ChipGroup chip_sort_date = findViewById(R.id.cg_sort_date);
+        Chip sort_date_new = findViewById(R.id.date_new);
+        Chip sort_date_old = findViewById(R.id.date_old);
+        ChipGroup chip_sort_price = findViewById(R.id.cg_sort_price);
+        Chip sort_price_highlow = findViewById(R.id.price_high_low);
+        Chip sort_price_lowhigh = findViewById(R.id.price_low_high);
+
+
+        sort_date_old.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    System.out.println("");
+                }
+            }
+        });
+
+        sort_date_new.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Chip 2 is selected
+                    // Perform actions when Chip 2 is selected
+                } else {
+                    // Chip 2 is deselected
+                    // Perform actions when Chip 2 is deselected
+                }
+            }
+        });
+        sort_price_highlow.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Chip 1 is selected
+                    // Perform actions when Chip 1 is selected
+                } else {
+                    // Chip 1 is deselected
+                    // Perform actions when Chip 1 is deselected
+                }
+            }
+        });
+
+        sort_price_lowhigh.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Chip 2 is selected
+                    // Perform actions when Chip 2 is selected
+                } else {
+                    // Chip 2 is deselected
+                    // Perform actions when Chip 2 is deselected
+                }
+            }
+        });
+
+    }
+
+
+
+
 
 }
