@@ -8,11 +8,18 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="make">Make</string>
     <string name="model">Model</string>
-    <string name="purchase_date">Purchase date</string>
+    <string name="purchase_date">Purchase Date</string>
     <string name="estimated_value">Estimated Value</string>
     <string name="description">Description</string>
     <string name="serial">Serial</string>
     <string name="Comments">Comments</string>
     <string name="delete_item_text">Delete</string>
     <string name="done_text">Done</string>
+    <string name="model_hint">Model</string>
+    <string name="make_hint">Make</string>
+    <string name="estimated_value_hint">Estimated Value (#.##)</string>
+    <string name="description_hint">Description (Max 20)</string>
+    <string name="purchase_date_hint">Purchase Date (yyyy-mm-dd)</string>
+    <string name="serial_number_hint">Serial Number</string>
+    <string name="comments_hint">Comments (Max 30)</string>
 </resources>

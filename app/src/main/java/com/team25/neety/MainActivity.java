@@ -1,5 +1,6 @@
 package com.team25.neety;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,7 +36,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AddItem.OnFragmentInteractionListener{
 
     private ActivityMainBinding binding;
     private ListView lv;
@@ -43,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private Boolean is_deleting = Boolean.FALSE;
 
     private Button filterButton;
+    private Button addButton;
     private ArrayList<Item> itemsList = new ArrayList<Item>();
+    private static final int EDIT_ITEM_REQUEST = 1;
     private Item item_to_delete;
     private ItemsLvAdapter adapter;
 
@@ -103,6 +106,22 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
             startActivity(intent);
         });
+        lv.setOnItemClickListener((parent, view, position, id) -> {
+            Intent intent = new Intent(this, EditItemActivity.class);
+            intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
+            startActivityForResult(intent, EDIT_ITEM_REQUEST);
+        });
+
+        addButton = findViewById(R.id.button_additem);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AddItem().show(getSupportFragmentManager(), "add item");
+            }
+        });
+
+
 
         del_button = findViewById(R.id.button_deleteitem);
 
@@ -197,6 +216,36 @@ public class MainActivity extends AppCompatActivity {
             lv.notifyDataSetChanged();
         }
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == EDIT_ITEM_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            Item updatedItem = (Item) data.getSerializableExtra(Constants.INTENT_ITEM_KEY);
+            if (updatedItem != null) {
+                updateItemInList(updatedItem);
+            }
+        }
+    }
+
+    private void updateItemInList(Item updatedItem) {
+        for (int i = 0; i < itemsList.size(); i++) {
+            String serial = itemsList.get(i).getSerial();
+            if (serial != null && serial.equals(updatedItem.getSerial())) {
+                itemsList.set(i, updatedItem);
+                break;
+            }
+        }
+
+        adapter.notifyDataSetChanged(); // Notify the adapter of the data change
+    }
+
+    public void onOKPressed(Item item) {
+        //Add to datalist
+        itemsList.add(item);
+        adapter.notifyDataSetChanged();
+    }
+
 
 
 
