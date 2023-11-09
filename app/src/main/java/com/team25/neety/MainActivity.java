@@ -7,22 +7,31 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+
+import android.widget.LinearLayout;
+
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.team25.neety.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -56,17 +65,33 @@ public class MainActivity extends AppCompatActivity {
                 "A233F1827G",
                 (float) 1312.45,
                 "This is a long winded comment for the Samsung Galaxy " +
-                "S23 Ultra item stored in the Neety app. Here is some more text."));
+                        "S23 Ultra item stored in the Neety app. Here is some more text."));
 
 
         adapter = new ItemsLvAdapter(this, itemsList);
 
         //      For sorting item by specification and updating the screen according to it
-        filterButton=findViewById(R.id.filter_button);
+        filterButton = findViewById(R.id.filter_button);
         filterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("Filter_Button_click", "clicked ");
+                final View mView = LayoutInflater.from(MainActivity.this).inflate(R.layout.filter_layout, null, false);
+                final PopupWindow popUp = new PopupWindow(mView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, false);
+                popUp.setTouchable(true);
+                popUp.setFocusable(true);
+                popUp.setOutsideTouchable(true);
+                popUp.showAtLocation(v, Gravity.BOTTOM,0,500);// location of pop ip
+//                popUp.showAsDropDown(findViewById(R.id.filter_button)
+                // This code is for clicking apply button
+                Button applyButton=mView.findViewById(R.id.btnApply);
+                applyButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        sort_by_make(mView,adapter);// sorts by make if chosen
+                        popUp.dismiss(); // Close the popup when the close button is clicked
+                    }
+                });
+                popUp.showAsDropDown(findViewById(R.id.filter_button));
             }
         });
 
@@ -141,21 +166,53 @@ public class MainActivity extends AppCompatActivity {
 
             DataHolder.getInstance().setData(null);
 
+    }
             CharSequence text = String.format("%s is deleted.", item_to_delete.getModel()) ;
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(MainActivity.this, text, duration);
             toast.show();
         }
 
+public  void sort_by_make(View view,ItemsLvAdapter lv){
+    Chip sort_make_A_Z = view.findViewById(R.id.cg_make_ascending);
+    Chip sort_make_Z_A = view.findViewById(R.id.cg_make_descending);
+    // sort by ascending alphabet (A-Z)
+    if(sort_make_A_Z.isChecked()){
+        Collections.sort(itemsList, new Comparator<Item>() {
+            @Override
+            public int compare(Item item1, Item item2) {
+                return item1.getMake().compareTo(item2.getMake());
+            }
+        });
+        lv.notifyDataSetChanged();
     }
+    // sort by descending alphabet (Z-A)
+    if(sort_make_Z_A.isChecked()){
+        Collections.sort(itemsList, new Comparator<Item>() {
+            @Override
+            public int compare(Item item1, Item item2) {
+                    return item2.getMake().compareTo(item1.getMake());
+            }
+        });
+        lv.notifyDataSetChanged();
+    }
+}
+
+
 
     public void sort_item_date(View view){
         ChipGroup chip_sort_date = findViewById(R.id.cg_sort_date);
         Chip sort_date_new = findViewById(R.id.date_new);
         Chip sort_date_old = findViewById(R.id.date_old);
+
         ChipGroup chip_sort_price = findViewById(R.id.cg_sort_price);
         Chip sort_price_highlow = findViewById(R.id.price_high_low);
         Chip sort_price_lowhigh = findViewById(R.id.price_low_high);
+
+        ChipGroup chip_sort_make=findViewById(R.id.cg_sort_make);
+        Chip sort_make_A_Z = findViewById(R.id.cg_make_ascending);
+        Chip sort_make_Z_A = findViewById(R.id.cg_make_descending);
+
 
 
         sort_date_old.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -212,3 +269,4 @@ public class MainActivity extends AppCompatActivity {
 
 
 }
+
