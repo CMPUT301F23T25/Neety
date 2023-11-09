@@ -56,34 +56,8 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
             startActivity(intent);
         });
-//                String Msg = String.format("Do you want to delete %s?", itemsList.get(position).getModel());
-//                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-//                builder
-//                        .setMessage(Msg)
-//                        .setTitle("Deleting an item")
-//                        .setNegativeButton("No", ((dialog, which) -> {
-//                            dialog.cancel();
-//                        }))
-//                        .setPositiveButton("Yes",((dialog, which) -> {
-//                            onYesDelete(position);
-//                        }));
-//                AlertDialog alertDialog = builder.create();
-//                alertDialog.show();
+
         del_button = findViewById(R.id.button_deleteitem);
-//        del_button.setOnClickListener(v -> {
-//            if (!is_deleting) {
-//                del_button.setText("Done Deleting");
-//                is_deleting = Boolean.TRUE;
-//
-//                CharSequence text = "Click on the item to delete";
-//                int duration = Toast.LENGTH_SHORT;
-//                Toast toast = Toast.makeText(MainActivity.this, text, duration);
-//                toast.show();
-//            } else {
-//                del_button.setText("Delete");
-//                is_deleting = Boolean.FALSE;
-//            }
-//        });
 
         del_button.setOnClickListener(v -> {
             if (!is_deleting) {
@@ -151,8 +125,5 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
         }
     }
-    private void onYesDelete(int position){
-        itemsList.remove(position);
-        adapter.notifyDataSetChanged();
-    }
+
 }
