@@ -24,6 +24,8 @@ import com.google.android.material.chip.ChipGroup;
 import com.team25.neety.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -68,19 +70,18 @@ public class MainActivity extends AppCompatActivity {
                 popUp.setOutsideTouchable(true);
                 popUp.showAtLocation(v, Gravity.BOTTOM,0,500);// location of pop ip
 //                popUp.showAsDropDown(findViewById(R.id.filter_button)
-
                 // This code is for clicking apply button
                 Button applyButton=mView.findViewById(R.id.btnApply);
                 applyButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        sort_by_make(mView,adapter);// sorts by make if chosen
                         popUp.dismiss(); // Close the popup when the close button is clicked
                     }
                 });
                 popUp.showAsDropDown(findViewById(R.id.filter_button));
             }
         });
-
 
         lv = findViewById(R.id.items_list_view);
         lv.setAdapter(adapter);
@@ -93,6 +94,32 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+public  void sort_by_make(View view,ItemsLvAdapter lv){
+    Chip sort_make_A_Z = view.findViewById(R.id.cg_make_ascending);
+    Chip sort_make_Z_A = view.findViewById(R.id.cg_make_descending);
+    // sort by ascending alphabet (A-Z)
+    if(sort_make_A_Z.isChecked()){
+        Collections.sort(itemsList, new Comparator<Item>() {
+            @Override
+            public int compare(Item item1, Item item2) {
+                return item1.getMake().compareTo(item2.getMake());
+            }
+        });
+        lv.notifyDataSetChanged();
+    }
+    // sort by descending alphabet (Z-A)
+    if(sort_make_Z_A.isChecked()){
+        Collections.sort(itemsList, new Comparator<Item>() {
+            @Override
+            public int compare(Item item1, Item item2) {
+                    return item2.getMake().compareTo(item1.getMake());
+            }
+        });
+        lv.notifyDataSetChanged();
+    }
+}
+
 
 
     public void sort_item_date(View view){
