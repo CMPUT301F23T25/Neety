@@ -35,7 +35,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AddItem.OnFragmentInteractionListener{
 
     private ActivityMainBinding binding;
     private ListView lv;
@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private Boolean is_deleting = Boolean.FALSE;
 
     private Button filterButton;
+    private Button addButton;
     private ArrayList<Item> itemsList = new ArrayList<Item>();
     private Item item_to_delete;
     private ItemsLvAdapter adapter;
@@ -103,6 +104,17 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
             startActivity(intent);
         });
+
+        addButton = findViewById(R.id.button_additem);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AddItem().show(getSupportFragmentManager(), "add item");
+            }
+        });
+
+
 
         del_button = findViewById(R.id.button_deleteitem);
 
@@ -197,6 +209,13 @@ public class MainActivity extends AppCompatActivity {
             lv.notifyDataSetChanged();
         }
     }
+
+    public void onOKPressed(Item item) {
+        //Add to datalist
+        itemsList.add(item);
+        adapter.notifyDataSetChanged();
+    }
+
 
 
 
