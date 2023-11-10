@@ -26,15 +26,25 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.team25.neety.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+
+import javax.annotation.Nullable;
 
 public class MainActivity extends AppCompatActivity implements AddItem.OnFragmentInteractionListener{
 
@@ -43,9 +53,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private Button del_button;
     private Boolean is_deleting = Boolean.FALSE;
 
+    private FirebaseFirestore db;
+    private CollectionReference itemsRef;
     private Button filterButton;
     private Button addButton;
-    private ArrayList<Item> itemsList = new ArrayList<Item>();
+    private ArrayList<Item> itemsList;
     private static final int EDIT_ITEM_REQUEST = 1;
     private Item item_to_delete;
     private ItemsLvAdapter adapter;
@@ -53,25 +65,26 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        db = FirebaseFirestore.getInstance();
+        itemsRef = db.collection("items");
+        itemsList = new ArrayList<>();
 
-
-        itemsList.add(new Item("Apple", "iPhone 13 Pro Max", (float) 255.32));
-        itemsList.add(new Item("Google", "Pixel 8 Pro", (float) 343.32));
-        itemsList.add(new Item(
-                new Date(),
-                "Samsung",
-                "Galaxy S23 5G Ultra Pro",
-                "This is a description for the Samsung S23 Ultra smartphone.",
-                "A233F1827G",
-                (float) 1312.45,
-                "This is a long winded comment for the Samsung Galaxy " +
-                        "S23 Ultra item stored in the Neety app. Here is some more text."));
-        itemsList.add(new Item(new Date(101, 2, 1), "RandomBrand", "RandomModel", "RandomDescription", "RandomSerial", (float) 99.99, "RandomComment"));
-        itemsList.add(new Item(new Date(98, 4, 15), "HardcodedBrand", "HardcodedModel", "HardcodedDescription", "HardcodedSerial", (float) 66.66, "HardcodedComment"));
+//        itemsList.add(new Item("Apple", "iPhone 13 Pro Max", (float) 255.32));
+//        itemsList.add(new Item("Google", "Pixel 8 Pro", (float) 343.32));
+//        itemsList.add(new Item(
+//                new Date(),
+//                "Samsung",
+//                "Galaxy S23 5G Ultra Pro",
+//                "This is a description for the Samsung S23 Ultra smartphone.",
+//                "A233F1827G",
+//                (float) 1312.45,
+//                "This is a long winded comment for the Samsung Galaxy " +
+//                        "S23 Ultra item stored in the Neety app. Here is some more text."));
+//        itemsList.add(new Item(new Date(101, 2, 1), "RandomBrand", "RandomModel", "RandomDescription", "RandomSerial", (float) 99.99, "RandomComment"));
+//        itemsList.add(new Item(new Date(98, 4, 15), "HardcodedBrand", "HardcodedModel", "HardcodedDescription", "HardcodedSerial", (float) 66.66, "HardcodedComment"));
 
         adapter = new ItemsLvAdapter(this, itemsList);
 
@@ -110,11 +123,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
             startActivity(intent);
         });
-        lv.setOnItemClickListener((parent, view, position, id) -> {
-            Intent intent = new Intent(this, EditItemActivity.class);
-            intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
-            startActivityForResult(intent, EDIT_ITEM_REQUEST);
-        });
+//        lv.setOnItemClickListener((parent, view, position, id) -> {
+//            Intent intent = new Intent(this, EditItemActivity.class);
+//            intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
+//            startActivityForResult(intent, EDIT_ITEM_REQUEST);
+//        });
 
         addButton = findViewById(R.id.button_additem);
 
@@ -159,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                     Item item = iterator.next();
                                     if (item.isSelected()) {
                                         iterator.remove();
+                                        itemsRef.document(item.getMake()).delete();
                                     }
 
                                 }
@@ -176,6 +190,30 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             adapter.setDeleting(is_deleting);
             adapter.notifyDataSetChanged();
         });
+
+        itemsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot querySnapshots, @Nullable FirebaseFirestoreException error) {
+                if (error != null){
+                    Log.e("Firestore", error.toString());
+                    return;
+                }
+                if (querySnapshots != null){
+                    itemsList.clear();
+                    for (QueryDocumentSnapshot doc: querySnapshots){
+                        String Model = doc.getId();
+                        String Make = doc.getString("Make");
+                        String Value = doc.getString("Value");
+                        Value = Value.substring(1);
+                        Log.d("Firestore", String.format("Model(%s, %s) fetched",
+                                Model, Make));
+                        itemsList.add(new Item(Model, Make, Float.parseFloat(Value)));
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+
 
     }
     @Override
@@ -304,8 +342,19 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
     public void onOKPressed(Item item) {
         //Add to datalist
-        itemsList.add(item);
-        adapter.notifyDataSetChanged();
+        HashMap<String, String> data = new HashMap<>();
+        data.put("Make", item.getMake());
+        data.put("Value", item.getEstimatedValueString());
+
+        itemsRef
+                .document(item.getModel())
+                .set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Firestore", "DocumentSnapshot successfully written!");
+                    }
+                });
     }
 
 }
