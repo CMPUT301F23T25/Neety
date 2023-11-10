@@ -118,29 +118,30 @@ public class AddItem extends DialogFragment{
                             boolean checkDate = false;
                             boolean checkPrice = validatePrice(estimatedValue);
 
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
-                            dateFormat.setLenient(false);
-                            Date date = null;
-                            if (validateDate(datestring)){
-                                try {
-                                    date = dateFormat.parse(datestring);
-                                    checkDate = true;
-                                } catch (ParseException e) {
-                                    throw new RuntimeException(e);
-                                }
+                            String make = makeName.getText().toString();
+                            String model = modelName.getText().toString();
+                            String desc = description.getText().toString();
+                            String price = estimatedValue.getText().toString();
+                            String serial = serialNumber.getText().toString();
+                            String comment = comments.getText().toString();
+                            if (datestring == "" && desc == "" && serial == "" && comment == ""){
+                                listener.onOKPressed(new Item(make, model, Float.parseFloat(price)));
                             }
-
-                            if (checkPrice && checkDate) {
-                                String make = makeName.getText().toString();
-                                String model = modelName.getText().toString();
-                                String desc = description.getText().toString();
-                                String price = estimatedValue.getText().toString();
-                                String serial = serialNumber.getText().toString();
-                                String comment = comments.getText().toString();
-                                if (datestring == ""){
-                                    listener.onOKPressed(new Item(make, model, Float.parseFloat(price)));
+                            if (datestring != "") {
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+                                dateFormat.setLenient(false);
+                                Date date = null;
+                                if (validateDate(datestring)) {
+                                    try {
+                                        date = dateFormat.parse(datestring);
+                                        checkDate = true;
+                                    } catch (ParseException e) {
+                                        throw new RuntimeException(e);
+                                    }
                                 }
-                                listener.onOKPressed(new Item(date, make, model, desc, serial, Float.parseFloat(price), comment));
+                                if (checkPrice && checkDate) {
+                                    listener.onOKPressed(new Item(date, make, model, desc, serial, Float.parseFloat(price), comment));
+                                }
                             }
 
 
