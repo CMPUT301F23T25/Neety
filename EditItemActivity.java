@@ -2,11 +2,22 @@ package com.team25.neety;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EditItemActivity extends AppCompatActivity {
 
@@ -55,14 +66,44 @@ public class EditItemActivity extends AppCompatActivity {
         String comments = editComments.getText().toString();
 
         // Create an updated Item object
-        Item updatedItem = new Item(item.getPurchaseDate(), make, model, description, serial, value, comments);
+        Item updatedItem = new Item(model, make, value);
+        updatedItem.setDescription(description);
+        updatedItem.setSerial(serial);
+        updatedItem.setComments(comments);
+
+        // Update the item in Firestore
+        updateItemInFirestore(updatedItem);
 
         // Send the updated item back to the calling activity
         Intent resultIntent = new Intent();
         resultIntent.putExtra(Constants.INTENT_ITEM_KEY, updatedItem);
         setResult(RESULT_OK, resultIntent);
+
         finish();
     }
+
+    private void updateItemInFirestore(Item updatedItem) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference itemsRef = db.collection("items");
+
+        // Update the item in Firestore
+        Map<String, Object> updatedData = new HashMap<>();
+        updatedData.put("make", updatedItem.getMake());
+        updatedData.put("value", String.valueOf(updatedItem.getEstimatedValue()));
+
+        DocumentReference itemRef = itemsRef.document(updatedItem.getModel());
+        itemRef.update(updatedData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Firestore", "DocumentSnapshot successfully updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("Firestore", "Error updating document", e);
+                    }
+                });
+    }
 }
-
-
