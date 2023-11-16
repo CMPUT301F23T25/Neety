@@ -2,6 +2,7 @@ package com.team25.neety;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -20,8 +21,8 @@ public class ViewItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_item);
 
-        assert getSupportActionBar() != null;   //null check
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);   //show back button
+        assert getSupportActionBar() != null;   // null check
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);   // show back button
 
 
         item = getIntent().getSerializableExtra(Constants.INTENT_ITEM_KEY, Item.class);
@@ -46,7 +47,7 @@ public class ViewItemActivity extends AppCompatActivity {
         edit_button.setOnClickListener(v -> {
             Intent intent = new Intent(this, EditItemActivity.class);
             intent.putExtra(Constants.INTENT_ITEM_KEY, item);
-            startActivity(intent);
+            startActivityForResult(intent, Constants.EDIT_ITEM_ACTIVITY_CODE);
         });
         del_button = findViewById(R.id.del_button_item_view);
         del_button.setOnClickListener(v -> {
@@ -61,4 +62,20 @@ public class ViewItemActivity extends AppCompatActivity {
         finish();
         return true;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Constants.EDIT_ITEM_ACTIVITY_CODE) {
+            if(resultCode == Activity.RESULT_OK){
+                Item result = data.getSerializableExtra(Constants.INTENT_ITEM_KEY, Item.class);
+                // result holds the new item
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
+        }
+    } //onActivityResult
+
 }
