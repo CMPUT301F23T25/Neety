@@ -8,7 +8,13 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class EditItemActivity extends AppCompatActivity {
+
+    private FirebaseFirestore db;
+    private CollectionReference itemsRef;
 
     private Item item;
     private EditText editMake, editModel, editValue, editDescription, editSerial, editComments;
@@ -17,6 +23,9 @@ public class EditItemActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
+
+        db = FirebaseFirestore.getInstance();
+        itemsRef = db.collection("items");
 
         item = (Item) getIntent().getSerializableExtra(Constants.INTENT_ITEM_KEY);
 
@@ -55,7 +64,7 @@ public class EditItemActivity extends AppCompatActivity {
         String comments = editComments.getText().toString();
 
         // Create an updated Item object
-        Item updatedItem = new Item(item.getPurchaseDate(), make, model, description, serial, value, comments);
+        Item updatedItem = new Item(item.getId(), item.getPurchaseDate(), make, model, description, serial, value, comments);
 
         // Send the updated item back to the calling activity
         Intent resultIntent = new Intent();

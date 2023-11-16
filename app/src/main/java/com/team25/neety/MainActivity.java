@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -60,10 +61,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private Button filterButton;
     private Button addButton;
     private ArrayList<Item> itemsList;
-    private static final int EDIT_ITEM_REQUEST = 1;
     private Item item_to_delete;
     private ItemsLvAdapter adapter;
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,20 +73,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         db = FirebaseFirestore.getInstance();
         itemsRef = db.collection("items");
         itemsList = new ArrayList<>();
-
-//        itemsList.add(new Item("Apple", "iPhone 13 Pro Max", (float) 255.32));
-//        itemsList.add(new Item("Google", "Pixel 8 Pro", (float) 343.32));
-//        itemsList.add(new Item(
-//                new Date(),
-//                "Samsung",
-//                "Galaxy S23 5G Ultra Pro",
-//                "This is a description for the Samsung S23 Ultra smartphone.",
-//                "A233F1827G",
-//                (float) 1312.45,
-//                "This is a long winded comment for the Samsung Galaxy " +
-//                        "S23 Ultra item stored in the Neety app. Here is some more text."));
-//        itemsList.add(new Item(new Date(101, 2, 1), "RandomBrand", "RandomModel", "RandomDescription", "RandomSerial", (float) 99.99, "RandomComment"));
-//        itemsList.add(new Item(new Date(98, 4, 15), "HardcodedBrand", "HardcodedModel", "HardcodedDescription", "HardcodedSerial", (float) 66.66, "HardcodedComment"));
 
         adapter = new ItemsLvAdapter(this, itemsList);
 
@@ -126,11 +111,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
             startActivity(intent);
         });
-//        lv.setOnItemClickListener((parent, view, position, id) -> {
-//            Intent intent = new Intent(this, EditItemActivity.class);
-//            intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
-//            startActivityForResult(intent, EDIT_ITEM_REQUEST);
-//        });
 
         addButton = findViewById(R.id.button_additem);
 
@@ -175,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                     Item item = iterator.next();
                                     if (item.isSelected()) {
                                         iterator.remove();
-                                        itemsRef.document(item.getModel()).delete();
+                                        itemsRef.document(item.getIdString()).delete();
                                     }
 
                                 }
@@ -204,27 +184,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 if (querySnapshots != null){
                     itemsList.clear();
                     for (QueryDocumentSnapshot doc: querySnapshots){
-                        String Model = doc.getId();
-                        String Make = doc.getString("Make");
-                        String Value = doc.getString("Value");
-                        Value = Value.substring(1);
-                        String Description = doc.getString("Description");
-                        String PurchaseDate = doc.getString("PurchaseDate");
-                        String Serial = doc.getString("Serial");
-                        String Comments = doc.getString("Comments");
-                        Log.d("Firestore", String.format("Model(%s, %s) fetched",
-                                Model, Make));
-
-                        dateFormat.setLenient(false);
-                        Date date = null;
-                        if (PurchaseDate != null){
-                            try {
-                                date = dateFormat.parse(PurchaseDate);
-                            } catch (ParseException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        itemsList.add(new Item(date, Make, Model, Description, Serial, Float.parseFloat(Value), Comments));
+                        Log.d("D", doc.toString());
+                        itemsList.add(Item.getItemFromDocument(doc));
                     }
                     adapter.notifyDataSetChanged();
                 }
@@ -327,48 +288,12 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
-
-
-
-
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == EDIT_ITEM_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            Item updatedItem = (Item) data.getSerializableExtra(Constants.INTENT_ITEM_KEY);
-            if (updatedItem != null) {
-                updateItemInList(updatedItem);
-            }
-        }
-    }
-
-    private void updateItemInList(Item updatedItem) {
-        for (int i = 0; i < itemsList.size(); i++) {
-            String serial = itemsList.get(i).getSerial();
-            if (serial != null && serial.equals(updatedItem.getSerial())) {
-                itemsList.set(i, updatedItem);
-                break;
-            }
-        }
-
-        adapter.notifyDataSetChanged(); // Notify the adapter of the data change
-    }
-
     public void onOKPressed(Item item) {
         //Add to datalist
-        HashMap<String, String> data = new HashMap<>();
-        data.put("Make", item.getMake());
-        data.put("Value", item.getEstimatedValueString());
-        data.put("Description", item.getDescription());
-        data.put("PurchaseDate", item.getPurchaseDateString());
-        data.put("Serial", item.getSerial());
-        data.put("Comments", item.getComments());
+        HashMap<String, String> data = Item.getFirestoreDataFromItem(item);
 
         itemsRef
-                .document(item.getModel())
+                .document(item.getIdString())
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
