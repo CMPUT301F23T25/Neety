@@ -43,6 +43,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.annotation.Nullable;
 
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private static final int EDIT_ITEM_REQUEST = 1;
     private Item item_to_delete;
     private ItemsLvAdapter adapter;
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                     Item item = iterator.next();
                                     if (item.isSelected()) {
                                         iterator.remove();
-                                        itemsRef.document(item.getMake()).delete();
+                                        itemsRef.document(item.getModel()).delete();
                                     }
 
                                 }
@@ -205,9 +208,23 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                         String Make = doc.getString("Make");
                         String Value = doc.getString("Value");
                         Value = Value.substring(1);
+                        String Description = doc.getString("Description");
+                        String PurchaseDate = doc.getString("PurchaseDate");
+                        String Serial = doc.getString("Serial");
+                        String Comments = doc.getString("Comments");
                         Log.d("Firestore", String.format("Model(%s, %s) fetched",
                                 Model, Make));
-                        itemsList.add(new Item(Model, Make, Float.parseFloat(Value)));
+
+                        dateFormat.setLenient(false);
+                        Date date = null;
+                        if (PurchaseDate != null){
+                            try {
+                                date = dateFormat.parse(PurchaseDate);
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        itemsList.add(new Item(date, Make, Model, Description, Serial, Float.parseFloat(Value), Comments));
                     }
                     adapter.notifyDataSetChanged();
                 }
@@ -345,6 +362,10 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         HashMap<String, String> data = new HashMap<>();
         data.put("Make", item.getMake());
         data.put("Value", item.getEstimatedValueString());
+        data.put("Description", item.getDescription());
+        data.put("PurchaseDate", item.getPurchaseDateString());
+        data.put("Serial", item.getSerial());
+        data.put("Comments", item.getComments());
 
         itemsRef
                 .document(item.getModel())
