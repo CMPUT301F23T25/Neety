@@ -34,6 +34,9 @@ public class EditItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
 
+        assert getSupportActionBar() != null;   // null check
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);   // show back button
+
         // Initialize EditText fields
         editMake = findViewById(R.id.edit_make);
         editModel = findViewById(R.id.edit_model);
@@ -97,6 +100,7 @@ public class EditItemActivity extends AppCompatActivity {
         String description = editDescription.getText().toString();
         String serial = editSerial.getText().toString();
         String comments = editComments.getText().toString();
+
         // TODO: FIX THIS
         Date purchaseDate = new Date();
 
@@ -114,5 +118,11 @@ public class EditItemActivity extends AppCompatActivity {
                         finish();
                     }
                 });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }
