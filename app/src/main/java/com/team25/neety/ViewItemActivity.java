@@ -1,15 +1,22 @@
 package com.team25.neety;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.UUID;
 
 public class ViewItemActivity extends AppCompatActivity {
 
@@ -17,7 +24,7 @@ public class ViewItemActivity extends AppCompatActivity {
     private CollectionReference itemsRef;
 
 
-    private Item item;
+    private UUID itemId;
     private TextView tvMake, tvModel, tvEstimatedValue, tvDescription, tvPurchaseDate, tvSerial, tvComments;
     private Button del_button;
     private Button edit_button;
@@ -34,9 +41,30 @@ public class ViewItemActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         itemsRef = db.collection("items");
 
-        item = getIntent().getSerializableExtra(Constants.INTENT_ITEM_KEY, Item.class);
+        itemId = getIntent().getSerializableExtra(Constants.INTENT_ITEM_ID_KEY, UUID.class);
 
-        populateFields();
+        Item item;
+        itemsRef.document(itemId.toString()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        item = Item.getItemFromDocument(document);
+                    } else {
+                        Log.d("ViewItemActivity", "No such document");
+                        finish();
+                    }
+                } else {
+                    Log.d("ViewItemActivity", "get failed with ", task.getException());
+                    finish();
+                }
+            }
+        });
+
+        Log.d("D", "UUID: " + itemId.toString());
+
+        populateFields(item);
 
         edit_button = findViewById(R.id.edit_button);
         edit_button.setOnClickListener(v -> {
@@ -73,7 +101,9 @@ public class ViewItemActivity extends AppCompatActivity {
         }
     } //onActivityResult
 
-    protected void populateFields() {
+    protected void populateFields(Item item) {
+        if (item == null) return;
+
         tvMake = findViewById(R.id.make_textview);
         tvModel = findViewById(R.id.model_textview);
         tvEstimatedValue = findViewById(R.id.ev_textview);
