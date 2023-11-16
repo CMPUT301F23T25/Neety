@@ -1,5 +1,7 @@
 package com.team25.neety;
 
+import static com.team25.neety.Helpers.floatToPriceString;
+
 import android.util.Log;
 
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -46,9 +48,7 @@ public class Item implements Serializable {
     }
 
     public String getPurchaseDateString() {
-        // TODO: Perhaps add locale here?
-        DateFormat df = new SimpleDateFormat(Constants.DATE_FORMAT_PATTERN);
-        return df.format(purchaseDate);
+        return Helpers.getStringFromDate(purchaseDate);
     }
 
     public void setPurchaseDate(Date purchaseDate) {
@@ -92,8 +92,7 @@ public class Item implements Serializable {
     }
 
     public String getEstimatedValueString() {
-        // TODO: Perhaps add locale here?
-        return String.format("$%,.2f", estimatedValue);
+        return Helpers.floatToPriceString(estimatedValue);
     }
 
     public void setEstimatedValue(float estimatedValue) {
@@ -139,17 +138,7 @@ public class Item implements Serializable {
         this.id = id;
     } */
 
-    public static Date getDateFromString(String dateString) {
-        if (dateString == null) throw new NullPointerException("Empty dateString");
 
-        DateFormat df = new SimpleDateFormat(Constants.DATE_FORMAT_PATTERN);
-
-        try {
-            return df.parse(dateString);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static Item getItemFromDocument(DocumentSnapshot doc) {
 
@@ -158,7 +147,7 @@ public class Item implements Serializable {
         String make = doc.getString("Make");
         String value = doc.getString("Value").substring(1);
         String description = doc.getString("Description");
-        Date purchaseDate = Item.getDateFromString(doc.getString("PurchaseDate"));
+        Date purchaseDate = Helpers.getDateFromString(doc.getString("PurchaseDate"));
         String serial = doc.getString("Serial");
         String comments = doc.getString("Comments");
         Log.d("Firestore", String.format("Model(%s, %s) fetched",

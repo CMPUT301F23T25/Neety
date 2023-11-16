@@ -20,6 +20,7 @@ import android.widget.CompoundButton;
 
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -35,6 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.rpc.Help;
 import com.team25.neety.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
@@ -52,17 +54,16 @@ import javax.annotation.Nullable;
 public class MainActivity extends AppCompatActivity implements AddItem.OnFragmentInteractionListener{
 
     private ActivityMainBinding binding;
-    private ListView lv;
-    private Button del_button;
-    private Boolean is_deleting = Boolean.FALSE;
-
     private FirebaseFirestore db;
     private CollectionReference itemsRef;
-    private Button filterButton;
-    private Button addButton;
+
+    private ListView lv;
     private ArrayList<Item> itemsList;
-    private Item item_to_delete;
     private ItemsLvAdapter adapter;
+
+    private Button filterButton, addButton, del_button;
+    private TextView totalValueTv;
+    private Boolean is_deleting = Boolean.FALSE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         itemsList = new ArrayList<>();
 
         adapter = new ItemsLvAdapter(this, itemsList);
+
+        totalValueTv = findViewById(R.id.total_value_textview);
 
         //      For sorting item by specification and updating the screen according to it
         filterButton = findViewById(R.id.filter_button);
@@ -183,10 +186,15 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 }
                 if (querySnapshots != null){
                     itemsList.clear();
+                    float total = 0;
                     for (QueryDocumentSnapshot doc: querySnapshots){
                         Log.d("D", doc.toString());
-                        itemsList.add(Item.getItemFromDocument(doc));
+                        Item i = Item.getItemFromDocument(doc);
+                        itemsList.add(i);
+                        total += i.getEstimatedValue();
                     }
+
+                    totalValueTv.setText(Helpers.floatToPriceString(total));
                     adapter.notifyDataSetChanged();
                 }
             }
