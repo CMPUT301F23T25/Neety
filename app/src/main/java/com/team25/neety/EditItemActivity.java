@@ -1,12 +1,12 @@
 package com.team25.neety;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 public class EditItemActivity extends AppCompatActivity {
 
@@ -16,7 +16,7 @@ public class EditItemActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_item);
+        setContentView(R.layout.activity_edit_item2);
 
         item = getIntent().getSerializableExtra(Constants.INTENT_ITEM_KEY,Item.class);
 
@@ -64,5 +64,3 @@ public class EditItemActivity extends AppCompatActivity {
         finish();
     }
 }
-
-
