@@ -18,7 +18,7 @@ public class EditItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
 
-        item = (Item) getIntent().getSerializableExtra(Constants.INTENT_ITEM_KEY);
+        item = getIntent().getSerializableExtra(Constants.INTENT_ITEM_KEY,Item.class);
 
         // Initialize EditText fields
         editMake = findViewById(R.id.edit_make);
@@ -42,7 +42,7 @@ public class EditItemActivity extends AppCompatActivity {
         editComments.setText(item.getComments());
         editComments.setEnabled(true);
 
-        Button saveButton = findViewById(R.id.edit_button);
+        Button saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(v -> saveEditedItem());
     }
 

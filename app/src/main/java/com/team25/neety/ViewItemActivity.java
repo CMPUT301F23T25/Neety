@@ -12,6 +12,7 @@ public class ViewItemActivity extends AppCompatActivity {
     private Item item;
     private TextView tvMake, tvModel, tvEstimatedValue, tvDescription, tvPurchaseDate, tvSerial, tvComments;
     private Button del_button;
+    private Button edit_button;
 
 
     @Override
@@ -41,6 +42,12 @@ public class ViewItemActivity extends AppCompatActivity {
         tvSerial.setText((item.getSerial() != null) ? item.getSerial() : "No serial");
         tvComments.setText((item.getComments() != null) ? item.getComments() : "No comments");
 
+        edit_button = findViewById(R.id.edit_button);
+        edit_button.setOnClickListener(v -> {
+            Intent intent = new Intent(this, EditItemActivity.class);
+            intent.putExtra(Constants.INTENT_ITEM_KEY, item);
+            startActivity(intent);
+        });
         del_button = findViewById(R.id.del_button_item_view);
         del_button.setOnClickListener(v -> {
             DataHolder.getInstance().setData(item);
