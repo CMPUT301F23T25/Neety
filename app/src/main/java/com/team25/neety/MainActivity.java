@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
         lv.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent = new Intent(this, ViewItemActivity.class);
-            intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
+            intent.putExtra(Constants.INTENT_ITEM_ID_KEY, itemsList.get(position).getId());
             startActivity(intent);
         });
 

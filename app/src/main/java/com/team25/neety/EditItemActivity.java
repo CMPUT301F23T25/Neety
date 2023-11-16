@@ -1,33 +1,41 @@
 package com.team25.neety;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Date;
+import java.util.UUID;
 
 public class EditItemActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private CollectionReference itemsRef;
 
-    private Item item;
-    private EditText editMake, editModel, editValue, editDescription, editSerial, editComments;
+    private UUID itemId;
+    private EditText editMake, editModel, editValue, editDescription, editSerial, editComments,editDate;
+    private Button saveButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
 
-        db = FirebaseFirestore.getInstance();
-        itemsRef = db.collection("items");
-
-        item = (Item) getIntent().getSerializableExtra(Constants.INTENT_ITEM_KEY);
+        assert getSupportActionBar() != null;   // null check
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);   // show back button
 
         // Initialize EditText fields
         editMake = findViewById(R.id.edit_make);
@@ -36,7 +44,38 @@ public class EditItemActivity extends AppCompatActivity {
         editDescription = findViewById(R.id.edit_description);
         editSerial = findViewById(R.id.edit_serial);
         editComments = findViewById(R.id.edit_comments);
+        editDate = findViewById(R.id.edit_date);
 
+        saveButton = findViewById(R.id.save_button);
+        saveButton.setEnabled(false);
+
+        db = FirebaseFirestore.getInstance();
+        itemsRef = db.collection("items");
+
+        itemId = getIntent().getSerializableExtra(Constants.INTENT_ITEM_ID_KEY, UUID.class);
+
+        itemsRef.document(itemId.toString()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        populateFields(Item.getItemFromDocument(document));
+                    } else {
+                        Log.d("ViewItemActivity", "No such document");
+                        finish();
+                    }
+                } else {
+                    Log.d("ViewItemActivity", "get failed with ", task.getException());
+                    finish();
+                }
+            }
+        });
+
+
+    }
+
+    private void populateFields(Item item) {
         // Set existing item details in EditText fields
         editMake.setText(item.getMake());
         editMake.setEnabled(true);
@@ -50,9 +89,11 @@ public class EditItemActivity extends AppCompatActivity {
         editSerial.setEnabled(true);
         editComments.setText(item.getComments());
         editComments.setEnabled(true);
+        editDate.setText(item.getPurchaseDateString());
+        editDate.setEnabled(true);
 
-        Button saveButton = findViewById(R.id.edit_button);
         saveButton.setOnClickListener(v -> saveEditedItem());
+        saveButton.setEnabled(true);
     }
 
     private void saveEditedItem() {
@@ -62,16 +103,30 @@ public class EditItemActivity extends AppCompatActivity {
         String description = editDescription.getText().toString();
         String serial = editSerial.getText().toString();
         String comments = editComments.getText().toString();
+        Date purchaseDate = Helpers.getDateFromString(editDate.getText().toString());
+
+        // TODO: FIX THIS
+        //Date purchaseDate = new Date();
 
         // Create an updated Item object
-        Item updatedItem = new Item(item.getId(), item.getPurchaseDate(), make, model, description, serial, value, comments);
+        Item updatedItem = new Item(itemId, purchaseDate, make, model, description, serial, value, comments);
 
-        // Send the updated item back to the calling activity
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra(Constants.INTENT_ITEM_KEY, updatedItem);
-        setResult(RESULT_OK, resultIntent);
+        // Save the new item to the db replacing the old item
+        itemsRef
+                .document(itemId.toString())
+                .set(Item.getFirestoreDataFromItem(updatedItem))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Firestore", "DocumentSnapshot successfully written!");
+                        finish();
+                    }
+                });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
         finish();
+        return true;
     }
 }
-
-
