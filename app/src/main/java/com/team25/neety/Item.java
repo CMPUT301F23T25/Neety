@@ -2,6 +2,7 @@ package com.team25.neety;
 
 import android.util.Log;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.Serializable;
@@ -147,7 +148,7 @@ public class Item implements Serializable {
         }
     }
 
-    public static Item getItemFromDocument(QueryDocumentSnapshot doc) {
+    public static Item getItemFromDocument(DocumentSnapshot doc) {
 
         String id = doc.getId();
         String model = doc.getString("Model");
