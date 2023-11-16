@@ -26,7 +26,7 @@ public class EditItemActivity extends AppCompatActivity {
     private CollectionReference itemsRef;
 
     private UUID itemId;
-    private EditText editMake, editModel, editValue, editDescription, editSerial, editComments;
+    private EditText editMake, editModel, editValue, editDescription, editSerial, editComments,editDate;
     private Button saveButton;
 
     @Override
@@ -44,6 +44,7 @@ public class EditItemActivity extends AppCompatActivity {
         editDescription = findViewById(R.id.edit_description);
         editSerial = findViewById(R.id.edit_serial);
         editComments = findViewById(R.id.edit_comments);
+        editDate = findViewById(R.id.edit_date);
 
         saveButton = findViewById(R.id.save_button);
         saveButton.setEnabled(false);
@@ -88,6 +89,8 @@ public class EditItemActivity extends AppCompatActivity {
         editSerial.setEnabled(true);
         editComments.setText(item.getComments());
         editComments.setEnabled(true);
+        editDate.setText(item.getPurchaseDateString());
+        editDate.setEnabled(true);
 
         saveButton.setOnClickListener(v -> saveEditedItem());
         saveButton.setEnabled(true);
@@ -100,9 +103,10 @@ public class EditItemActivity extends AppCompatActivity {
         String description = editDescription.getText().toString();
         String serial = editSerial.getText().toString();
         String comments = editComments.getText().toString();
+        Date purchaseDate = Helpers.getDateFromString(editDate.getText().toString());
 
         // TODO: FIX THIS
-        Date purchaseDate = new Date();
+        //Date purchaseDate = new Date();
 
         // Create an updated Item object
         Item updatedItem = new Item(itemId, purchaseDate, make, model, description, serial, value, comments);
