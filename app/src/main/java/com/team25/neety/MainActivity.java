@@ -194,23 +194,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
 
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        item_to_delete = DataHolder.getInstance().getData();
-
-        if (item_to_delete != null) {
-            itemsList.remove(item_to_delete);
-            adapter.notifyDataSetChanged();
-
-            DataHolder.getInstance().setData(null);
-
-            CharSequence text = String.format("%s is deleted.", item_to_delete.getModel());
-            int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(MainActivity.this, text, duration);
-            toast.show();
-        }
-    }
 
     public void sort_by_make(View view,ItemsLvAdapter lv){
         Chip sort_make_A_Z = view.findViewById(R.id.cg_make_ascending);
