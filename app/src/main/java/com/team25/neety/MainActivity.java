@@ -72,20 +72,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         itemsRef = db.collection("items");
         itemsList = new ArrayList<>();
 
-//        itemsList.add(new Item("Apple", "iPhone 13 Pro Max", (float) 255.32));
-//        itemsList.add(new Item("Google", "Pixel 8 Pro", (float) 343.32));
-//        itemsList.add(new Item(
-//                new Date(),
-//                "Samsung",
-//                "Galaxy S23 5G Ultra Pro",
-//                "This is a description for the Samsung S23 Ultra smartphone.",
-//                "A233F1827G",
-//                (float) 1312.45,
-//                "This is a long winded comment for the Samsung Galaxy " +
-//                        "S23 Ultra item stored in the Neety app. Here is some more text."));
-//        itemsList.add(new Item(new Date(101, 2, 1), "RandomBrand", "RandomModel", "RandomDescription", "RandomSerial", (float) 99.99, "RandomComment"));
-//        itemsList.add(new Item(new Date(98, 4, 15), "HardcodedBrand", "HardcodedModel", "HardcodedDescription", "HardcodedSerial", (float) 66.66, "HardcodedComment"));
-
         adapter = new ItemsLvAdapter(this, itemsList);
 
         //      For sorting item by specification and updating the screen according to it

@@ -27,21 +27,7 @@ public class ViewItemActivity extends AppCompatActivity {
 
         item = getIntent().getSerializableExtra(Constants.INTENT_ITEM_KEY, Item.class);
 
-        tvMake = findViewById(R.id.make_textview);
-        tvModel = findViewById(R.id.model_textview);
-        tvEstimatedValue = findViewById(R.id.ev_textview);
-        tvDescription = findViewById(R.id.description_textview);
-        tvPurchaseDate = findViewById(R.id.purchase_date_textview);
-        tvSerial = findViewById(R.id.serial_textview);
-        tvComments = findViewById(R.id.comments_textview);
-
-        tvMake.setText(item.getMake());
-        tvModel.setText(item.getModel());
-        tvEstimatedValue.setText(item.getEstimatedValueString());
-        tvDescription.setText((item.getDescription() != null) ? item.getDescription() : "No description" );
-        tvPurchaseDate.setText(item.getPurchaseDateString());
-        tvSerial.setText((item.getSerial() != null) ? item.getSerial() : "No serial");
-        tvComments.setText((item.getComments() != null) ? item.getComments() : "No comments");
+        populateFields();
 
         edit_button = findViewById(R.id.edit_button);
         edit_button.setOnClickListener(v -> {
@@ -68,7 +54,7 @@ public class ViewItemActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == Constants.EDIT_ITEM_ACTIVITY_CODE) {
-            if(resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 Item result = data.getSerializableExtra(Constants.INTENT_ITEM_KEY, Item.class);
                 // result holds the new item
             }
@@ -78,4 +64,21 @@ public class ViewItemActivity extends AppCompatActivity {
         }
     } //onActivityResult
 
+    protected void populateFields() {
+        tvMake = findViewById(R.id.make_textview);
+        tvModel = findViewById(R.id.model_textview);
+        tvEstimatedValue = findViewById(R.id.ev_textview);
+        tvDescription = findViewById(R.id.description_textview);
+        tvPurchaseDate = findViewById(R.id.purchase_date_textview);
+        tvSerial = findViewById(R.id.serial_textview);
+        tvComments = findViewById(R.id.comments_textview);
+
+        tvMake.setText(item.getMake());
+        tvModel.setText(item.getModel());
+        tvEstimatedValue.setText(item.getEstimatedValueString());
+        tvDescription.setText((item.getDescription() != null) ? item.getDescription() : "No description" );
+        tvPurchaseDate.setText(item.getPurchaseDateString());
+        tvSerial.setText((item.getSerial() != null) ? item.getSerial() : "No serial");
+        tvComments.setText((item.getComments() != null) ? item.getComments() : "No comments");
+    }
 }
