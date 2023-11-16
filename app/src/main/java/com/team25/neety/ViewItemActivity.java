@@ -7,7 +7,14 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class ViewItemActivity extends AppCompatActivity {
+
+    private FirebaseFirestore db;
+    private CollectionReference itemsRef;
+
 
     private Item item;
     private TextView tvMake, tvModel, tvEstimatedValue, tvDescription, tvPurchaseDate, tvSerial, tvComments;
@@ -22,6 +29,8 @@ public class ViewItemActivity extends AppCompatActivity {
         assert getSupportActionBar() != null;   //null check
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);   //show back button
 
+        db = FirebaseFirestore.getInstance();
+        itemsRef = db.collection("items");
 
         item = getIntent().getSerializableExtra(Constants.INTENT_ITEM_KEY, Item.class);
 
@@ -43,7 +52,7 @@ public class ViewItemActivity extends AppCompatActivity {
 
         del_button = findViewById(R.id.del_button_item_view);
         del_button.setOnClickListener(v -> {
-            DataHolder.getInstance().setData(item);
+            itemsRef.document(item.getIdString()).delete();
             finish();
         });
 
