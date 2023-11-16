@@ -8,7 +8,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLength="15"
+        android:maxLength="30"
         android:ems="10"
         android:hint="@string/model_hint"
         android:id="@+id/model_edittext"
