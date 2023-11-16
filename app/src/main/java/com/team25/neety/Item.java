@@ -1,16 +1,10 @@
 package com.team25.neety;
 
-import static com.team25.neety.Helpers.floatToPriceString;
-
 import android.util.Log;
 
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
