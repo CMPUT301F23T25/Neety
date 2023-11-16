@@ -18,6 +18,8 @@ import androidx.fragment.app.DialogFragment;
 
 
 import java.io.Serializable;
+import java.util.UUID;
+
 public class AddItem extends DialogFragment{
 
     private EditText modelName;
@@ -124,7 +126,7 @@ public class AddItem extends DialogFragment{
                             String price = estimatedValue.getText().toString();
                             String serial = serialNumber.getText().toString();
                             String comment = comments.getText().toString();
-                            if (datestring == "" && desc == "" && serial == "" && comment == ""){
+                            if (datestring.equals("") && desc.equals("") && serial.equals("") && comment.equals("")){
                                 listener.onOKPressed(new Item(make, model, Float.parseFloat(price)));
                             }
                             if (datestring != "") {
@@ -140,7 +142,7 @@ public class AddItem extends DialogFragment{
                                     }
                                 }
                                 if (checkPrice && checkDate) {
-                                    listener.onOKPressed(new Item(date, make, model, desc, serial, Float.parseFloat(price), comment));
+                                    listener.onOKPressed(new Item(UUID.randomUUID(), date, make, model, desc, serial, Float.parseFloat(price), comment));
                                 }
                             }
 

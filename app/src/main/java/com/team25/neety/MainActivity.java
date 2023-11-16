@@ -43,6 +43,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -58,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private Button filterButton;
     private Button addButton;
     private ArrayList<Item> itemsList;
-    private static final int EDIT_ITEM_REQUEST = 1;
     private Item item_to_delete;
     private ItemsLvAdapter adapter;
 
@@ -109,11 +111,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
             startActivity(intent);
         });
-//        lv.setOnItemClickListener((parent, view, position, id) -> {
-//            Intent intent = new Intent(this, EditItemActivity.class);
-//            intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
-//            startActivityForResult(intent, EDIT_ITEM_REQUEST);
-//        });
 
         addButton = findViewById(R.id.button_additem);
 
@@ -158,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                     Item item = iterator.next();
                                     if (item.isSelected()) {
                                         iterator.remove();
-                                        itemsRef.document(item.getMake()).delete();
+                                        itemsRef.document(item.getIdString()).delete();
                                     }
 
                                 }
@@ -187,13 +184,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 if (querySnapshots != null){
                     itemsList.clear();
                     for (QueryDocumentSnapshot doc: querySnapshots){
-                        String Model = doc.getId();
-                        String Make = doc.getString("Make");
-                        String Value = doc.getString("Value");
-                        Value = Value.substring(1);
-                        Log.d("Firestore", String.format("Model(%s, %s) fetched",
-                                Model, Make));
-                        itemsList.add(new Item(Model, Make, Float.parseFloat(Value)));
+                        Log.d("D", doc.toString());
+                        itemsList.add(Item.getItemFromDocument(doc));
                     }
                     adapter.notifyDataSetChanged();
                 }
@@ -201,23 +193,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         });
 
 
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        item_to_delete = DataHolder.getInstance().getData();
-
-        if (item_to_delete != null) {
-            itemsList.remove(item_to_delete);
-            adapter.notifyDataSetChanged();
-
-            DataHolder.getInstance().setData(null);
-
-            CharSequence text = String.format("%s is deleted.", item_to_delete.getModel());
-            int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(MainActivity.this, text, duration);
-            toast.show();
-        }
     }
 
     public void sort_by_make(View view,ItemsLvAdapter lv){
@@ -296,44 +271,12 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
-
-
-
-
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == EDIT_ITEM_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            Item updatedItem = (Item) data.getSerializableExtra(Constants.INTENT_ITEM_KEY);
-            if (updatedItem != null) {
-                updateItemInList(updatedItem);
-            }
-        }
-    }
-
-    private void updateItemInList(Item updatedItem) {
-        for (int i = 0; i < itemsList.size(); i++) {
-            String serial = itemsList.get(i).getSerial();
-            if (serial != null && serial.equals(updatedItem.getSerial())) {
-                itemsList.set(i, updatedItem);
-                break;
-            }
-        }
-
-        adapter.notifyDataSetChanged(); // Notify the adapter of the data change
-    }
-
     public void onOKPressed(Item item) {
         //Add to datalist
-        HashMap<String, String> data = new HashMap<>();
-        data.put("Make", item.getMake());
-        data.put("Value", item.getEstimatedValueString());
+        HashMap<String, String> data = Item.getFirestoreDataFromItem(item);
 
         itemsRef
-                .document(item.getModel())
+                .document(item.getIdString())
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
