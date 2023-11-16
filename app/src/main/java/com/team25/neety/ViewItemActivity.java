@@ -27,7 +27,6 @@ public class ViewItemActivity extends AppCompatActivity {
     private TextView tvMake, tvModel, tvEstimatedValue, tvDescription, tvPurchaseDate, tvSerial, tvComments;
     private Button del_button;
     private Button edit_button;
-    private Intent intent;
 
 
     @Override
@@ -51,50 +50,17 @@ public class ViewItemActivity extends AppCompatActivity {
 
         itemId = getIntent().getSerializableExtra(Constants.INTENT_ITEM_ID_KEY, UUID.class);
 
-        final Item[] item = new Item[1];
-        itemsRef.document(itemId.toString()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        item[0] = Item.getItemFromDocument(document);
-                    } else {
-                        Log.d("ViewItemActivity", "No such document");
-                        finish();
-                    }
-                } else {
-                    Log.d("ViewItemActivity", "get failed with ", task.getException());
-                    finish();
-                }
-            }
-        });
-
-        Log.d("D", "UUID: " + itemId.toString());
-
-        populateFields(item[0]);
-
         refresh();
-
 
         edit_button = findViewById(R.id.edit_button);
         edit_button.setOnClickListener(v -> {
             Intent intent = new Intent(this, EditItemActivity.class);
-
-            intent.putExtra(Constants.INTENT_ITEM_KEY, item[0]);
-            startActivityForResult(intent, Constants.EDIT_ITEM_ACTIVITY_CODE);
-        });
-        del_button = findViewById(R.id.del_button_item_view);
-        del_button.setOnClickListener(v -> {
-            itemsRef.document(item[0].getIdString()).delete();
-
             intent.putExtra(Constants.INTENT_ITEM_ID_KEY, itemId);
             startActivity(intent);
         });
         del_button = findViewById(R.id.del_button_item_view);
         del_button.setOnClickListener(v -> {
             itemsRef.document(itemId.toString()).delete();
-
             finish();
         });
 
