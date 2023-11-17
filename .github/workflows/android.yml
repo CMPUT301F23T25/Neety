@@ -31,7 +31,7 @@ jobs:
         name: Build Report
         # optional, default is artifact
         # A file, directory or wildcard pattern that describes what to upload
-        path: 'home/runner/work/Neety/Neety/app/build/reports/lint-results-debug.html'
+        path: '/home/runner/work/Neety/Neety/app/build/reports/lint-results-debug.html'
         retention-days: 5
     - name: Build APK
       run: ./gradlew assemble
@@ -42,5 +42,5 @@ jobs:
         name: Release APK
         # optional, default is artifact
         # A file, directory or wildcard pattern that describes what to upload
-        path: 'home/runner/work/Neety/Neety/app/build/outputs/apk/release/app-release-unsigned.apk'
+        path: '/home/runner/work/Neety/Neety/app/build/outputs/apk/release/app-release-unsigned.apk'
         retention-days: 5
