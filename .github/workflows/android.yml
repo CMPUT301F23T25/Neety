@@ -43,6 +43,6 @@ jobs:
         name: Release APK
         # optional, default is artifact
         # A file, directory or wildcard pattern that describes what to upload
-        path: 'home/runner/work/Neety/Neety/app/build/reports/lint-results-debug.html'
+        path: 'home/runner/work/Neety/Neety/app/build/apk/app-release-unsigned.apk'
         ignore: true
         retention-days: 5
