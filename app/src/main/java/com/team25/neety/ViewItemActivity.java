@@ -172,6 +172,7 @@ public class ViewItemActivity extends AppCompatActivity {
             }
             if (imageUri != null) {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                photoURI = imageUri;
                 takePictureLauncher.launch(takePictureIntent);
             }
         }
@@ -208,7 +209,7 @@ public class ViewItemActivity extends AppCompatActivity {
 
     private void uploadImageToFirebase() {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        String path = "images/" + itemId;
+        String path = "images/" + itemId + "/";
         StorageReference imageRef = storageRef.child(path + photoURI.getLastPathSegment());
         UploadTask uploadTask = imageRef.putFile(photoURI);
         uploadTask.addOnFailureListener(new OnFailureListener() {
