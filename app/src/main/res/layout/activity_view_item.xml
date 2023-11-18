@@ -307,23 +307,60 @@
             android:gravity="center"
             android:orientation="horizontal"
             android:showDividers="middle"
+            android:id="@+id/linearLayout2"
+            app:layout_constraintTop_toBottomOf="@id/constraintLayout4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/gallery_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:drawableLeft="@drawable/gallery_icon"
+                android:text="Gallery" />
+
+            <Button
+                android:id="@+id/take_photo_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:drawableLeft="@drawable/camera_icon"
+                android:text="Take Photo" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:divider="@drawable/empty_wide_divider"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:id="@+id/linearLayout1"
+            android:showDividers="middle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
             <Button
                 android:id="@+id/edit_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.5"
+                android:drawableLeft="@drawable/edit_icon"
                 android:text="Edit" />
 
             <Button
                 android:id="@+id/del_button_item_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:drawableLeft="@drawable/trash"
+                android:layout_weight="0.5"
                 android:text="@string/delete_item_text" />
         </LinearLayout>
 
