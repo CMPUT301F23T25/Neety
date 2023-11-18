@@ -10,6 +10,9 @@ public final class Constants {
     public static final String INTENT_ITEM_ID_KEY = "PASSED_ITEM_ID";
 
     public static final int EDIT_ITEM_ACTIVITY_CODE = 1;
+    public static final int REQUEST_IMAGE_CAPTURE = 10;
+
+    public static final int REQUEST_CAMERA_PERMISSION_CODE = 1010;
 
     // Private constructor because you should never instantiate this class
     private Constants() {}
