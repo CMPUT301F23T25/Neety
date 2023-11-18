@@ -162,17 +162,16 @@ public class ViewItemActivity extends AppCompatActivity {
     private void setupCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            Uri imageUri = null;
+            photoURI = null;
             try {
-                imageUri = createImageFile();
+                photoURI = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
                 Toast.makeText(this, "Error creating image file", Toast.LENGTH_SHORT).show();
                 Log.e("CreateImageFileError", "Error creating image file: " + ex.getMessage());
             }
-            if (imageUri != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                photoURI = imageUri;
+            if (photoURI != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 takePictureLauncher.launch(takePictureIntent);
             }
         }
@@ -180,12 +179,12 @@ public class ViewItemActivity extends AppCompatActivity {
 
     private Uri createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String imageFileName = "Neety_" + timeStamp + "_";
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.DISPLAY_NAME, imageFileName);
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-        Uri imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        return imageUri;
+        photoURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        return photoURI;
     }
 
     @Override
@@ -199,13 +198,7 @@ public class ViewItemActivity extends AppCompatActivity {
             }
         }
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            uploadImageToFirebase();
-        }
-    }
+
 
     private void uploadImageToFirebase() {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -222,7 +215,7 @@ public class ViewItemActivity extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(ViewItemActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewItemActivity.this, "Upload successful ", Toast.LENGTH_SHORT).show();
                 Log.d("UploadSuccess", "Upload successful: " + taskSnapshot.getMetadata().getReference().getPath());
             }
         });
