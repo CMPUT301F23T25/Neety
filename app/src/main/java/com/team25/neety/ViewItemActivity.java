@@ -240,7 +240,7 @@ public class ViewItemActivity extends AppCompatActivity {
 
     private Uri createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "Neety_" + timeStamp + "_";
+        String imageFileName = "Neety_" + timeStamp;
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.DISPLAY_NAME, imageFileName);
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
@@ -280,6 +280,7 @@ public class ViewItemActivity extends AppCompatActivity {
                     // Clean up the temporary image file here if necessary
                     Toast.makeText(ViewItemActivity.this, "Upload successful ", Toast.LENGTH_SHORT).show();
                     Log.d("UploadSuccess", "Upload successful: " + taskSnapshot.getMetadata().getReference().getPath());
+                    refresh();
                 }
             });
         } else {

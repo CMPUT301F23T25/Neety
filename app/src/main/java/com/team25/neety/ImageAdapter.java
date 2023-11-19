@@ -14,7 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
     private List<String> imageUrls;
@@ -22,7 +25,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     public ImageAdapter(Context context, List<String> imageUrls) {
         this.context = context;
-        this.imageUrls = imageUrls;
+        Set<String> uniqueImageUrls = new HashSet<>(imageUrls);
+        this.imageUrls = new ArrayList<>(uniqueImageUrls);
     }
 
     @NonNull
