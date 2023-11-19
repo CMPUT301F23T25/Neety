@@ -40,6 +40,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.squareup.picasso:picasso:2.71828")
+    implementation("jp.wasabeef:picasso-transformations:2.4.0")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
