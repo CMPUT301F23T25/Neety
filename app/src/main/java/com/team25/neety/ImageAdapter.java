@@ -13,10 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,21 +48,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         int width = displayMetrics.widthPixels;
 
-        Picasso.get()
+        Glide.with(context)
                 .load(imageUrl)
-                .resize(width, 0)
-                .into(holder.imageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        // Image loaded successfully
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        // Error occurred while loading image
-                        Log.e("ImageAdapter", "Error loading image", e);
-                    }
-                });
+                .apply(new RequestOptions().override(width, 0))
+                .into(holder.imageView);
 
         holder.imageDelButton.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
