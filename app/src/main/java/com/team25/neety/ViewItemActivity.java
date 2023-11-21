@@ -98,6 +98,9 @@ public class ViewItemActivity extends AppCompatActivity {
         // Handle delete button
         del_button = findViewById(R.id.del_button_item_view);
         del_button.setOnClickListener(v -> {
+            // Delete item's images from storage
+            Item.deleteImagesFromStorage(itemId);
+            // Delete item from database
             itemsRef.document(itemId.toString()).delete();
             finish();
         });
