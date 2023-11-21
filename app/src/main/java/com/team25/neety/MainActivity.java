@@ -1,8 +1,10 @@
 package com.team25.neety;
 
-import android.app.Activity;
+import static com.google.common.base.Throwables.getRootCause;
+
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import android.widget.Button;
@@ -11,24 +13,18 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 
 import android.widget.LinearLayout;
 
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -40,7 +36,6 @@ import com.team25.neety.databinding.ActivityMainBinding;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -49,18 +44,16 @@ import javax.annotation.Nullable;
 public class MainActivity extends AppCompatActivity implements AddItem.OnFragmentInteractionListener{
 
     private ActivityMainBinding binding;
-    private ListView lv;
-    private Button del_button;
-    private Boolean is_deleting = Boolean.FALSE;
-
     private FirebaseFirestore db;
     private CollectionReference itemsRef;
-    private Button filterButton;
-    private Button addButton;
+
+    private ListView lv;
     private ArrayList<Item> itemsList;
-    private static final int EDIT_ITEM_REQUEST = 1;
-    private Item item_to_delete;
     private ItemsLvAdapter adapter;
+
+    private Button filterButton, addButton, del_button;
+    private TextView totalValueTv;
+    private Boolean is_deleting = Boolean.FALSE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,21 +65,9 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         itemsRef = db.collection("items");
         itemsList = new ArrayList<>();
 
-//        itemsList.add(new Item("Apple", "iPhone 13 Pro Max", (float) 255.32));
-//        itemsList.add(new Item("Google", "Pixel 8 Pro", (float) 343.32));
-//        itemsList.add(new Item(
-//                new Date(),
-//                "Samsung",
-//                "Galaxy S23 5G Ultra Pro",
-//                "This is a description for the Samsung S23 Ultra smartphone.",
-//                "A233F1827G",
-//                (float) 1312.45,
-//                "This is a long winded comment for the Samsung Galaxy " +
-//                        "S23 Ultra item stored in the Neety app. Here is some more text."));
-//        itemsList.add(new Item(new Date(101, 2, 1), "RandomBrand", "RandomModel", "RandomDescription", "RandomSerial", (float) 99.99, "RandomComment"));
-//        itemsList.add(new Item(new Date(98, 4, 15), "HardcodedBrand", "HardcodedModel", "HardcodedDescription", "HardcodedSerial", (float) 66.66, "HardcodedComment"));
-
         adapter = new ItemsLvAdapter(this, itemsList);
+
+        totalValueTv = findViewById(R.id.total_value_textview);
 
         //      For sorting item by specification and updating the screen according to it
         filterButton = findViewById(R.id.filter_button);
@@ -120,14 +101,9 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
         lv.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent = new Intent(this, ViewItemActivity.class);
-            intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
+            intent.putExtra(Constants.INTENT_ITEM_ID_KEY, itemsList.get(position).getId());
             startActivity(intent);
         });
-//        lv.setOnItemClickListener((parent, view, position, id) -> {
-//            Intent intent = new Intent(this, EditItemActivity.class);
-//            intent.putExtra(Constants.INTENT_ITEM_KEY, itemsList.get(position));
-//            startActivityForResult(intent, EDIT_ITEM_REQUEST);
-//        });
 
         addButton = findViewById(R.id.button_additem);
 
@@ -172,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                     Item item = iterator.next();
                                     if (item.isSelected()) {
                                         iterator.remove();
-                                        itemsRef.document(item.getMake()).delete();
+                                        itemsRef.document(item.getIdString()).delete();
                                     }
 
                                 }
@@ -200,38 +176,42 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 }
                 if (querySnapshots != null){
                     itemsList.clear();
+                    float total = 0;
                     for (QueryDocumentSnapshot doc: querySnapshots){
-                        String Model = doc.getId();
-                        String Make = doc.getString("Make");
-                        String Value = doc.getString("Value");
-                        Value = Value.substring(1);
-                        Log.d("Firestore", String.format("Model(%s, %s) fetched",
-                                Model, Make));
-                        itemsList.add(new Item(Model, Make, Float.parseFloat(Value)));
+                        Log.d("D", doc.toString());
+                        try {
+                            Item i = Item.getItemFromDocument(doc);
+                            itemsList.add(i);
+                            total += i.getEstimatedValue();
+                        } catch (Exception e) {
+                            Drawable dr = getResources().getDrawable(android.R.drawable.ic_dialog_info);
+                            dr.setTint(getResources().getColor(R.color.black));
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Oops...")
+                                    .setMessage("There was an error parsing the database data. Please try again later.\n\nError:\n" +
+                                            getRootCause(e).getClass().getCanonicalName() + "\n\nItem Id: " +
+                                            doc.getId())
+                                    // Specifying a listener allows you to take an action before dismissing the dialog.
+                                    // The dialog is automatically dismissed when a dialog button is clicked.
+                                    .setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            finishAndRemoveTask();
+                                        }
+                                    })
+                                    .setCancelable(false)
+                                    // A null listener allows the button to dismiss the dialog and take no further action.
+                                    .setIcon(android.R.drawable.ic_dialog_info)
+                                    .show();
+                        }
                     }
+
+                    totalValueTv.setText(Helpers.floatToPriceString(total));
                     adapter.notifyDataSetChanged();
                 }
             }
         });
 
 
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        item_to_delete = DataHolder.getInstance().getData();
-
-        if (item_to_delete != null) {
-            itemsList.remove(item_to_delete);
-            adapter.notifyDataSetChanged();
-
-            DataHolder.getInstance().setData(null);
-
-            CharSequence text = String.format("%s is deleted.", item_to_delete.getModel());
-            int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(MainActivity.this, text, duration);
-            toast.show();
-        }
     }
 
     public void sort_by_make(View view,ItemsLvAdapter lv){
@@ -310,44 +290,12 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
-
-
-
-
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == EDIT_ITEM_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            Item updatedItem = (Item) data.getSerializableExtra(Constants.INTENT_ITEM_KEY);
-            if (updatedItem != null) {
-                updateItemInList(updatedItem);
-            }
-        }
-    }
-
-    private void updateItemInList(Item updatedItem) {
-        for (int i = 0; i < itemsList.size(); i++) {
-            String serial = itemsList.get(i).getSerial();
-            if (serial != null && serial.equals(updatedItem.getSerial())) {
-                itemsList.set(i, updatedItem);
-                break;
-            }
-        }
-
-        adapter.notifyDataSetChanged(); // Notify the adapter of the data change
-    }
-
     public void onOKPressed(Item item) {
         //Add to datalist
-        HashMap<String, String> data = new HashMap<>();
-        data.put("Make", item.getMake());
-        data.put("Value", item.getEstimatedValueString());
+        HashMap<String, String> data = Item.getFirestoreDataFromItem(item);
 
         itemsRef
-                .document(item.getModel())
+                .document(item.getIdString())
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

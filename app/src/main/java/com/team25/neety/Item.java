@@ -1,12 +1,17 @@
 package com.team25.neety;
 
+import android.util.Log;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Item implements Serializable {
+    private UUID id;
     private Date purchaseDate;
     private String make;
     private String model;
@@ -16,7 +21,8 @@ public class Item implements Serializable {
     private String comments;
     private boolean isSelected;
 
-    public Item(Date purchaseDate, String make, String model, String description, String serial, float estimatedValue, String comments) {
+    public Item(UUID id, Date purchaseDate, String make, String model, String description, String serial, float estimatedValue, String comments) {
+        this.id = id;
         this.purchaseDate = purchaseDate;
         this.make = make;
         this.model = model;
@@ -27,7 +33,7 @@ public class Item implements Serializable {
     }
 
     public Item(String make, String model, float estimatedValue) {
-        this(new Date(), make, model, null, null, estimatedValue, null);
+        this(UUID.randomUUID(), new Date(), make, model, null, null, estimatedValue, null);
     }
 
 
@@ -36,9 +42,7 @@ public class Item implements Serializable {
     }
 
     public String getPurchaseDateString() {
-        // TODO: Perhaps add locale here?
-        DateFormat df = new SimpleDateFormat(Constants.DATE_FORMAT_PATTERN);
-        return df.format(purchaseDate);
+        return Helpers.getStringFromDate(purchaseDate);
     }
 
     public void setPurchaseDate(Date purchaseDate) {
@@ -82,8 +86,7 @@ public class Item implements Serializable {
     }
 
     public String getEstimatedValueString() {
-        // TODO: Perhaps add locale here?
-        return String.format("$%,.2f", estimatedValue);
+        return Helpers.floatToPriceString(estimatedValue);
     }
 
     public void setEstimatedValue(float estimatedValue) {
@@ -111,7 +114,53 @@ public class Item implements Serializable {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Item item = (Item) obj;
-        return Objects.equals(model, item.model); // replace 'model' with your actual fields
+        return Objects.equals(id, item.id); // replace 'model' with your actual fields
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getIdString() {
+        return id.toString();
+    }
+
+    // Commenting out since this could be a potential foot-gun for us.
+    // If you ever need to set an ID please think through it thoroughly
+    //      before uncommenting the function below
+    /* public void setId(UUID id) {
+        this.id = id;
+    } */
+
+
+
+    public static Item getItemFromDocument(DocumentSnapshot doc) {
+        String id = doc.getId();
+        String model = doc.getString("Model");
+        String make = doc.getString("Make");
+        String value = doc.getString("Value").substring(1);
+        String description = doc.getString("Description");
+        Date purchaseDate = Helpers.getDateFromString(doc.getString("PurchaseDate"));
+        String serial = doc.getString("Serial");
+        String comments = doc.getString("Comments");
+        Log.d("Firestore", String.format("Model(%s, %s) fetched",
+                model, make));
+
+
+        return new Item(UUID.fromString(id), purchaseDate, make, model, description, serial, Float.parseFloat(value), comments);
+    }
+
+    public static HashMap<String, String> getFirestoreDataFromItem(Item item) {
+        HashMap<String, String> data = new HashMap<>();
+        data.put("Model", item.getModel());
+        data.put("Make", item.getMake());
+        data.put("Value", item.getEstimatedValueString());
+        data.put("Description", item.getDescription());
+        data.put("PurchaseDate", item.getPurchaseDateString());
+        data.put("Serial", item.getSerial());
+        data.put("Comments", item.getComments());
+
+        return data;
     }
 
 }

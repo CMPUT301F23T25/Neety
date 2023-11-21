@@ -3,7 +3,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="add_item_text">Add Item</string>
+    <string name="add_item_text">Add</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="make">Make</string>
@@ -22,4 +22,7 @@
     <string name="purchase_date_hint">Purchase Date (yyyy-mm-dd)</string>
     <string name="serial_number_hint">Serial Number</string>
     <string name="comments_hint">Comments (Max 30)</string>
+    <string name="total_item_value_string">Total Estimated Value</string>
+    <string name="loading_text">Loading...</string>
+    <string name="camera_text">CAMERA</string>
 </resources>

@@ -12,7 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Neety"
         android:hardwareAccelerated="true"
+        android:clearTaskOnLaunch="true"
         tools:targetApi="31">
+        <activity
+            android:name=".EditItemActivity"
+            android:exported="false" />
         <activity
             android:name=".ViewItemActivity"
             android:exported="false" />
