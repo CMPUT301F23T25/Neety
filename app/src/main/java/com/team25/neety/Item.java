@@ -135,7 +135,6 @@ public class Item implements Serializable {
 
 
     public static Item getItemFromDocument(DocumentSnapshot doc) {
-
         String id = doc.getId();
         String model = doc.getString("Model");
         String make = doc.getString("Make");

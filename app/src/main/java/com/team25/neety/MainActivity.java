@@ -1,6 +1,10 @@
 package com.team25.neety;
 
+import static com.google.common.base.Throwables.getRootCause;
+
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import android.widget.Button;
@@ -175,9 +179,31 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     float total = 0;
                     for (QueryDocumentSnapshot doc: querySnapshots){
                         Log.d("D", doc.toString());
-                        Item i = Item.getItemFromDocument(doc);
-                        itemsList.add(i);
-                        total += i.getEstimatedValue();
+                        try {
+                            Item i = Item.getItemFromDocument(doc);
+                            itemsList.add(i);
+                            total += i.getEstimatedValue();
+                        } catch (Exception e) {
+                            Drawable dr = getResources().getDrawable(android.R.drawable.ic_dialog_info);
+                            dr.setTint(getResources().getColor(R.color.black));
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Oops...")
+                                    .setMessage("There was an error parsing the database data. Please try again later.\n\nError:\n" +
+                                            getRootCause(e).getClass().getCanonicalName() + "\n\nItem Id: " +
+                                            doc.getId())
+
+                                    // Specifying a listener allows you to take an action before dismissing the dialog.
+                                    // The dialog is automatically dismissed when a dialog button is clicked.
+                                    .setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            finishAndRemoveTask();
+                                        }
+                                    })
+                                    .setCancelable(false)
+                                    // A null listener allows the button to dismiss the dialog and take no further action.
+                                    .setIcon(android.R.drawable.ic_dialog_info)
+                                    .show();
+                        }
                     }
 
                     totalValueTv.setText(Helpers.floatToPriceString(total));
