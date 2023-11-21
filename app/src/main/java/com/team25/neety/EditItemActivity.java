@@ -75,6 +75,7 @@ public class EditItemActivity extends AppCompatActivity {
                     BarcodeScanner scanner = BarcodeScanning.getClient();
                     scanner.process(image)
                             .addOnSuccessListener(barcodes -> {
+                                Log.i("Scanned Barcodes", barcodes.toString());
                                 if (barcodes.size() > 0) {
                                     String scannedValue = barcodes.get(0).getRawValue();
                                     editSerial.setText(scannedValue);
