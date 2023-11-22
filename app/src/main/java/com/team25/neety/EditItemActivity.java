@@ -145,9 +145,6 @@ public class EditItemActivity extends AppCompatActivity {
         String comments = editComments.getText().toString();
         Date purchaseDate = Helpers.getDateFromString(editDate.getText().toString());
 
-        // TODO: FIX THIS
-        //Date purchaseDate = new Date();
-
         // Create an updated Item object
         Item updatedItem = new Item(itemId, purchaseDate, make, model, description, serial, value, comments);
 
