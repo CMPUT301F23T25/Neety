@@ -47,8 +47,6 @@ public class ViewItemActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private CollectionReference itemsRef;
-    private StorageReference storageRef;
-    private StorageReference imagesRef;
     private UUID itemId;
     private TextView tvMake, tvModel, tvEstimatedValue, tvDescription, tvPurchaseDate, tvSerial, tvComments;
     private RecyclerView rvImages;
@@ -56,7 +54,6 @@ public class ViewItemActivity extends AppCompatActivity {
     private Button edit_button;
     private Uri photoURI;
     private ActivityResultLauncher<Intent> takePictureLauncher;
-    private List<String> imageUrls;
     private Item item;
 
 
@@ -81,10 +78,6 @@ public class ViewItemActivity extends AppCompatActivity {
         itemsRef = db.collection("items");
 
         itemId = getIntent().getSerializableExtra(Constants.INTENT_ITEM_ID_KEY, UUID.class);
-
-        storageRef = FirebaseStorage.getInstance().getReference();
-        String path = "images/" + itemId + "/";
-        imagesRef = storageRef.child(path);
 
         refresh();
 
@@ -112,7 +105,7 @@ public class ViewItemActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK) {
                         // Handle the result here
                         if (result.getData() != null) {
-                            uploadImageToFirebase();
+                            item.uploadImageToFirebase(this, photoURI, this::refresh);
                         }
                     }
                 });
@@ -150,6 +143,8 @@ public class ViewItemActivity extends AppCompatActivity {
                     if (document.exists()) {
                         item = Item.getItemFromDocument(document);
                         populateFields(item);
+                        item.getImageUrls(imageUrls -> populateImages(imageUrls));
+
                     } else {
                         Log.d("ViewItemActivity", "No such document");
                         finish();
@@ -160,49 +155,6 @@ public class ViewItemActivity extends AppCompatActivity {
                 }
             }
         });
-        imageUrls = new ArrayList<>();
-        imagesRef.listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-                        int totalItems = listResult.getItems().size();
-                        AtomicInteger loadedItems = new AtomicInteger(0);
-
-                        for (StorageReference item : listResult.getItems()) {
-                            // Get the download URL for each file
-                            item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            // Got the download URL
-                                            String downloadUrl = uri.toString();
-                                            imageUrls.add(downloadUrl);
-
-                                            // Check if all URLs have been retrieved
-                                            if (loadedItems.incrementAndGet() == totalItems) {
-                                                // All URLs have been retrieved, update the RecyclerView
-                                                populateImages(imageUrls);
-                                            }
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.e("GetURL", "Error getting URL", e);
-                                            Toast.makeText(ViewItemActivity.this, "Error getting URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-
-                                        }
-                                    });
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                        Log.e("ViewItemActivity", "Error getting images", exception);
-                        Toast.makeText(ViewItemActivity.this, "Error getting images: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
 
     }
 
@@ -265,31 +217,4 @@ public class ViewItemActivity extends AppCompatActivity {
         }
     }
 
-
-    private void uploadImageToFirebase() {
-        if (photoURI != null) {
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-            String path = "images/" + itemId + "/";
-            StorageReference imageRef = storageRef.child(path + photoURI.getLastPathSegment());
-            UploadTask uploadTask = imageRef.putFile(photoURI);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                    Log.e("UploadFailure", "Upload failed: " + exception.getMessage());
-                    Toast.makeText(ViewItemActivity.this, "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // Clean up the temporary image file here if necessary
-                    Toast.makeText(ViewItemActivity.this, "Upload successful ", Toast.LENGTH_SHORT).show();
-                    Log.d("UploadSuccess", "Upload successful: " + taskSnapshot.getMetadata().getReference().getPath());
-                    refresh();
-                }
-            });
-        } else {
-            Toast.makeText(this, "No photo to upload", Toast.LENGTH_SHORT).show();
-        }
-    }
 }

@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
@@ -49,7 +51,6 @@ public class Item implements Serializable {
 
     public Item(String make, String model, float estimatedValue) {
         this(UUID.randomUUID(), new Date(), make, model, null, null, estimatedValue, null);
-        refreshImageUrls();
     }
 
 
@@ -148,71 +149,59 @@ public class Item implements Serializable {
         this.id = id;
     } */
 
-    private void refreshImageUrls() {
-        List<String> urls = new ArrayList<>();
+    public interface ImageUrlsCallback {
+        void onCallback(List<String> imageUrls);
+    }
+
+    public void getImageUrls(ImageUrlsCallback callback) {
+        refreshImageUrls(callback);
+    }
+
+    private void refreshImageUrls(ImageUrlsCallback callback) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         String path = "images/" + this.id + "/";
         StorageReference imagesRef = storageRef.child(path);
+        List<String> Urls = new ArrayList<>();
 
         imagesRef.listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-                        for (StorageReference item : listResult.getItems()) {
-                            // Get the download URL for each file
-                            item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            // Got the download URL
-                                            String downloadUrl = uri.toString();
-                                            urls.add(downloadUrl);
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.e("GetURL", "Error getting URL", e);
-                                        }
-                                    });
+                .addOnSuccessListener(listResult -> {
+                    List<Task<Uri>> tasks = new ArrayList<>();
+                    for (StorageReference item : listResult.getItems()) {
+                        // Get the download URL for each file
+                        tasks.add(item.getDownloadUrl());
+                    }
+                    Tasks.whenAllSuccess(tasks).addOnSuccessListener(objects -> {
+                        for (Object object : objects) {
+                            Urls.add(object.toString());
                         }
-                    }
+                        callback.onCallback(Urls);
+                    });
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Log errors
-                        Log.e("ViewItemActivity", "Error getting images", exception);
-                    }
+                .addOnFailureListener(exception -> {
+                    // Handle any errors
+                    Log.e("ViewItemActivity", "Error getting images", exception);
                 });
-        this.imageUrls = urls;
     }
 
-    public List<String> getImageUrls() {
-        refreshImageUrls();
-        return this.imageUrls;
+    public interface UploadCallback {
+        void onCallback();
     }
 
-    private void uploadImageToFirebase(Context context, Uri photoURI) {
+    public void uploadImageToFirebase(Context context, Uri photoURI, UploadCallback callback) {
         if (photoURI != null) {
             StorageReference storageRef = FirebaseStorage.getInstance().getReference();
             String path = "images/" + this.id + "/";
             StorageReference imageRef = storageRef.child(path + photoURI.getLastPathSegment());
             UploadTask uploadTask = imageRef.putFile(photoURI);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                    Log.e("Upload Failure", "Upload failed: " + exception.getMessage());
-                    Toast.makeText(context, "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // Clean up the temporary image file here if necessary
-                    Toast.makeText(context, "Upload successful ", Toast.LENGTH_SHORT).show();
-                    Log.d("Upload Success", "Upload successful: " + taskSnapshot.getMetadata().getReference().getPath());
-                    refreshImageUrls();
-                }
+            uploadTask.addOnFailureListener(exception -> {
+                // Handle unsuccessful uploads
+                Log.e("Upload Failure", "Upload failed: " + exception.getMessage());
+                Toast.makeText(context, "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+            }).addOnSuccessListener(taskSnapshot -> {
+                Toast.makeText(context, "Upload successful ", Toast.LENGTH_SHORT).show();
+                Log.d("Upload Success", "Upload successful: " + taskSnapshot.getMetadata().getReference().getPath());
+
+                callback.onCallback();
             });
         } else {
             Toast.makeText(context, "No photo to upload", Toast.LENGTH_SHORT).show();
