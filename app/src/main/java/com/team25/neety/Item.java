@@ -1,6 +1,9 @@
 package com.team25.neety;
 
+import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -10,12 +13,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Item implements Serializable {
     private UUID id;
@@ -27,6 +34,7 @@ public class Item implements Serializable {
     private float estimatedValue;
     private String comments;
     private boolean isSelected;
+    private List<String> imageUrls;
 
     public Item(UUID id, Date purchaseDate, String make, String model, String description, String serial, float estimatedValue, String comments) {
         this.id = id;
@@ -41,6 +49,7 @@ public class Item implements Serializable {
 
     public Item(String make, String model, float estimatedValue) {
         this(UUID.randomUUID(), new Date(), make, model, null, null, estimatedValue, null);
+        refreshImageUrls();
     }
 
 
@@ -139,41 +148,82 @@ public class Item implements Serializable {
         this.id = id;
     } */
 
+    private void refreshImageUrls() {
+        List<String> urls = new ArrayList<>();
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        String path = "images/" + this.id + "/";
+        StorageReference imagesRef = storageRef.child(path);
 
-
-    public static Item getItemFromDocument(DocumentSnapshot doc) {
-        String id = doc.getId();
-        String model = doc.getString("Model");
-        String make = doc.getString("Make");
-        String value = doc.getString("Value").substring(1);
-        String description = doc.getString("Description");
-        Date purchaseDate = Helpers.getDateFromString(doc.getString("PurchaseDate"));
-        String serial = doc.getString("Serial");
-        String comments = doc.getString("Comments");
-        Log.d("Firestore", String.format("Model(%s, %s) fetched",
-                model, make));
-
-
-        return new Item(UUID.fromString(id), purchaseDate, make, model, description, serial, Float.parseFloat(value), comments);
+        imagesRef.listAll()
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        for (StorageReference item : listResult.getItems()) {
+                            // Get the download URL for each file
+                            item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            // Got the download URL
+                                            String downloadUrl = uri.toString();
+                                            urls.add(downloadUrl);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e("GetURL", "Error getting URL", e);
+                                        }
+                                    });
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Log errors
+                        Log.e("ViewItemActivity", "Error getting images", exception);
+                    }
+                });
+        this.imageUrls = urls;
     }
 
-    public static HashMap<String, String> getFirestoreDataFromItem(Item item) {
-        HashMap<String, String> data = new HashMap<>();
-        data.put("Model", item.getModel());
-        data.put("Make", item.getMake());
-        data.put("Value", item.getEstimatedValueString());
-        data.put("Description", item.getDescription());
-        data.put("PurchaseDate", item.getPurchaseDateString());
-        data.put("Serial", item.getSerial());
-        data.put("Comments", item.getComments());
-
-        return data;
+    public List<String> getImageUrls() {
+        refreshImageUrls();
+        return this.imageUrls;
     }
 
-    public static void deleteImagesFromStorage(UUID itemId) {
+    private void uploadImageToFirebase(Context context, Uri photoURI) {
+        if (photoURI != null) {
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+            String path = "images/" + this.id + "/";
+            StorageReference imageRef = storageRef.child(path + photoURI.getLastPathSegment());
+            UploadTask uploadTask = imageRef.putFile(photoURI);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                    Log.e("Upload Failure", "Upload failed: " + exception.getMessage());
+                    Toast.makeText(context, "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // Clean up the temporary image file here if necessary
+                    Toast.makeText(context, "Upload successful ", Toast.LENGTH_SHORT).show();
+                    Log.d("Upload Success", "Upload successful: " + taskSnapshot.getMetadata().getReference().getPath());
+                    refreshImageUrls();
+                }
+            });
+        } else {
+            Toast.makeText(context, "No photo to upload", Toast.LENGTH_SHORT).show();
+            Log.w("Upload Failure", "No photo to upload");
+        }
+    }
+
+    public void deleteImagesFromStorage() {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        String path = "images/" + itemId.toString() + "/";
+        String path = "images/" + this.id.toString() + "/";
         StorageReference imagesRef = storageRef.child(path);
 
         imagesRef.listAll()
@@ -204,5 +254,34 @@ public class Item implements Serializable {
                         Log.e("Item", "Failed to list files", exception);
                     }
                 });
+    }
+
+    public static Item getItemFromDocument(DocumentSnapshot doc) {
+        String id = doc.getId();
+        String model = doc.getString("Model");
+        String make = doc.getString("Make");
+        String value = doc.getString("Value").substring(1);
+        String description = doc.getString("Description");
+        Date purchaseDate = Helpers.getDateFromString(doc.getString("PurchaseDate"));
+        String serial = doc.getString("Serial");
+        String comments = doc.getString("Comments");
+        Log.d("Firestore", String.format("Model(%s, %s) fetched",
+                model, make));
+
+
+        return new Item(UUID.fromString(id), purchaseDate, make, model, description, serial, Float.parseFloat(value), comments);
+    }
+
+    public static HashMap<String, String> getFirestoreDataFromItem(Item item) {
+        HashMap<String, String> data = new HashMap<>();
+        data.put("Model", item.getModel());
+        data.put("Make", item.getMake());
+        data.put("Value", item.getEstimatedValueString());
+        data.put("Description", item.getDescription());
+        data.put("PurchaseDate", item.getPurchaseDateString());
+        data.put("Serial", item.getSerial());
+        data.put("Comments", item.getComments());
+
+        return data;
     }
 }

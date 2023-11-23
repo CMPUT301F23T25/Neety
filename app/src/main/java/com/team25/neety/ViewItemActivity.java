@@ -56,7 +56,8 @@ public class ViewItemActivity extends AppCompatActivity {
     private Button edit_button;
     private Uri photoURI;
     private ActivityResultLauncher<Intent> takePictureLauncher;
-    List<String> imageUrls;
+    private List<String> imageUrls;
+    private Item item;
 
 
     @Override
@@ -99,7 +100,7 @@ public class ViewItemActivity extends AppCompatActivity {
         del_button = findViewById(R.id.del_button_item_view);
         del_button.setOnClickListener(v -> {
             // Delete item's images from storage
-            Item.deleteImagesFromStorage(itemId);
+            item.deleteImagesFromStorage();
             // Delete item from database
             itemsRef.document(itemId.toString()).delete();
             finish();
@@ -147,7 +148,8 @@ public class ViewItemActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        populateFields(Item.getItemFromDocument(document));
+                        item = Item.getItemFromDocument(document);
+                        populateFields(item);
                     } else {
                         Log.d("ViewItemActivity", "No such document");
                         finish();
