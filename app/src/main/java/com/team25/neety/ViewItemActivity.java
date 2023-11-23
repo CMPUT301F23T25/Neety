@@ -5,6 +5,7 @@ import static com.team25.neety.Constants.REQUEST_CAMERA_PERMISSION_CODE;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -92,11 +93,19 @@ public class ViewItemActivity extends AppCompatActivity {
         // Handle delete button
         del_button = findViewById(R.id.del_button_item_view);
         del_button.setOnClickListener(v -> {
-            // Delete item's images from storage
-            item.deleteImagesFromStorage();
-            // Delete item from database
-            itemsRef.document(itemId.toString()).delete();
-            finish();
+            new AlertDialog.Builder(this)
+                    .setTitle("Delete entry")
+                    .setMessage("Are you sure you want to delete this entry?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        // Delete item's images from storage
+                        item.deleteImagesFromStorage();
+                        // Delete item from database
+                        itemsRef.document(itemId.toString()).delete();
+                        finish();
+                    })
+                    .setNegativeButton("No", null)
+                    .setIcon(R.drawable.alert)
+                    .show();
         });
 
         // Handle take photo button
