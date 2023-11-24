@@ -4,6 +4,8 @@ import static com.google.common.base.Throwables.getRootCause;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -20,8 +22,10 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
@@ -60,6 +64,22 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        TextView tv = new TextView(getApplicationContext());
+        ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
+                ActionBar.LayoutParams.WRAP_CONTENT, // Width of TextView
+                ActionBar.LayoutParams.WRAP_CONTENT); // Height of TextView
+        tv.setLayoutParams(lp);
+        tv.setText("  Neety.");
+        tv.setTextColor(ResourcesCompat.getColor(getResources(), R.color.pale_dogwood, null));
+        tv.setTextSize(26);
+
+        // Set the Typeface
+        Typeface tf = ResourcesCompat.getFont(this, R.font.pacifico);
+        tv.setTypeface(tf);
+
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(tv);
 
         db = FirebaseFirestore.getInstance();
         itemsRef = db.collection("items");
