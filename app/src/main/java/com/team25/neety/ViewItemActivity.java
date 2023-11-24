@@ -110,12 +110,14 @@ public class ViewItemActivity extends AppCompatActivity {
                     .show();
         });
         // handle gallery photo
-        Button add_image_button = findViewById(R.id.gallery_button);
+        Button add_image_button = findViewById(R.id.gallery_button); // OnClick listener for gallery button
+
         add_image_button.setOnClickListener(new View.OnClickListener() {
+            //launch gallery
             @Override
             public void onClick(View v) {
                 Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                startActivityForResult(gallery, 100);
+                startActivityForResult(gallery, 101);
             }
         });
 
@@ -142,24 +144,33 @@ public class ViewItemActivity extends AppCompatActivity {
             }
         });
     }
+
+    // receiving image from gallery and uploading to firebase
+
+    //
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            try {
-                // Get the selected image URI
-                Uri imageUri = data.getData();
-                // Set the image to the ImageView
-                item.uploadImageToFirebase(this, imageUri, this::refresh);
+        if (requestCode ==101){
+            if (resultCode == RESULT_OK) {
+                try {
+                    // Get the selected image URI
+                    Uri imageUri = data.getData();
+                    // Upload image to firebase
+                    try{
+                        item.uploadImageToFirebase(this, imageUri, this::refresh);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(ViewItemActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();}
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(ViewItemActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(ViewItemActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+                }
             }
-        }
-        else {
-            Toast.makeText(ViewItemActivity.this, "You haven't picked an image", Toast.LENGTH_LONG).show();
-        }
+            else {
+                Toast.makeText(ViewItemActivity.this, "You haven't picked an image", Toast.LENGTH_LONG).show();
+            }}
     }
 
     @Override
