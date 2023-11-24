@@ -21,6 +21,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
@@ -110,6 +111,16 @@ public class ViewItemActivity extends AppCompatActivity {
                     .setIcon(R.drawable.alert)
                     .show();
         });
+        // handle gallery photo
+        Button add_image_button = findViewById(R.id.gallery_button);
+        add_image_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(gallery, 100);
+            }
+        });
+
 
         // Handle take photo button
         takePictureLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -132,6 +143,25 @@ public class ViewItemActivity extends AppCompatActivity {
                 setupCamera();
             }
         });
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            try {
+                // Get the selected image URI
+                Uri imageUri = data.getData();
+                // Set the image to the ImageView
+                item.uploadImageToFirebase(this, imageUri, this::refresh);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(ViewItemActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+            }
+        }
+        else {
+            Toast.makeText(ViewItemActivity.this, "You haven't picked an image", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
