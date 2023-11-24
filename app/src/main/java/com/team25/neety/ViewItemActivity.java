@@ -66,6 +66,8 @@ public class ViewItemActivity extends AppCompatActivity {
 
         assert getSupportActionBar() != null;   // null check
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);   // show back button
+        getSupportActionBar().setTitle("Item Details");
+        getSupportActionBar().setBackgroundDrawable(getDrawable(R.color.space_cadet));
 
         tvMake = findViewById(R.id.make_textview);
         tvModel = findViewById(R.id.model_textview);

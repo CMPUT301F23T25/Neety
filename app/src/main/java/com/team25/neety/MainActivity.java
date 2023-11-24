@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        getSupportActionBar().setBackgroundDrawable(getDrawable(R.color.space_cadet));
         TextView tv = new TextView(getApplicationContext());
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
                 ActionBar.LayoutParams.WRAP_CONTENT, // Width of TextView
