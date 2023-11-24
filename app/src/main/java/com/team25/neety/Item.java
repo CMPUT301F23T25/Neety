@@ -1,9 +1,7 @@
 package com.team25.neety;
 
 import android.util.Log;
-
 import com.google.firebase.firestore.DocumentSnapshot;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +18,7 @@ public class Item implements Serializable {
     private float estimatedValue;
     private String comments;
     private boolean isSelected;
+    private String userId;
 
     public Item(UUID id, Date purchaseDate, String make, String model, String description, String serial, float estimatedValue, String comments) {
         this.id = id;
@@ -35,7 +34,6 @@ public class Item implements Serializable {
     public Item(String make, String model, float estimatedValue) {
         this(UUID.randomUUID(), new Date(), make, model, null, null, estimatedValue, null);
     }
-
 
     public Date getPurchaseDate() {
         return purchaseDate;
@@ -109,12 +107,20 @@ public class Item implements Serializable {
         isSelected = selected;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Item item = (Item) obj;
-        return Objects.equals(id, item.id); // replace 'model' with your actual fields
+        return Objects.equals(id, item.id);
     }
 
     public UUID getId() {
@@ -125,17 +131,7 @@ public class Item implements Serializable {
         return id.toString();
     }
 
-    // Commenting out since this could be a potential foot-gun for us.
-    // If you ever need to set an ID please think through it thoroughly
-    //      before uncommenting the function below
-    /* public void setId(UUID id) {
-        this.id = id;
-    } */
-
-
-
     public static Item getItemFromDocument(DocumentSnapshot doc) {
-
         String id = doc.getId();
         String model = doc.getString("Model");
         String make = doc.getString("Make");
@@ -144,11 +140,14 @@ public class Item implements Serializable {
         Date purchaseDate = Helpers.getDateFromString(doc.getString("PurchaseDate"));
         String serial = doc.getString("Serial");
         String comments = doc.getString("Comments");
-        Log.d("Firestore", String.format("Model(%s, %s) fetched",
-                model, make));
+        String userId = doc.getString("UserId");
 
+        Log.d("Firestore", String.format("Model(%s, %s) fetched", model, make));
 
-        return new Item(UUID.fromString(id), purchaseDate, make, model, description, serial, Float.parseFloat(value), comments);
+        Item item = new Item(UUID.fromString(id), purchaseDate, make, model, description, serial, Float.parseFloat(value), comments);
+        item.setUserId(userId);
+
+        return item;
     }
 
     public static HashMap<String, String> getFirestoreDataFromItem(Item item) {
@@ -160,8 +159,8 @@ public class Item implements Serializable {
         data.put("PurchaseDate", item.getPurchaseDateString());
         data.put("Serial", item.getSerial());
         data.put("Comments", item.getComments());
+        data.put("UserId", item.getUserId());
 
         return data;
     }
-
 }
