@@ -24,4 +24,7 @@
     <string name="comments_hint">Comments (Max 30)</string>
     <string name="total_item_value_string">Total Estimated Value</string>
     <string name="loading_text">Loading...</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
+    <string name="profile">Profile</string>
 </resources>
