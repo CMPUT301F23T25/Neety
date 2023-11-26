@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -215,9 +216,21 @@ public class ViewItemActivity extends AppCompatActivity {
         tvComments.setText((item.getComments() != null) ? item.getComments() : "No comments");
     }
     private void populateImages(List<String> imageUrls) {
-        rvImages.setLayoutManager(new LinearLayoutManager(this));
-        ImageAdapter adapter = new ImageAdapter(this, imageUrls);
-        rvImages.setAdapter(adapter);
+        TextView noti = findViewById(R.id.no_images_textview);
+        RecyclerView images = findViewById(R.id.images_recyclerView);
+
+        if (imageUrls.size() != 0) {
+            images.setVisibility(View.VISIBLE);
+            noti.setVisibility(View.GONE);
+
+            rvImages.setLayoutManager(new LinearLayoutManager(this));
+            ImageAdapter adapter = new ImageAdapter(this, imageUrls);
+            rvImages.setAdapter(adapter);
+        } else {
+            images.setVisibility(View.GONE);
+            noti.setVisibility(View.VISIBLE);
+        }
+
     }
 
     private void setupCamera() {

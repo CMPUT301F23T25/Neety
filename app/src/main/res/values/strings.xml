@@ -18,13 +18,15 @@
     <string name="model_hint">Model</string>
     <string name="make_hint">Make</string>
     <string name="estimated_value_hint">Estimated Value (#.##)</string>
-    <string name="description_hint">Description (Max 20)</string>
+    <string name="description_hint">Description (Max 20 characters)</string>
     <string name="purchase_date_hint">Purchase Date (yyyy-mm-dd)</string>
     <string name="serial_number_hint">Serial Number</string>
-    <string name="comments_hint">Comments (Max 30)</string>
+    <string name="comments_hint">Comments (Max 30 characters)</string>
     <string name="total_item_value_string">Total Estimated Value</string>
     <string name="loading_text">Loading...</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
     <string name="profile">Profile</string>
+    <string name="save">Save</string>
+    <string name="no_images">No images to show</string>
 </resources>
