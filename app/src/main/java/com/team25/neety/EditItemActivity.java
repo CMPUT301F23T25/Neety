@@ -36,6 +36,8 @@ public class EditItemActivity extends AppCompatActivity {
 
         assert getSupportActionBar() != null;   // null check
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);   // show back button
+        getSupportActionBar().setTitle("Edit");
+        getSupportActionBar().setBackgroundDrawable(getDrawable(R.color.space_cadet));
 
         // Initialize EditText fields
         editMake = findViewById(R.id.edit_make);
