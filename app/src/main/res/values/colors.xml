@@ -13,4 +13,6 @@
     <color name="rose_quartz">#9A8C98</color>
     <color name="pale_dogwood">#C9ADA7</color>
     <color name="isabelline">#F2E9E4</color>
+    <color name="rich_black">#0F0F1A</color>
+    <color name="less_black">#121212</color>
 </resources>

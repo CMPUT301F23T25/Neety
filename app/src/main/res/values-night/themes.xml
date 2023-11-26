@@ -6,14 +6,18 @@
         <item name="colorPrimaryVariant">@color/black</item>
         <item name="colorOnPrimary">@color/space_cadet</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorSecondary">@color/pale_dogwood</item>
+        <item name="colorSecondaryVariant">@color/rose_quartz</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Default text color. -->
+        <item name="android:textColor">@color/isabelline</item>
         <!-- Customize your theme here. -->
 
         <!-- Background color. -->
-        <item name="backgroundColor">#121212</item>
+        <item name="backgroundColor">@color/less_black</item>
+        <item name="colorOutline">@color/pale_dogwood</item>
+        <item name="colorPrimaryContainer">@color/rich_black</item>
     </style>
 </resources>
