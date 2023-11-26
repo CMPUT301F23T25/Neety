@@ -45,12 +45,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         String imageUrl = imageUrls.get(position);
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int width = displayMetrics.widthPixels;
 
         Glide.with(context)
                 .load(imageUrl)
-                .apply(new RequestOptions().override(width, 0))
+                .apply(new RequestOptions().override(0, 0))
                 .into(holder.imageView);
 
         holder.imageDelButton.setOnClickListener(v -> {
@@ -72,7 +70,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                             });
                         })
                         .setNegativeButton("No", null)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setIcon(R.drawable.alert)
                         .show();
             }
         });

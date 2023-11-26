@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                     Item item = iterator.next();
                                     if (item.isSelected()) {
                                         iterator.remove();
+                                        item.deleteImagesFromStorage();
                                         itemsRef.document(item.getIdString()).delete();
                                     }
 
