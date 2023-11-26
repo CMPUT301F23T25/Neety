@@ -12,5 +12,8 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+
+        <!-- Background color. -->
+        <item name="backgroundColor">@color/isabelline</item>
     </style>
 </resources>
