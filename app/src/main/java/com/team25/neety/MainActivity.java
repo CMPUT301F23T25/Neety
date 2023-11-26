@@ -9,6 +9,9 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
 
 import android.util.Log;
@@ -327,5 +330,20 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_button) {
+            // Handle action button click
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
 
