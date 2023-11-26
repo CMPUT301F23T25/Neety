@@ -29,4 +29,5 @@
     <string name="profile">Profile</string>
     <string name="save">Save</string>
     <string name="no_images">No images to show</string>
+    <string name="edit">Edit</string>
 </resources>
