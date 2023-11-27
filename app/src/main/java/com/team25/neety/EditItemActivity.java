@@ -1,6 +1,7 @@
 package com.team25.neety;
 
 
+import static com.team25.neety.Constants.REQUEST_CAMERA_PERMISSION_CODE;
 import static java.security.AccessController.getContext;
 
 
@@ -12,15 +13,20 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.Manifest;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -74,27 +80,12 @@ public class EditItemActivity extends AppCompatActivity {
         cameraButton = findViewById(R.id.camera_button);
         cameraButton.setEnabled(false);
 
-        cameraResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == RESULT_OK) {
-                    Bitmap b = result.getData().getExtras().getParcelable("data", Bitmap.class);
 
-                    if (b == null) return;
-
-                    InputImage image = InputImage.fromBitmap(b, 0);
-                    BarcodeScanner scanner = BarcodeScanning.getClient();
-                    scanner.process(image)
-                            .addOnSuccessListener(barcodes -> {
-                                Log.i("Scanned Barcodes", barcodes.toString());
-                                if (barcodes.size() > 0) {
-                                    String scannedValue = barcodes.get(0).getRawValue();
-                                    editSerial.setText(scannedValue);
-                                }
-                            });
-                }
-            }
-        });
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION_CODE);
+        } else {
+            startCamera();
+        }
 
         db = FirebaseFirestore.getInstance();
         itemsRef = db.collection("items");
@@ -204,5 +195,41 @@ public class EditItemActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startCamera();
+            } else {
+                Toast.makeText(this, "Camera Permission is Required to Use Camera.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void startCamera() {
+        cameraResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == RESULT_OK) {
+                    Bitmap b = result.getData().getExtras().getParcelable("data", Bitmap.class);
+
+                    if (b == null) return;
+
+                    InputImage image = InputImage.fromBitmap(b, 0);
+                    BarcodeScanner scanner = BarcodeScanning.getClient();
+                    scanner.process(image)
+                            .addOnSuccessListener(barcodes -> {
+                                Log.i("Scanned Barcodes", barcodes.toString());
+                                if (barcodes.size() > 0) {
+                                    String scannedValue = barcodes.get(0).getRawValue();
+                                    editSerial.setText(scannedValue);
+                                }
+                            });
+                }
+            }
+        });
     }
 }
