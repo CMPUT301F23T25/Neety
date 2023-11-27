@@ -296,9 +296,16 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_button) {
             // Handle action button click
+            openProfileActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);
+
+    }
+
+    private void openProfileActivity() {
+        Intent profileIntent = new Intent(this, ProfileActivity.class);
+        startActivity(profileIntent);
     }
 }
 
