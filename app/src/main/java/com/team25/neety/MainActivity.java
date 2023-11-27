@@ -216,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                     .setMessage("There was an error parsing the database data. Please try again later.\n\nError:\n" +
                                             getRootCause(e).getClass().getCanonicalName() + "\n\nItem Id: " +
                                             doc.getId())
-
                                     // Specifying a listener allows you to take an action before dismissing the dialog.
                                     // The dialog is automatically dismissed when a dialog button is clicked.
                                     .setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {

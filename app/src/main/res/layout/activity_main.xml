@@ -22,22 +22,24 @@
 
         <Button
             android:id="@+id/button_additem"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_corners_button"
+            android:layout_weight="1"
             android:text="@string/add_item_text" />
 
         <Button
             android:id="@+id/button_deleteitem"
-            android:layout_width="109dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginStart="20dp"
             android:background="@drawable/rounded_corners_button"
             android:text="@string/delete_item_text" />
 
         <Button
             android:id="@+id/filter_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginLeft="20dp"
