@@ -39,7 +39,6 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:minLines="1"
-                    android:textSize="24sp"
                     android:hint="Model"
                     android:inputType="text"  />
 
@@ -90,7 +89,6 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:minLines="1"
-                    android:textSize="24sp"
                     android:hint="@string/make"
                     android:inputType="text" />
             </LinearLayout>
@@ -141,7 +139,6 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:minLines="1"
-                    android:textSize="24sp"
                     android:hint="@string/estimated_value"
                     android:inputType="numberDecimal"
 
@@ -198,7 +195,6 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:minLines="1"
-                    android:textSize="24sp"
                     android:hint="@string/description_hint"
                     android:inputType="text"
 
@@ -234,7 +230,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/description_layout">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -248,18 +244,35 @@
 
                 <EditText
                     android:id="@+id/edit_date"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:minLines="1"
-                    android:textSize="24sp"
                     android:hint="@string/purchase_date_hint"
                     android:inputType="date"
 
+                    android:ems="13"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+
                     android:layout_marginHorizontal="10dp"
                     android:layout_marginVertical="5dp"/>
-            </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/calendar_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginVertical="5dp"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/calendar_ic"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             <TextView
@@ -307,7 +320,6 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:minLines="1"
-                    android:textSize="24sp"
                     android:hint="@string/serial_number_hint"
                     android:inputType="text"
 
@@ -361,9 +373,8 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:minLines="1"
-                    android:textSize="24sp"
                     android:hint="@string/comments_hint"
-                    android:inputType="date"
+                    android:inputType="text"
                     android:layout_marginHorizontal="10dp"
                     android:layout_marginVertical="5dp"  />
             </LinearLayout>
