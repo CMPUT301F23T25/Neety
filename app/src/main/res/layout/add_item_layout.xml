@@ -1,10 +1,409 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-    <!--  EditView Name -->
+    android:background="?attr/backgroundColor">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/model_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/round_background"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/model_legend_textview">
+
+                <EditText
+                    android:id="@+id/model_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:minLines="1"
+                    android:maxLength="30"
+                    android:textSize="18sp"
+                    android:hint="Model"
+                    android:inputType="textPersonName"  />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/model_legend_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:paddingHorizontal="5dp"
+                android:text="@string/model"
+                android:textColor="@color/isabelline"
+                android:background="@drawable/small_round_corners"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/make_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/model_layout">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/round_background"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/make_legend_textview">
+
+                <EditText
+                    android:id="@+id/make_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="5dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:minLines="1"
+                    android:maxLength="30"
+                    android:textSize="18sp"
+                    android:hint="@string/make"
+                    android:inputType="text" />
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/make_legend_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:text="@string/make"
+
+                android:textColor="@color/isabelline"
+                android:background="@drawable/small_round_corners"
+                android:paddingHorizontal="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/value_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/make_layout">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/value_legend_textview"
+
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/round_background">
+
+                <EditText
+                    android:id="@+id/estimated_value_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:minLines="1"
+                    android:textSize="18sp"
+                    android:hint="@string/estimated_value"
+                    android:inputType="numberDecimal"
+
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="5dp"
+                    />
+            </LinearLayout>
+
+
+
+            <TextView
+                android:id="@+id/value_legend_textview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:text="@string/estimated_value"
+
+                android:textColor="@color/isabelline"
+                android:background="@drawable/small_round_corners"
+                android:paddingHorizontal="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/description_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/value_layout">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/description_legend_textview"
+
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/round_background">
+
+                <EditText
+                    android:id="@+id/description_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:minLines="1"
+                    android:textSize="18sp"
+                    android:hint="@string/description_hint"
+                    android:inputType="text"
+
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="5dp"
+                    />
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/description_legend_textview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:text="@string/description"
+
+                android:textColor="@color/isabelline"
+                android:background="@drawable/small_round_corners"
+                android:paddingHorizontal="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/date_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/description_layout">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/date_legend_textview"
+
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/round_background">
+
+                <EditText
+                    android:id="@+id/purchase_date_edittext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:minLines="1"
+                    android:textSize="18sp"
+                    android:ems="12"
+                    android:hint="@string/purchase_date_hint"
+                    android:inputType="date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="5dp"/>
+
+                <ImageButton
+                    android:id="@+id/calendar_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginVertical="5dp"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/calendar_ic"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <TextView
+                android:id="@+id/date_legend_textview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:text="@string/purchase_date"
+
+                android:textColor="@color/isabelline"
+                android:background="@drawable/small_round_corners"
+                android:paddingHorizontal="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/serial_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/date_layout">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/serial_legend_textview"
+
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/round_background">
+
+                <EditText
+                    android:id="@+id/serial_number_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:minLines="1"
+                    android:textSize="18sp"
+                    android:hint="@string/serial_number_hint"
+                    android:inputType="text"
+
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="5dp"/>
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/serial_legend_textview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:text="@string/serial"
+
+                android:textColor="@color/isabelline"
+                android:background="@drawable/small_round_corners"
+                android:paddingHorizontal="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/comments_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/serial_layout">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/comments_legend_textview"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/round_background">
+
+                <EditText
+                    android:id="@+id/comments_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:minLines="1"
+                    android:textSize="18sp"
+                    android:hint="@string/comments_hint"
+                    android:inputType="date"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="5dp"  />
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/comments_legend_textview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:text="@string/Comments"
+
+                android:textColor="@color/isabelline"
+                android:background="@drawable/small_round_corners"
+                android:paddingHorizontal="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!--
+    &lt;!&ndash;  EditView Name &ndash;&gt;
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,7 +412,7 @@
         android:hint="@string/model_hint"
         android:id="@+id/model_edittext"
         android:inputType="textPersonName"></EditText>
-    <!--  EditView Date -->
+    &lt;!&ndash;  EditView Date &ndash;&gt;
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +420,7 @@
         android:hint="@string/make_hint"
         android:id="@+id/make_edittext"
         android:inputType="textPersonName"></EditText>
-    <!--  EditView Price -->
+    &lt;!&ndash;  EditView Price &ndash;&gt;
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +428,7 @@
         android:hint="@string/estimated_value_hint"
         android:id="@+id/estimated_value_edittext"
         android:inputType="textPersonName"></EditText>
-    <!--  EditView Comment -->
+    &lt;!&ndash;  EditView Comment &ndash;&gt;
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -61,5 +460,5 @@
         android:ems="10"
         android:hint="@string/comments_hint"
         android:id="@+id/comments_edittext"
-        android:inputType="textPersonName"></EditText>
-</LinearLayout>
+        android:inputType="textPersonName"></EditText>-->
+</ScrollView>

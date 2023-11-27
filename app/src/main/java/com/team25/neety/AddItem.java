@@ -101,7 +101,7 @@ public class AddItem extends DialogFragment{
         comments = view.findViewById(R.id.comments_edittext);
 
         //Init Builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogCustom);
 
         //Load arguments, if its empty, then its add, if it passes in expense it wants to edit
         Bundle args = getArguments();
