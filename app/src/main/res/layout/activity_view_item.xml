@@ -471,7 +471,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/gallery_icon"
-                android:layout_weight="0.5"
                 android:background="@drawable/rounded_corners_button"
                 android:text="@string/gallery" />
 
@@ -480,7 +479,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/camera_icon"
-                android:layout_weight="0.5"
                 android:background="@drawable/rounded_corners_button"
                 android:text="@string/camera" />
 
@@ -508,7 +506,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/edit_icon"
-                android:layout_weight="0.5"
                 android:background="@drawable/rounded_corners_button"
                 android:text="@string/edit" />
 
@@ -517,7 +514,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/trash"
-                android:layout_weight="0.5"
                 android:background="@drawable/rounded_corners_button"
                 android:text="@string/delete_item_text" />
         </LinearLayout>
