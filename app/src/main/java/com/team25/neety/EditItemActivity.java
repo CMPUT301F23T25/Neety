@@ -1,14 +1,18 @@
 package com.team25.neety;
 
+import static java.security.AccessController.getContext;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -17,6 +21,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -28,6 +33,7 @@ public class EditItemActivity extends AppCompatActivity {
     private UUID itemId;
     private EditText editMake, editModel, editValue, editDescription, editSerial, editComments,editDate;
     private Button saveButton;
+    private ImageButton calendar_button;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,6 +53,7 @@ public class EditItemActivity extends AppCompatActivity {
         editSerial = findViewById(R.id.edit_serial);
         editComments = findViewById(R.id.edit_comments);
         editDate = findViewById(R.id.edit_date);
+        calendar_button = findViewById(R.id.calendar_button);
 
         saveButton = findViewById(R.id.save_button);
         saveButton.setEnabled(false);
@@ -72,6 +79,34 @@ public class EditItemActivity extends AppCompatActivity {
                     finish();
                 }
             }
+        });
+
+        //Handle calendar button for getting date
+        calendar_button.setOnClickListener(view1 -> {
+            final Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    this, // or getActivity() if you're in a Fragment
+                    (datePicker, i, i1, i2) -> {
+                        String month_of_year;
+                        String day_of_month;
+
+                        if (i1 + 1 < 10) {
+                            month_of_year = "0" + (i1 + 1);
+                        } else month_of_year = String.valueOf(i1 + 1);
+
+                        if (i2 < 10) {
+                            day_of_month = "0" + i2;
+                        } else day_of_month = String.valueOf(i2);
+
+                        String date_inp = i + "-" + month_of_year + "-" + day_of_month;
+                        editDate.setText(date_inp);
+                    },
+                    year, month, day);
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+            datePickerDialog.show();
         });
 
 
