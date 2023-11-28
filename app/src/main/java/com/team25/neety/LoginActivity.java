@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize sign in options the client-id is copied form google-services.json file
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("438431947620-ecpi41uk3dhhf4mv8g8q993k3vs49ltm.apps.googleusercontent.com")
+                .requestIdToken("708622187336-h5500e4k64ie4knkj3voeprh452m3mpa.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
 

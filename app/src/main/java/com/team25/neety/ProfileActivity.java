@@ -1,5 +1,6 @@
 package com.team25.neety;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -21,6 +22,7 @@ public class ProfileActivity extends AppCompatActivity {
     ImageView ivImage;
     TextView tvName;
     Button btLogout;
+    Button backButton;
     FirebaseAuth firebaseAuth;
     GoogleSignInClient googleSignInClient;
 
@@ -32,6 +34,7 @@ public class ProfileActivity extends AppCompatActivity {
         ivImage = findViewById(R.id.iv_image);
         tvName = findViewById(R.id.tv_name);
         btLogout = findViewById(R.id.bt_logout);
+        backButton = findViewById(R.id.back_btn);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -44,13 +47,25 @@ public class ProfileActivity extends AppCompatActivity {
 
         googleSignInClient = GoogleSignIn.getClient(ProfileActivity.this, GoogleSignInOptions.DEFAULT_SIGN_IN);
 
-        btLogout.setOnClickListener(view -> {
+        backButton.setOnClickListener(view -> {
+            Intent mainIntent = new Intent(ProfileActivity.this, MainActivity.class);
+            mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(mainIntent);
+        });
+
+        btLogout.setOnClickListener(backView -> {
             googleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         firebaseAuth.signOut();
                         Toast.makeText(getApplicationContext(), "Logout successful", Toast.LENGTH_SHORT).show();
+
+                        // Navigate back to LoginActivity after logging out
+                        Intent loginIntent = new Intent(ProfileActivity.this, LoginActivity.class);
+                        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(loginIntent);
+
                         finish();
                     }
                 }
