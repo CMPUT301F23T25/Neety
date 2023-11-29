@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import android.widget.ListView;
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private ArrayList<Item> itemsList;
     private ItemsLvAdapter adapter;
 
-    private Button filterButton, addButton, del_button;
+    private ImageButton filterButton, addButton, del_button, real_filterButton;
     private TextView totalValueTv;
     private Boolean is_deleting = Boolean.FALSE;
 
@@ -94,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         totalValueTv = findViewById(R.id.total_value_textview);
 
         //      For sorting item by specification and updating the screen according to it
+        // This filter is actually sort button
         filterButton = findViewById(R.id.filter_button);
         filterButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             startActivity(intent);
         });
 
+        // Handle Add Button
         addButton = findViewById(R.id.button_additem);
 
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -138,13 +141,22 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             }
         });
 
+        // Handle Filter Button aka Real Filter Button
+        real_filterButton = findViewById(R.id.real_filter_button);
+        real_filterButton.setOnClickListener(v -> {
+            // TODO: Implement real filter button here
+        });
 
 
+        // Handle Delete Button
         del_button = findViewById(R.id.button_deleteitem);
 
         del_button.setOnClickListener(v -> {
             if (!is_deleting) {
-                del_button.setText("Done");
+                del_button.setImageDrawable(getDrawable(R.drawable.check_icon));
+                addButton.setVisibility(View.INVISIBLE);
+                real_filterButton.setVisibility(View.INVISIBLE);
+                filterButton.setVisibility(View.INVISIBLE);
                 is_deleting = Boolean.TRUE;
             } else {
                 // Count how many items are selected
@@ -183,7 +195,10 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 }
-                del_button.setText("Delete");
+                del_button.setImageDrawable(getDrawable(R.drawable.trash));
+                addButton.setVisibility(View.VISIBLE);
+                real_filterButton.setVisibility(View.VISIBLE);
+                filterButton.setVisibility(View.VISIBLE);
                 is_deleting = Boolean.FALSE;
             }
 

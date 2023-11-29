@@ -9,42 +9,54 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+        <ImageButton
             android:id="@+id/button_additem"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_corners_button"
-            android:layout_weight="1"
-            android:text="@string/add_item_text" />
+            android:text="@string/add_item_text"
 
-        <Button
-            android:id="@+id/button_deleteitem"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="20dp"
-            android:background="@drawable/rounded_corners_button"
-            android:text="@string/delete_item_text" />
+            android:padding="10dp"
+            android:src="@drawable/plus_ic"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/filter_button"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginLeft="20dp"
+            android:layout_marginStart="8dp"
             android:background="@drawable/rounded_corners_button"
+            android:padding="10dp"
+            android:src="@drawable/sort_ic"
             android:text="Filter" />
+
+        <ImageButton
+            android:id="@+id/real_filter_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/rounded_corners_button"
+            android:padding="10dp"
+            android:src="@drawable/filter_ic"/>
+
+
+        <ImageButton
+            android:id="@+id/button_deleteitem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/rounded_corners_button"
+            android:text="@string/delete_item_text"
+            android:padding="10dp"
+            android:src="@drawable/trash"/>
     </LinearLayout>
 
     <ListView
