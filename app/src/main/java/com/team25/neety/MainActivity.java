@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 addButton.setVisibility(View.INVISIBLE);
                 real_filterButton.setVisibility(View.INVISIBLE);
                 filterButton.setVisibility(View.INVISIBLE);
+                barcodeButton.setVisibility(View.INVISIBLE);
                 is_deleting = Boolean.TRUE;
             } else {
                 // Count how many items are selected
@@ -205,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 addButton.setVisibility(View.VISIBLE);
                 real_filterButton.setVisibility(View.VISIBLE);
                 filterButton.setVisibility(View.VISIBLE);
+                barcodeButton.setVisibility(View.VISIBLE);
                 is_deleting = Boolean.FALSE;
             }
 
