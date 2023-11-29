@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private ArrayList<Item> itemsList;
     private ItemsLvAdapter adapter;
 
-    private ImageButton filterButton, addButton, del_button, real_filterButton;
+    private ImageButton filterButton, addButton, del_button, real_filterButton, barcodeButton;
     private TextView totalValueTv;
     private Boolean is_deleting = Boolean.FALSE;
 
@@ -145,6 +145,12 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         real_filterButton = findViewById(R.id.real_filter_button);
         real_filterButton.setOnClickListener(v -> {
             // TODO: Implement real filter button here
+        });
+
+        // Handle Barcode button
+        barcodeButton = findViewById(R.id.button_barcode);
+        barcodeButton.setOnClickListener(v -> {
+            // TODO: Implement item lookup by barcode here
         });
 
 
