@@ -58,6 +58,23 @@ public class ViewItemActivity extends AppCompatActivity {
     private Uri photoURI;
     private ActivityResultLauncher<Intent> takePictureLauncher;
     private Item item;
+    private final ActivityResultLauncher<Intent> galleryResultLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                // receiving image from gallery and uploading to firebase
+                if (result.getResultCode() == RESULT_OK) {
+                    Uri imageUri = result.getData().getData();
+                    Log.d("GalleryResult", "Image URI: " + imageUri); // Log the image URI
+                    try {
+                        item.uploadImageToFirebase(this, imageUri, this::refresh);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(ViewItemActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Log.d("GalleryResult", "No image selected"); // Log that no image was selected
+                    Toast.makeText(ViewItemActivity.this, "You haven't picked an image", Toast.LENGTH_LONG).show();
+                }
+            });
 
 
     @Override
@@ -114,13 +131,9 @@ public class ViewItemActivity extends AppCompatActivity {
         // handle gallery photo
         Button add_image_button = findViewById(R.id.gallery_button); // OnClick listener for gallery button
 
-        add_image_button.setOnClickListener(new View.OnClickListener() {
-            //launch gallery
-            @Override
-            public void onClick(View v) {
-                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                startActivityForResult(gallery, 101);
-            }
+        add_image_button.setOnClickListener(v -> {
+            Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+            galleryResultLauncher.launch(gallery);
         });
 
 
@@ -145,34 +158,6 @@ public class ViewItemActivity extends AppCompatActivity {
                 setupCamera();
             }
         });
-    }
-
-    // receiving image from gallery and uploading to firebase
-
-    //
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode ==101){
-            if (resultCode == RESULT_OK) {
-                try {
-                    // Get the selected image URI
-                    Uri imageUri = data.getData();
-                    // Upload image to firebase
-                    try{
-                        item.uploadImageToFirebase(this, imageUri, this::refresh);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Toast.makeText(ViewItemActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();}
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(ViewItemActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
-                }
-            }
-            else {
-                Toast.makeText(ViewItemActivity.this, "You haven't picked an image", Toast.LENGTH_LONG).show();
-            }}
     }
 
     @Override
