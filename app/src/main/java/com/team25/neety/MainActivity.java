@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                         new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogCustom)
                                 .setTitle("User Profile")
                                 .setIcon(R.drawable.profile_ic)
-                                .setMessage(Html.fromHtml("You are login as " + "<b>" + username + "</b>" + ".<br>"
+                                .setMessage(Html.fromHtml("You are logging in as " + "<b>" + username + "</b>" + ".<br>"
                                         +"Your total number of items is " + itemCount + ".", Html.FROM_HTML_MODE_LEGACY))
                                 .setPositiveButton("Back", null)
                                 .setNegativeButton("Log Out", new DialogInterface.OnClickListener() {
