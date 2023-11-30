@@ -19,5 +19,7 @@
         <item name="backgroundColor">@color/less_black</item>
         <item name="colorOutline">@color/pale_dogwood</item>
         <item name="colorPrimaryContainer">@color/rich_black</item>
+        <item name="colorSecondaryContainer">@color/ultra_violet</item>
+        <item name="colorOnSecondaryContainer">@color/isabelline</item>
     </style>
 </resources>

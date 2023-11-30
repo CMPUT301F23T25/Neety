@@ -18,10 +18,12 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -220,16 +222,19 @@ public class Item implements Serializable {
         void onCallback(List<String> imageUrls);
     }
 
-    public void getImageUrls(ImageUrlsCallback callback) {
-        refreshImageUrls(callback);
+    public void getImageUrls(ImageUrlsCallback callback, String username) {
+        refreshImageUrls(callback, username);
     }
+
     /*
      * This refreshes the image urls
      * @param callback
+     * @param username
      */
-    private void refreshImageUrls(ImageUrlsCallback callback) {
+    private void refreshImageUrls(ImageUrlsCallback callback, String username) {
+
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        String path = "images/" + this.id + "/";
+        String path = "images/" + username + "/" + this.id + "/";
         StorageReference imagesRef = storageRef.child(path);
         List<String> Urls = new ArrayList<>();
 
@@ -257,17 +262,25 @@ public class Item implements Serializable {
         void onCallback();
     }
 
+
     /*
      * This uploads the image to firebase
      * @param context
      * @param photoURI
+     * @param username
      * @param callback
      */
-    public void uploadImageToFirebase(Context context, Uri photoURI, UploadCallback callback) {
+    public void uploadImageToFirebase(Context context, Uri photoURI,String username, UploadCallback callback) {
+
         if (photoURI != null) {
             StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-            String path = "images/" + this.id + "/";
-            StorageReference imageRef = storageRef.child(path + photoURI.getLastPathSegment());
+            String path = "images/" + username + "/" + this.id + "/";
+
+            // Format the current date and time as a string
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+            String dateTime = sdf.format(new Date());
+
+            StorageReference imageRef = storageRef.child(path + username + "_" + dateTime + ".jpg");
             UploadTask uploadTask = imageRef.putFile(photoURI);
             uploadTask.addOnFailureListener(exception -> {
                 // Handle unsuccessful uploads
@@ -286,11 +299,14 @@ public class Item implements Serializable {
     }
     /*
      * This deletes the image from firebase
+     * @param username 
      */
-    public void deleteImagesFromStorage() {
+    public void deleteImagesFromStorage(String username) {
+
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        String path = "images/" + this.id.toString() + "/";
+
+        String path = "images/" + username + "/" + this.id.toString() + "/";
         StorageReference imagesRef = storageRef.child(path);
 
         imagesRef.listAll()

@@ -19,5 +19,7 @@
         <item name="backgroundColor">@color/isabelline</item>
         <item name="colorOutline">@color/space_cadet</item>
         <item name="colorPrimaryContainer">@color/pale_dogwood</item>
+        <item name="colorSecondaryContainer">@color/pale_dogwood</item>
+        <item name="colorOnSecondaryContainer">@color/space_cadet</item>
     </style>
 </resources>
