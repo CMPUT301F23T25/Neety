@@ -10,6 +10,11 @@ public class Helpers {
         return String.format("$%,.2f", f);
     }
 
+    /*
+     * this gets a date from a string
+     * @param dateString
+     * @return date
+     */
     public static Date getDateFromString(String dateString) {
         // TODO: Perhaps add locale here?
 
@@ -24,6 +29,11 @@ public class Helpers {
         }
     }
 
+    /*
+     * this gets a string from a date
+     * @param date
+     * @return string
+     */
     public static String getStringFromDate(Date date) {
         // TODO: Perhaps add locale here?
 

@@ -125,7 +125,7 @@ public class EditItemActivity extends AppCompatActivity {
             }
         });
 
-
+   
         //Handle calendar button for getting date
         calendar_button.setOnClickListener(view1 -> {
             final Calendar calendar = Calendar.getInstance();
@@ -154,7 +154,10 @@ public class EditItemActivity extends AppCompatActivity {
             datePickerDialog.show();
         });
     }
-
+    /*
+    * this populates the fields for the edit item activity by getting the item from the database
+    * @param item
+     */
     private void populateFields(Item item) {
         // Set existing item details in EditText fields
         editMake.setText(item.getMake());
@@ -183,7 +186,9 @@ public class EditItemActivity extends AppCompatActivity {
             }
         });
     }
-
+    /*
+    * this saves the edited item to firebase
+    */
     private void saveEditedItem() {
         String make = editMake.getText().toString();
         String model = editModel.getText().toString();
@@ -214,7 +219,12 @@ public class EditItemActivity extends AppCompatActivity {
         finish();
         return true;
     }
-
+    /*
+    * this checks if the camera permission is granted
+    * @param requestCode
+    * @param permissions
+    * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -226,7 +236,9 @@ public class EditItemActivity extends AppCompatActivity {
             }
         }
     }
-
+    /*
+    * this starts the camera
+     */  
     private void startCamera() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         cameraResultLauncher.launch(cameraIntent);

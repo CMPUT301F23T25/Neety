@@ -34,6 +34,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         this.imageUrls = new ArrayList<>(uniqueImageUrls);
     }
 
+    /*
+     * this creates the view holder
+     * @param parent
+     * @param viewType
+     * @return ImageViewHolder
+     */
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -41,7 +47,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                 .inflate(R.layout.item_image, parent, false);
         return new ImageViewHolder(itemView);
     }
-
+    /*
+     * this binds the view holder
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         String imageUrl = imageUrls.get(position);
@@ -76,12 +86,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         });
     }
 
-
+    /*
+     * this gets the number of items in the list
+     * @return int
+     */
     @Override
     public int getItemCount() {
         return imageUrls.size();
     }
-
+    
     static class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         ImageButton imageDelButton;

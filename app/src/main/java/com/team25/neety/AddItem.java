@@ -38,6 +38,11 @@ public class AddItem extends DialogFragment{
 
     private OnFragmentInteractionListener listener;
 
+    /*
+     * This method is called when the fragment is first attached to its context.
+     * onCreate(Bundle) will be called after this.
+     * @param context
+     */
     @Override
     //Attach on fragment listener to context(main)
     public void onAttach(@NonNull Context context) {
@@ -51,6 +56,11 @@ public class AddItem extends DialogFragment{
 
 
     }
+    /*
+     * This method is called when the fragment is first attached to its context.
+     * @param savedInstanceState
+     * @return Dialog
+     */
     static AddItem newInstance(Item item){
         Bundle args = new Bundle();
         args.putSerializable("item", item);

@@ -15,7 +15,11 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
     private final Activity context;
     private final ArrayList<Item> itemList;
     private boolean isDeleting;
-
+    /*
+     * this is the constructor for the list view adapter
+     * @param context
+     * @param list
+     */
     public ItemsLvAdapter(Activity context, ArrayList<Item> list) {
         super(context, R.layout.listitem, list);
         // TODO Auto-generated constructor stub
@@ -23,7 +27,13 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
         this.itemList=list;
 
     }
-
+    /*
+     * this gets the view for the list view
+     * @param position
+     * @param view
+     * @param parent
+     * @return view
+     */
     public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView = inflater.inflate(R.layout.listitem, null,true);
@@ -54,6 +64,10 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
         return rowView;
 
     };
+    /*
+     * this gets the item list
+     * @return itemList
+     */
     public void setDeleting(boolean isDeleting) {
         this.isDeleting = isDeleting;
     }
