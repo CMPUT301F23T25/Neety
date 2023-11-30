@@ -18,10 +18,12 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -191,7 +193,12 @@ public class Item implements Serializable {
         if (photoURI != null) {
             StorageReference storageRef = FirebaseStorage.getInstance().getReference();
             String path = "images/" + username + "/" + this.id + "/";
-            StorageReference imageRef = storageRef.child(path + photoURI.getLastPathSegment());
+
+            // Format the current date and time as a string
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+            String dateTime = sdf.format(new Date());
+
+            StorageReference imageRef = storageRef.child(path + username + "_" + dateTime + ".jpg");
             UploadTask uploadTask = imageRef.putFile(photoURI);
             uploadTask.addOnFailureListener(exception -> {
                 // Handle unsuccessful uploads
