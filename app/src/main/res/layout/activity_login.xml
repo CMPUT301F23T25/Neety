@@ -54,6 +54,19 @@
         app:layout_constraintTop_toBottomOf="@id/notification_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:drawableEnd="@drawable/arrow_right_ic"
+        android:background="@drawable/rounded_corners_button"/>
+
+    <Button
+        android:id="@+id/register_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        app:layout_constraintTop_toBottomOf="@id/notification_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:drawableEnd="@drawable/arrow_right_ic"
+        android:visibility="gone"
         android:background="@drawable/rounded_corners_button"/>
     
 
