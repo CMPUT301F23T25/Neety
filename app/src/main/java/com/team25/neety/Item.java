@@ -153,13 +153,13 @@ public class Item implements Serializable {
         void onCallback(List<String> imageUrls);
     }
 
-    public void getImageUrls(ImageUrlsCallback callback) {
-        refreshImageUrls(callback);
+    public void getImageUrls(ImageUrlsCallback callback, String username) {
+        refreshImageUrls(callback, username);
     }
 
-    private void refreshImageUrls(ImageUrlsCallback callback) {
+    private void refreshImageUrls(ImageUrlsCallback callback, String username) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        String path = "images/" + this.id + "/";
+        String path = "images/" + username + "/" + this.id + "/";
         StorageReference imagesRef = storageRef.child(path);
         List<String> Urls = new ArrayList<>();
 
@@ -187,10 +187,10 @@ public class Item implements Serializable {
         void onCallback();
     }
 
-    public void uploadImageToFirebase(Context context, Uri photoURI, UploadCallback callback) {
+    public void uploadImageToFirebase(Context context, Uri photoURI,String username, UploadCallback callback) {
         if (photoURI != null) {
             StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-            String path = "images/" + this.id + "/";
+            String path = "images/" + username + "/" + this.id + "/";
             StorageReference imageRef = storageRef.child(path + photoURI.getLastPathSegment());
             UploadTask uploadTask = imageRef.putFile(photoURI);
             uploadTask.addOnFailureListener(exception -> {
@@ -209,10 +209,11 @@ public class Item implements Serializable {
         }
     }
 
-    public void deleteImagesFromStorage() {
+    public void deleteImagesFromStorage(String username) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        String path = "images/" + this.id.toString() + "/";
+
+        String path = "images/" + username + "/" + this.id.toString() + "/";
         StorageReference imagesRef = storageRef.child(path);
 
         imagesRef.listAll()

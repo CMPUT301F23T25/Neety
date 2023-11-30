@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -49,7 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ViewItemActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
-    private CollectionReference itemsRef;
+    private CollectionReference usersRef, itemsRef;
     private UUID itemId;
     private TextView tvMake, tvModel, tvEstimatedValue, tvDescription, tvPurchaseDate, tvSerial, tvComments;
     private RecyclerView rvImages;
@@ -58,6 +59,7 @@ public class ViewItemActivity extends AppCompatActivity {
     private Uri photoURI;
     private ActivityResultLauncher<Intent> takePictureLauncher;
     private Item item;
+    private String username;
     private final ActivityResultLauncher<Intent> galleryResultLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 // receiving image from gallery and uploading to firebase
@@ -65,7 +67,7 @@ public class ViewItemActivity extends AppCompatActivity {
                     Uri imageUri = result.getData().getData();
                     Log.d("GalleryResult", "Image URI: " + imageUri); // Log the image URI
                     try {
-                        item.uploadImageToFirebase(this, imageUri, this::refresh);
+                        item.uploadImageToFirebase(this, imageUri, username, this::refresh);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(ViewItemActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
@@ -96,8 +98,12 @@ public class ViewItemActivity extends AppCompatActivity {
         tvComments = findViewById(R.id.comments_textview);
         rvImages = findViewById(R.id.images_recyclerView);
 
+        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        username = sharedPreferences.getString("username", "");
+
         db = FirebaseFirestore.getInstance();
-        itemsRef = db.collection("items");
+        usersRef = db.collection("users");
+        itemsRef = usersRef.document(username).collection("items");
 
         itemId = getIntent().getSerializableExtra(Constants.INTENT_ITEM_ID_KEY, UUID.class);
 
@@ -119,7 +125,7 @@ public class ViewItemActivity extends AppCompatActivity {
                     .setMessage("Are you sure you want to delete this entry?")
                     .setPositiveButton("Yes", (dialog, which) -> {
                         // Delete item's images from storage
-                        item.deleteImagesFromStorage();
+                        item.deleteImagesFromStorage(username);
                         // Delete item from database
                         itemsRef.document(itemId.toString()).delete();
                         finish();
@@ -143,7 +149,7 @@ public class ViewItemActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK) {
                         // Handle the result here
                         if (result.getData() != null) {
-                            item.uploadImageToFirebase(this, photoURI, this::refresh);
+                            item.uploadImageToFirebase(this, photoURI, username, this::refresh);
                         }
                     }
                 });
@@ -181,7 +187,7 @@ public class ViewItemActivity extends AppCompatActivity {
                     if (document.exists()) {
                         item = Item.getItemFromDocument(document);
                         populateFields(item);
-                        item.getImageUrls(imageUrls -> populateImages(imageUrls));
+                        item.getImageUrls(imageUrls -> populateImages(imageUrls), username);
 
                     } else {
                         Log.d("ViewItemActivity", "No such document");

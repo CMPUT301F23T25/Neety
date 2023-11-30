@@ -4,6 +4,7 @@ import static com.google.common.base.Throwables.getRootCause;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -26,6 +27,8 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
     private ActivityMainBinding binding;
     private FirebaseFirestore db;
-    private CollectionReference itemsRef;
+    private CollectionReference usersRef, itemsRef;
 
     private ListView lv;
     private ArrayList<Item> itemsList;
@@ -62,12 +65,16 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private ImageButton filterButton, addButton, del_button, real_filterButton, barcodeButton;
     private TextView totalValueTv;
     private Boolean is_deleting = Boolean.FALSE;
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        username = sharedPreferences.getString("username", "");
 
         getSupportActionBar().setBackgroundDrawable(getDrawable(R.color.space_cadet));
         TextView tv = new TextView(getApplicationContext());
@@ -87,7 +94,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         getSupportActionBar().setCustomView(tv);
 
         db = FirebaseFirestore.getInstance();
-        itemsRef = db.collection("items");
+        usersRef = db.collection("users");
+        itemsRef = usersRef.document(username).collection("items");
         itemsList = new ArrayList<>();
 
         adapter = new ItemsLvAdapter(this, itemsList);
@@ -191,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                     Item item = iterator.next();
                                     if (item.isSelected()) {
                                         iterator.remove();
-                                        item.deleteImagesFromStorage();
+                                        item.deleteImagesFromStorage(username);
                                         itemsRef.document(item.getIdString()).delete();
                                     }
 
