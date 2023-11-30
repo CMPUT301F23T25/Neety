@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,12 +30,15 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
@@ -371,7 +375,31 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_button) {
-            // Handle action button click
+            itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        int itemCount = task.getResult().size();
+                        new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogCustom)
+                                .setTitle("User Profile")
+                                .setIcon(R.drawable.profile_ic)
+                                .setMessage(Html.fromHtml("You are login as " + "<b>" + username + "</b>" + ".<br>"
+                                        +"Your total number of items is " + itemCount + ".", Html.FROM_HTML_MODE_LEGACY))
+                                .setPositiveButton("Back", null)
+                                .setNegativeButton("Log Out", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Finish the activity
+                                        MainActivity.this.finish();
+                                    }
+                                })
+                                .show();
+                    } else {
+                        Log.d("Firestore", "Error getting documents: ", task.getException());
+                    }
+                }
+            });
+
+
             return true;
         }
         return super.onOptionsItemSelected(item);
