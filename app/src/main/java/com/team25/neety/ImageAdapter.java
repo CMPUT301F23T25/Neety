@@ -98,11 +98,16 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public int getItemCount() {
         return imageUrls.size();
     }
-    
+    /*
+     * this is class for the image view holder
+     */
     static class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         ImageButton imageDelButton;
-
+        /*
+         * this is the constructor for the image view holder
+         * @param itemView
+         */
         ImageViewHolder(@NonNull View itemView) {
             super(itemView);
             this.imageView = itemView.findViewById(R.id.imageView);

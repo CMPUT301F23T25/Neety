@@ -59,7 +59,7 @@ public class ViewItemActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> takePictureLauncher;
     private Item item;
     /*
-     * this function create intent for gallery and deal with uploading image to firebase
+     * this function create intent for gallery and deals with uploading image to firebase
      * @param requestCode
      */
     private final ActivityResultLauncher<Intent> galleryResultLauncher =
@@ -80,7 +80,9 @@ public class ViewItemActivity extends AppCompatActivity {
                 }
             });
 
-
+    /* this function is reponsible for when view item activity is initialized
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

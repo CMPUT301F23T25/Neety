@@ -170,6 +170,13 @@ public class AddItem extends DialogFragment{
                     .setNegativeButton("Cancel", null)
                     // If add pressed then return all variables newly typed in only if it passes validation
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        /*
+                         * this function handles the ok button
+                         * @param dialog
+                         * @param which
+                         * 
+                         * 
+                         */
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             String datestring = purchaseDate.getText().toString();

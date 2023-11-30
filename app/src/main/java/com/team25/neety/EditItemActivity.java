@@ -247,8 +247,8 @@ public class EditItemActivity extends AppCompatActivity {
         }
     }
     /*
-    * this starts the camera
-     */  
+    * this function starts the camera
+    */  
     private void startCamera() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         cameraResultLauncher.launch(cameraIntent);
