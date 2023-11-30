@@ -58,6 +58,10 @@ public class ViewItemActivity extends AppCompatActivity {
     private Uri photoURI;
     private ActivityResultLauncher<Intent> takePictureLauncher;
     private Item item;
+    /*
+     * this function create intent for gallery and deal with uploading image to firebase
+     * @param requestCode
+     */
     private final ActivityResultLauncher<Intent> galleryResultLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 // receiving image from gallery and uploading to firebase
@@ -159,19 +163,26 @@ public class ViewItemActivity extends AppCompatActivity {
             }
         });
     }
-
+    /*
+     * this function handles the back button
+     */
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
+    /*
+     * this function refreshes the page
+     */
     @Override
     protected void onResume() {
         super.onResume();
         refresh();
     }
-
+    /*
+     * this function refreshes the page
+     */
     private void refresh() {
         itemsRef.document(itemId.toString()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -195,7 +206,10 @@ public class ViewItemActivity extends AppCompatActivity {
         });
 
     }
-
+    /*
+     * this function populates the fields
+     * @param item
+     */
     private void populateFields(Item item) {
         if (item == null) return;
 
@@ -207,6 +221,10 @@ public class ViewItemActivity extends AppCompatActivity {
         tvSerial.setText((item.getSerial() != null) ? item.getSerial() : "No serial");
         tvComments.setText((item.getComments() != null) ? item.getComments() : "No comments");
     }
+    /*
+     * this function populates the images
+     * @param imageUrls
+     */
     private void populateImages(List<String> imageUrls) {
         TextView noti = findViewById(R.id.no_images_textview);
         RecyclerView images = findViewById(R.id.images_recyclerView);
@@ -224,7 +242,9 @@ public class ViewItemActivity extends AppCompatActivity {
         }
 
     }
-
+    /*
+     * this function sets up the camera
+     */
     private void setupCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -244,7 +264,10 @@ public class ViewItemActivity extends AppCompatActivity {
             Toast.makeText(this, "No camera app found", Toast.LENGTH_SHORT).show();
         }
     }
-
+    /*
+     * this function creates the image file
+     * @return Uri
+     */
     private Uri createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "Neety_" + timeStamp;
@@ -254,7 +277,13 @@ public class ViewItemActivity extends AppCompatActivity {
         photoURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         return photoURI;
     }
-
+    /*
+     * this function handles the permission for the camera
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     * 
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

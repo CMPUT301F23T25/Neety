@@ -27,7 +27,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     private List<String> imageUrls;
     private Context context;
     private FirebaseStorage storage = FirebaseStorage.getInstance();
-
+    /*
+     * this is the constructor for the image adapter
+     * @param context
+     * @param imageUrls
+     */
     public ImageAdapter(Context context, List<String> imageUrls) {
         this.context = context;
         Set<String> uniqueImageUrls = new HashSet<>(imageUrls);

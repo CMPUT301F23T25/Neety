@@ -76,14 +76,22 @@ public class AddItem extends DialogFragment{
         void onOKPressed(Item item);
     }
 
-
+    /*
+     *  this function validates the date to make sure it is in the correct format
+     * @param string
+     * @return boolean
+     */
     private boolean validateDate(String string){
         if (string.matches("\\d{4}-\\d{2}-\\d{2}")){
             return true;
         }
         return false;
     }
-
+    /*
+     *  this function validates the price to make sure it is in the correct format
+     * @param string
+     * @return boolean
+     */
     private boolean validatePrice(EditText string){
         String input = string.getText().toString();
         try {
@@ -98,10 +106,13 @@ public class AddItem extends DialogFragment{
         }
     }
 
-
+    /*
+     *  this function creates the dialog for adding an item
+     * @param savedInstanceState
+     * @return Dialog
+     */
     @NonNull
     @Override
-    //View
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
         //Initialize View

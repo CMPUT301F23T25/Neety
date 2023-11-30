@@ -1,5 +1,7 @@
 package com.team25.neety;
-
+/*
+ * This class contains all the constants used in the app
+ */
 public final class Constants {
     public static final int NO_SERIAL = -1;
 

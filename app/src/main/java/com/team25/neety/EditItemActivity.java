@@ -81,6 +81,10 @@ public class EditItemActivity extends AppCompatActivity {
         cameraButton.setEnabled(false);
 
         cameraResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            /*
+             * this gets the result from the camera for barcode scanning
+             * @param result
+             */
             @Override
             public void onActivityResult(ActivityResult result) {
                 if (result.getResultCode() == RESULT_OK) {
@@ -108,6 +112,10 @@ public class EditItemActivity extends AppCompatActivity {
         itemId = getIntent().getSerializableExtra(Constants.INTENT_ITEM_ID_KEY, UUID.class);
 
         itemsRef.document(itemId.toString()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            /*
+             * this gets the item from the database
+             * @param task
+             */
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -213,7 +221,9 @@ public class EditItemActivity extends AppCompatActivity {
                     }
                 });
     }
-
+    /*
+     * 
+     */
     @Override
     public boolean onSupportNavigateUp() {
         finish();
