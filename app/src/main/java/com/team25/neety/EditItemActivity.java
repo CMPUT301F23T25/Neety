@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -45,14 +46,14 @@ import java.util.UUID;
 public class EditItemActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
-    private CollectionReference itemsRef;
+    private CollectionReference itemsRef, usersRef;
 
     private UUID itemId;
     private EditText editMake, editModel, editValue, editDescription, editSerial, editComments, editDate;
     private Button saveButton;
     private ImageButton calendar_button;
     private ImageButton cameraButton;
-
+    private String username;
     private ActivityResultLauncher<Intent> cameraResultLauncher;
 
     @Override
@@ -102,8 +103,12 @@ public class EditItemActivity extends AppCompatActivity {
             }
         });
 
+        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        username = sharedPreferences.getString("username", "");
+
         db = FirebaseFirestore.getInstance();
-        itemsRef = db.collection("items");
+        usersRef = db.collection("users");
+        itemsRef = usersRef.document(username).collection("items");
 
         itemId = getIntent().getSerializableExtra(Constants.INTENT_ITEM_ID_KEY, UUID.class);
 
