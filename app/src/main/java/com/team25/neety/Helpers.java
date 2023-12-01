@@ -4,7 +4,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+/**
+ * helper class for the app (string form date, date from string)
+ *
+ */
 public class Helpers {
     public static String floatToPriceString(float f) {
         return String.format("$%,.2f", f);

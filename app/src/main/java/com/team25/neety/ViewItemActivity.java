@@ -47,6 +47,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * This class is the view item activity for the app handles all logic for viewing an item and interacting with it
+ * @version 1.0
+ *
+ */
 public class ViewItemActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;

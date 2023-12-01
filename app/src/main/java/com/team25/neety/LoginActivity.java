@@ -25,7 +25,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * This class is the login activity for the app handles all logic for logging in and registering
+ * @version 1.0
+ *
+ */
 public class LoginActivity extends AppCompatActivity {
     private EditText username_box;
     private Button continue_button, register_button;

@@ -42,6 +42,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * This class is the edit item activity for the app handles all logic for editing an item
+ * @version 1.0
+ *
+ */
 public class EditItemActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;

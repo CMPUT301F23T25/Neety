@@ -9,7 +9,9 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-
+/**
+ * This class is the list view adapter for the items and handles all the logic for the list view
+ */
 public class ItemsLvAdapter extends ArrayAdapter<Item> {
 
     private final Activity context;

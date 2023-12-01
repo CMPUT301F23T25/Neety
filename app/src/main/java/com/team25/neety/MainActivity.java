@@ -55,7 +55,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.annotation.Nullable;
-
+/**
+ * This class is the main activity for the app handles all logic for the main activity
+ * @version 1.0
+ */
 public class MainActivity extends AppCompatActivity implements AddItem.OnFragmentInteractionListener{
 
     private ActivityMainBinding binding;

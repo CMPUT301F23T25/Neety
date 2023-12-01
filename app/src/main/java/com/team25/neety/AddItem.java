@@ -24,7 +24,11 @@ import androidx.fragment.app.DialogFragment;
 
 import java.io.Serializable;
 import java.util.UUID;
-
+/**
+ * This class is the add item fragment for the app handles all logic for adding an item
+ * @version 1.0
+ *
+ */
 public class AddItem extends DialogFragment{
 
     private EditText modelName;
