@@ -81,7 +81,7 @@ public class EditItemActivity extends AppCompatActivity {
         cameraButton.setEnabled(false);
 
         cameraResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-            /*
+            /**
              * this gets the result from the camera for barcode scanning
              * @param result
              */
@@ -112,7 +112,7 @@ public class EditItemActivity extends AppCompatActivity {
         itemId = getIntent().getSerializableExtra(Constants.INTENT_ITEM_ID_KEY, UUID.class);
 
         itemsRef.document(itemId.toString()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            /*
+            /**
              * this gets the item from the database
              * @param task
              */
@@ -162,7 +162,7 @@ public class EditItemActivity extends AppCompatActivity {
             datePickerDialog.show();
         });
     }
-    /*
+    /**
     * this populates the fields for the edit item activity by getting the item from the database
     * @param item
      */
@@ -194,7 +194,7 @@ public class EditItemActivity extends AppCompatActivity {
             }
         });
     }
-    /*
+    /**
     * this saves the edited item to firebase
     */
     private void saveEditedItem() {
@@ -229,7 +229,7 @@ public class EditItemActivity extends AppCompatActivity {
         finish();
         return true;
     }
-    /*
+    /**
     * this checks if the camera permission is granted
     * @param requestCode
     * @param permissions
@@ -246,7 +246,7 @@ public class EditItemActivity extends AppCompatActivity {
             }
         }
     }
-    /*
+    /**
     * this function starts the camera
     */  
     private void startCamera() {

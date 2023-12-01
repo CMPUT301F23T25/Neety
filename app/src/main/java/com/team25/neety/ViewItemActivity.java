@@ -61,7 +61,7 @@ public class ViewItemActivity extends AppCompatActivity {
     private Item item;
 
     private String username;
-    /*
+    /**
      * this function create intent for gallery and deals with uploading image to firebase
      * @param requestCode
      */
@@ -83,7 +83,8 @@ public class ViewItemActivity extends AppCompatActivity {
                 }
             });
 
-    /* this function is reponsible for when view item activity is initialized
+    /**
+     *  this function is reponsible for when view item activity is initialized
      * @param savedInstanceState
      */
     @Override
@@ -172,7 +173,7 @@ public class ViewItemActivity extends AppCompatActivity {
             }
         });
     }
-    /*
+    /**
      * this function handles the back button
      */
     @Override
@@ -181,7 +182,7 @@ public class ViewItemActivity extends AppCompatActivity {
         return true;
     }
 
-    /*
+    /**
      * this function refreshes the page
      */
     @Override
@@ -189,7 +190,7 @@ public class ViewItemActivity extends AppCompatActivity {
         super.onResume();
         refresh();
     }
-    /*
+    /**
      * this function refreshes the page
      */
     private void refresh() {
@@ -215,7 +216,7 @@ public class ViewItemActivity extends AppCompatActivity {
         });
 
     }
-    /*
+    /**
      * this function populates the fields
      * @param item
      */
@@ -230,7 +231,7 @@ public class ViewItemActivity extends AppCompatActivity {
         tvSerial.setText((item.getSerial() != null) ? item.getSerial() : "No serial");
         tvComments.setText((item.getComments() != null) ? item.getComments() : "No comments");
     }
-    /*
+    /**
      * this function populates the images
      * @param imageUrls
      */
@@ -251,7 +252,7 @@ public class ViewItemActivity extends AppCompatActivity {
         }
 
     }
-    /*
+    /**
      * this function sets up the camera
      */
     private void setupCamera() {
@@ -273,7 +274,7 @@ public class ViewItemActivity extends AppCompatActivity {
             Toast.makeText(this, "No camera app found", Toast.LENGTH_SHORT).show();
         }
     }
-    /*
+    /**
      * this function creates the image file
      * @return Uri
      */
@@ -286,7 +287,7 @@ public class ViewItemActivity extends AppCompatActivity {
         photoURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         return photoURI;
     }
-    /*
+    /**
      * this function handles the permission for the camera
      * @param requestCode
      * @param permissions

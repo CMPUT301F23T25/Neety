@@ -10,7 +10,7 @@ public class Helpers {
         return String.format("$%,.2f", f);
     }
 
-    /*
+    /**
      * this gets a date from a string
      * @param dateString
      * @return date
@@ -29,7 +29,7 @@ public class Helpers {
         }
     }
 
-    /*
+    /**
      * this gets a string from a date
      * @param date
      * @return string

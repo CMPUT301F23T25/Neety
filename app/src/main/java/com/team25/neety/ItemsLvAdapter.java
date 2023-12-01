@@ -15,7 +15,7 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
     private final Activity context;
     private final ArrayList<Item> itemList;
     private boolean isDeleting;
-    /*
+    /**
      * this is the constructor for the list view adapter
      * @param context
      * @param list
@@ -27,7 +27,7 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
         this.itemList=list;
 
     }
-    /*
+    /**
      * this gets the view for the list view
      * @param position
      * @param view
@@ -64,7 +64,7 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
         return rowView;
 
     };
-    /*
+    /**
      * this gets the item list
      * @return itemList
      */

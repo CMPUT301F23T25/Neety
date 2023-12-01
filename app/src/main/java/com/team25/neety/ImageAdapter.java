@@ -27,7 +27,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     private List<String> imageUrls;
     private Context context;
     private FirebaseStorage storage = FirebaseStorage.getInstance();
-    /*
+    /**
      * this is the constructor for the image adapter
      * @param context
      * @param imageUrls
@@ -38,7 +38,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         this.imageUrls = new ArrayList<>(uniqueImageUrls);
     }
 
-    /*
+    /**
      * this creates the view holder
      * @param parent
      * @param viewType
@@ -51,7 +51,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                 .inflate(R.layout.item_image, parent, false);
         return new ImageViewHolder(itemView);
     }
-    /*
+    /**
      * this binds the view holder
      * @param holder
      * @param position
@@ -90,7 +90,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         });
     }
 
-    /*
+    /**
      * this gets the number of items in the list
      * @return int
      */
@@ -98,13 +98,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public int getItemCount() {
         return imageUrls.size();
     }
-    /*
+    /**
      * this is class for the image view holder
      */
     static class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         ImageButton imageDelButton;
-        /*
+        /**
          * this is the constructor for the image view holder
          * @param itemView
          */

@@ -38,7 +38,7 @@ public class AddItem extends DialogFragment{
 
     private OnFragmentInteractionListener listener;
 
-    /*
+    /**
      * This method is called when the fragment is first attached to its context.
      * onCreate(Bundle) will be called after this.
      * @param context
@@ -56,7 +56,7 @@ public class AddItem extends DialogFragment{
 
 
     }
-    /*
+    /**
      * This method is called when the fragment is first attached to its context.
      * @param savedInstanceState
      * @return Dialog
@@ -76,7 +76,7 @@ public class AddItem extends DialogFragment{
         void onOKPressed(Item item);
     }
 
-    /*
+    /**
      *  this function validates the date to make sure it is in the correct format
      * @param string
      * @return boolean
@@ -87,7 +87,7 @@ public class AddItem extends DialogFragment{
         }
         return false;
     }
-    /*
+    /**
      *  this function validates the price to make sure it is in the correct format
      * @param string
      * @return boolean
@@ -106,7 +106,7 @@ public class AddItem extends DialogFragment{
         }
     }
 
-    /*
+    /**
      *  this function creates the dialog for adding an item
      * @param savedInstanceState
      * @return Dialog
@@ -170,7 +170,7 @@ public class AddItem extends DialogFragment{
                     .setNegativeButton("Cancel", null)
                     // If add pressed then return all variables newly typed in only if it passes validation
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        /*
+                        /**
                          * this function handles the ok button
                          * @param dialog
                          * @param which

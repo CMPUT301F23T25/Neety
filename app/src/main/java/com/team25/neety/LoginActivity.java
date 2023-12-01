@@ -33,7 +33,10 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference usersRef;
     private String username;
-
+    /**
+     * This method is called when the activity for login is first created.    
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +57,13 @@ public class LoginActivity extends AppCompatActivity {
 
         continue_button.setEnabled(false);
         username_box.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            /**
+             * this is the on editor action listener for the username box
+             * @param v
+             * @param actionId
+             * @param event
+             * @return
+             */
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE ||
@@ -94,7 +104,10 @@ public class LoginActivity extends AppCompatActivity {
                 // This method is called to notify you that, within s,
                 // the count characters beginning at start have just replaced old text that had length before.
             }
-
+            /**
+             *  This method is called to notify you that, somewhere within s, the text has been changed.
+             * @param s
+             */
             @Override
             public void afterTextChanged(Editable s) {
                 // This method is called to notify you that, somewhere within s, the text has been changed.
@@ -153,9 +166,11 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnFailureListener(e -> Log.w("Firestore", "Error writing document", e));
         });
 
-
     }
-
+    /**
+     * this function logs the user in using username
+     * @param username
+     */
     private void login(String username){
 
         // Save username to SharedPreferences

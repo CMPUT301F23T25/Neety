@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         });
 
         itemsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            /*
+            /**
              * this function handles when the event is triggered
              * @param querySnapshots
              * @param error
@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
     }
 
-    /*
+    /**
      * This sorts items by make
      * @param view
      * @param lv
@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
-    /*
+    /**
      * this sorts by date
      * @param view
      * @param lv
@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             lv.notifyDataSetChanged();
         }
     }
-    /*
+    /**
      * this sorts by estimated value
      * @param view
      * @param lv
@@ -369,7 +369,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             lv.notifyDataSetChanged();
         }
     }
-    /*
+    /**
      * this handles the on ok pressed
      * @param item
      */
@@ -387,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     }
                 });
     }
-    /*
+    /**
      * this creates the options menu
      * @param menu
      * @return boolean
@@ -399,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         return true;
     }
 
-    /*
+    /**
      * this handles the action bar
      */
     @Override
