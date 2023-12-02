@@ -1,5 +1,7 @@
 package com.team25.neety;
 
+import java.util.Locale;
+
 public final class Constants {
     public static final int NO_SERIAL = -1;
 
@@ -10,6 +12,8 @@ public final class Constants {
     public static final String INTENT_ITEM_ID_KEY = "PASSED_ITEM_ID";
 
     public static final int EDIT_ITEM_ACTIVITY_CODE = 1;
+
+    public static final Locale locale = Locale.US;
 
     // Private constructor because you should never instantiate this class
     private Constants() {}
