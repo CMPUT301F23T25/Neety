@@ -20,6 +20,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private ArrayList<Item> itemsList;
     private ItemsLvAdapter adapter;
 
-    private ImageButton filterButton, addButton, del_button, real_filterButton, barcodeButton;
+    private ImageButton sortButton, addButton, del_button, filterButton, barcodeButton;
     private TextView totalValueTv;
     private Boolean is_deleting = Boolean.FALSE;
     private String username;
@@ -105,8 +106,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
         //      For sorting item by specification and updating the screen according to it
         // This filter is actually sort button
-        filterButton = findViewById(R.id.filter_button);
-        filterButton.setOnClickListener(new View.OnClickListener() {
+        sortButton = findViewById(R.id.filter_button);
+        sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final View mView = LayoutInflater.from(MainActivity.this).inflate(R.layout.sorting_layout, null, false);
@@ -151,10 +152,34 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         });
 
         // Handle Filter Button aka Real Filter Button
-        real_filterButton = findViewById(R.id.real_filter_button);
-        real_filterButton.setOnClickListener(v -> {
-            // TODO: Implement real filter button here
-//            HELLO MAN
+        filterButton = findViewById(R.id.real_filter_button);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final View mView = LayoutInflater.from(MainActivity.this).inflate(R.layout.filtering_layout, null, false);
+                final PopupWindow popUp = new PopupWindow(mView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, false);
+                popUp.setTouchable(true);
+                popUp.setFocusable(true);
+                popUp.setOutsideTouchable(true);
+                popUp.showAtLocation(v, Gravity.BOTTOM,0,500);// location of pop ip
+//                popUp.showAsDropDown(findViewById(R.id.filter_button)
+                // This code is for clicking apply button
+                Button applyButton=mView.findViewById(R.id.save_button2);
+                applyButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EditText selectMake = findViewById(R.id.edit_make2);
+//                        sort_by_make(mView,adapter);// sorts by make if chosen
+//                        sort_by_date(mView, adapter);// sorts by date if chosen
+//                        sort_by_estimated_value(mView, adapter);// sorts by est. value if chosen
+//                        filterByDate();
+//                        filterByDescription();
+                        filter_by_make(v, adapter, selectMake.getText().toString());
+                        popUp.dismiss(); // Close the popup when the close button is clicked
+                    }
+                });
+                popUp.showAsDropDown(findViewById(R.id.real_filter_button));
+            }
         });
 
         // Handle Barcode button
@@ -171,8 +196,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             if (!is_deleting) {
                 del_button.setImageDrawable(getDrawable(R.drawable.check_icon));
                 addButton.setVisibility(View.INVISIBLE);
-                real_filterButton.setVisibility(View.INVISIBLE);
                 filterButton.setVisibility(View.INVISIBLE);
+                sortButton.setVisibility(View.INVISIBLE);
                 barcodeButton.setVisibility(View.INVISIBLE);
                 is_deleting = Boolean.TRUE;
             } else {
@@ -214,8 +239,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 }
                 del_button.setImageDrawable(getDrawable(R.drawable.trash));
                 addButton.setVisibility(View.VISIBLE);
-                real_filterButton.setVisibility(View.VISIBLE);
                 filterButton.setVisibility(View.VISIBLE);
+                sortButton.setVisibility(View.VISIBLE);
                 barcodeButton.setVisibility(View.VISIBLE);
                 is_deleting = Boolean.FALSE;
             }
@@ -346,6 +371,38 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             // Notify the adapter that the dataset has changed
             lv.notifyDataSetChanged();
         }
+    }
+
+
+    public void filter_by_make(View view, ItemsLvAdapter lv, String selectedMake) {
+        // Create a new list to store the filtered items
+        ArrayList<Item> filteredList = new ArrayList<>();
+
+        // Iterate through the original list of items
+        for (Item item : itemsList) {
+            // Check if the make of the item matches the selected make
+            if (item.getMake().equalsIgnoreCase(selectedMake)) {
+                // Add the item to the filtered list
+                filteredList.add(item);
+            }
+        }
+
+        // Clear the existing items in the adapter
+        lv.clear();
+
+        // Add the filtered items to the adapter
+        lv.addAll(filteredList);
+
+        // Notify the adapter that the data has changed
+        lv.notifyDataSetChanged();
+    }
+
+
+    public void filterByDate(){
+
+    }
+    public void filterByDescription(){
+
     }
 
     public void onOKPressed(Item item) {
