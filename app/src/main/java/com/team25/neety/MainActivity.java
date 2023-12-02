@@ -62,12 +62,18 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
     private ListView lv;
     private ArrayList<Item> itemsList;
+
+    private ArrayList<Item> originalItemsList;
     private ItemsLvAdapter adapter;
+
+
 
     private ImageButton sortButton, addButton, del_button, filterButton, barcodeButton;
     private TextView totalValueTv;
     private Boolean is_deleting = Boolean.FALSE;
     private String username;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         usersRef = db.collection("users");
         itemsRef = usersRef.document(username).collection("items");
         itemsList = new ArrayList<>();
-
+        originalItemsList = new ArrayList<>();
         adapter = new ItemsLvAdapter(this, itemsList);
 
         totalValueTv = findViewById(R.id.total_value_textview);
@@ -107,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         //      For sorting item by specification and updating the screen according to it
         // This filter is actually sort button
         sortButton = findViewById(R.id.filter_button);
+        System.out.println(itemsList);
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,18 +171,26 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 popUp.showAtLocation(v, Gravity.BOTTOM,0,500);// location of pop ip
 //                popUp.showAsDropDown(findViewById(R.id.filter_button)
                 // This code is for clicking apply button
-                Button applyButton=mView.findViewById(R.id.save_button2);
+                Button applyButton=mView.findViewById(R.id.filter_confirm_button);
                 applyButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        EditText selectMake = findViewById(R.id.edit_make2);
-//                        sort_by_make(mView,adapter);// sorts by make if chosen
-//                        sort_by_date(mView, adapter);// sorts by date if chosen
-//                        sort_by_estimated_value(mView, adapter);// sorts by est. value if chosen
+                        EditText selectMake = mView.findViewById(R.id.edit_make2);
+                        resetAdapter(adapter);
 //                        filterByDate();
 //                        filterByDescription();
-                        filter_by_make(v, adapter, selectMake.getText().toString());
+                        filter_by_make(adapter, selectMake.getText().toString());
+
                         popUp.dismiss(); // Close the popup when the close button is clicked
+                    }
+                });
+
+                Button resetButton = mView.findViewById(R.id.filter_reset_button);
+                resetButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        resetAdapter(adapter);
+                        popUp.dismiss();
                     }
                 });
                 popUp.showAsDropDown(findViewById(R.id.real_filter_button));
@@ -259,12 +274,14 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 }
                 if (querySnapshots != null){
                     itemsList.clear();
+                    originalItemsList.clear();
                     float total = 0;
                     for (QueryDocumentSnapshot doc: querySnapshots){
                         Log.d("D", doc.toString());
                         try {
                             Item i = Item.getItemFromDocument(doc);
                             itemsList.add(i);
+                            originalItemsList.add(i);
                             total += i.getEstimatedValue();
                         } catch (Exception e) {
                             Drawable dr = getResources().getDrawable(android.R.drawable.ic_dialog_info);
@@ -374,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     }
 
 
-    public void filter_by_make(View view, ItemsLvAdapter lv, String selectedMake) {
+    public void filter_by_make(ItemsLvAdapter lv, String selectedMake) {
         // Create a new list to store the filtered items
         ArrayList<Item> filteredList = new ArrayList<>();
 
@@ -393,10 +410,37 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         // Add the filtered items to the adapter
         lv.addAll(filteredList);
 
+        // Update the total value based on the filtered list
+        float total = calculateTotalValue(filteredList);
+        totalValueTv.setText(Helpers.floatToPriceString(total));
+
         // Notify the adapter that the data has changed
         lv.notifyDataSetChanged();
     }
 
+    private float calculateTotalValue(ArrayList<Item> itemList) {
+        float total = 0;
+        for (Item item : itemList) {
+            total += item.getEstimatedValue();
+        }
+        return total;
+    }
+    public void resetAdapter(ItemsLvAdapter lv) {
+        // Clear the existing items in the adapter
+        lv.clear();
+
+
+        System.out.println(originalItemsList);
+        // Add the original items to the adapter
+        lv.addAll(originalItemsList);
+
+        // Update the total value based on the original items list
+        float total = calculateTotalValue(originalItemsList);
+        totalValueTv.setText(Helpers.floatToPriceString(total));
+
+        // Notify the adapter that the data has changed
+        lv.notifyDataSetChanged();
+    }
 
     public void filterByDate(){
 
