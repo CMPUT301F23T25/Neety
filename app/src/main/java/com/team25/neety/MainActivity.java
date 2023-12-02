@@ -44,11 +44,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.rpc.Help;
 import com.team25.neety.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -176,11 +178,15 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     @Override
                     public void onClick(View v) {
                         EditText selectMake = mView.findViewById(R.id.edit_make2);
+                        EditText selectDesc = mView.findViewById(R.id.edit_description);
                         resetAdapter(adapter);
-//                        filterByDate();
-//                        filterByDescription();
+                        EditText start = mView.findViewById(R.id.edit_date);
+                        EditText end = mView.findViewById(R.id.edit_date2);
+                        String startDate = start.getText().toString();
+                        String endDate = end.getText().toString();
+                        filter_by_date_range(adapter, startDate, endDate);
+                        filter_by_description(adapter, selectDesc.getText().toString());
                         filter_by_make(adapter, selectMake.getText().toString());
-
                         popUp.dismiss(); // Close the popup when the close button is clicked
                     }
                 });
@@ -392,30 +398,33 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
 
     public void filter_by_make(ItemsLvAdapter lv, String selectedMake) {
-        // Create a new list to store the filtered items
-        ArrayList<Item> filteredList = new ArrayList<>();
 
-        // Iterate through the original list of items
-        for (Item item : itemsList) {
-            // Check if the make of the item matches the selected make
-            if (item.getMake().equalsIgnoreCase(selectedMake)) {
-                // Add the item to the filtered list
-                filteredList.add(item);
+        if (!selectedMake.matches("")){
+            // Create a new list to store the filtered items
+            ArrayList<Item> filteredList = new ArrayList<>();
+
+            // Iterate through the original list of items
+            for (Item item : itemsList) {
+                // Check if the make of the item matches the selected make
+                if (item.getMake().equalsIgnoreCase(selectedMake)) {
+                    // Add the item to the filtered list
+                    filteredList.add(item);
+                }
             }
+
+            // Clear the existing items in the adapter
+            lv.clear();
+
+            // Add the filtered items to the adapter
+            lv.addAll(filteredList);
+
+            // Update the total value based on the filtered list
+            float total = calculateTotalValue(filteredList);
+            totalValueTv.setText(Helpers.floatToPriceString(total));
+
+            // Notify the adapter that the data has changed
+            lv.notifyDataSetChanged();
         }
-
-        // Clear the existing items in the adapter
-        lv.clear();
-
-        // Add the filtered items to the adapter
-        lv.addAll(filteredList);
-
-        // Update the total value based on the filtered list
-        float total = calculateTotalValue(filteredList);
-        totalValueTv.setText(Helpers.floatToPriceString(total));
-
-        // Notify the adapter that the data has changed
-        lv.notifyDataSetChanged();
     }
 
     private float calculateTotalValue(ArrayList<Item> itemList) {
@@ -441,6 +450,76 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         // Notify the adapter that the data has changed
         lv.notifyDataSetChanged();
     }
+
+    public void filter_by_description(ItemsLvAdapter lv, String keywords) {
+        // Create a new list to store the filtered items
+
+        if (!keywords.matches("")){
+            ArrayList<Item> filteredList = new ArrayList<>();
+
+            // Iterate through the original list of items
+            for (Item item : itemsList) {
+                // Check if the description of the item contains the specified keywords (case-insensitive)
+                if (item.getDescription()!= null && item.getDescription().toLowerCase().contains(keywords.toLowerCase()) && !keywords.matches("")) {
+                    filteredList.add(item);
+                }
+            }
+
+            // Clear the existing items in the adapter
+            lv.clear();
+
+            // Add the filtered items to the adapter
+            lv.addAll(filteredList);
+
+            // Update the total value based on the filtered list
+            float total = calculateTotalValue(filteredList);
+            totalValueTv.setText(Helpers.floatToPriceString(total));
+
+            // Notify the adapter that the data has changed
+            lv.notifyDataSetChanged();
+        }
+
+    }
+
+    public void filter_by_date_range(ItemsLvAdapter lv, String start, String end) {
+
+        if (!(start.matches("") || end.matches(""))){
+            Date startDate = Helpers.getDateFromString(start);
+            Date endDate = Helpers.getDateFromString(end);
+
+
+            // Create a new list to store the filtered items
+            ArrayList<Item> filteredList = new ArrayList<>();
+
+            // Iterate through the original list of items
+            for (Item item : itemsList) {
+                Date purchaseDate = item.getPurchaseDate();
+
+                // Check if the purchase date of the item is within the specified range
+                if (purchaseDate != null && (purchaseDate.after(startDate) || purchaseDate.equals(startDate))
+                        && (purchaseDate.before(endDate) || purchaseDate.equals(endDate))) {
+                    // Add the item to the filtered list
+                    filteredList.add(item);
+                }
+            }
+
+            // Clear the existing items in the adapter
+            lv.clear();
+
+            // Add the filtered items to the adapter
+            lv.addAll(filteredList);
+
+            // Update the total value based on the filtered list
+            float total = calculateTotalValue(filteredList);
+            totalValueTv.setText(Helpers.floatToPriceString(total));
+
+            // Notify the adapter that the data has changed
+            lv.notifyDataSetChanged();
+        }
+
+    }
+
+
 
     public void filterByDate(){
 
