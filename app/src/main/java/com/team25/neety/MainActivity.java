@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 popUp.showAtLocation(v, Gravity.BOTTOM,0,500);// location of pop ip
 //                popUp.showAsDropDown(findViewById(R.id.filter_button)
                 // This code is for clicking apply button
-                Button applyButton=mView.findViewById(R.id.save_button2);
+                Button applyButton=mView.findViewById(R.id.filter_confirm_button);
                 applyButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
