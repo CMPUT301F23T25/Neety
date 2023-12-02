@@ -1,20 +1,33 @@
 package com.team25.neety;
 
+
+import static com.team25.neety.Constants.REQUEST_CAMERA_PERMISSION_CODE;
+import static java.security.AccessController.getContext;
+
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
+import android.Manifest;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,19 +39,21 @@ import com.google.mlkit.vision.barcode.BarcodeScanner;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.common.InputImage;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
 public class EditItemActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
-    private CollectionReference itemsRef;
+    private CollectionReference itemsRef, usersRef;
 
     private UUID itemId;
     private EditText editMake, editModel, editValue, editDescription, editSerial, editComments, editDate;
     private Button saveButton;
+    private ImageButton calendar_button;
     private ImageButton cameraButton;
-
+    private String username;
     private ActivityResultLauncher<Intent> cameraResultLauncher;
 
     @Override
@@ -48,6 +63,8 @@ public class EditItemActivity extends AppCompatActivity {
 
         assert getSupportActionBar() != null;   // null check
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);   // show back button
+        getSupportActionBar().setTitle("Edit");
+        getSupportActionBar().setBackgroundDrawable(getDrawable(R.color.space_cadet));
 
         // Initialize EditText fields
         editMake = findViewById(R.id.edit_make);
@@ -57,6 +74,7 @@ public class EditItemActivity extends AppCompatActivity {
         editSerial = findViewById(R.id.edit_serial);
         editComments = findViewById(R.id.edit_comments);
         editDate = findViewById(R.id.edit_date);
+        calendar_button = findViewById(R.id.calendar_button);
 
         saveButton = findViewById(R.id.save_button);
         saveButton.setEnabled(false);
@@ -85,8 +103,12 @@ public class EditItemActivity extends AppCompatActivity {
             }
         });
 
+        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        username = sharedPreferences.getString("username", "");
+
         db = FirebaseFirestore.getInstance();
-        itemsRef = db.collection("items");
+        usersRef = db.collection("users");
+        itemsRef = usersRef.document(username).collection("items");
 
         itemId = getIntent().getSerializableExtra(Constants.INTENT_ITEM_ID_KEY, UUID.class);
 
@@ -108,6 +130,34 @@ public class EditItemActivity extends AppCompatActivity {
             }
         });
 
+
+        //Handle calendar button for getting date
+        calendar_button.setOnClickListener(view1 -> {
+            final Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    this, // or getActivity() if you're in a Fragment
+                    (datePicker, i, i1, i2) -> {
+                        String month_of_year;
+                        String day_of_month;
+
+                        if (i1 + 1 < 10) {
+                            month_of_year = "0" + (i1 + 1);
+                        } else month_of_year = String.valueOf(i1 + 1);
+
+                        if (i2 < 10) {
+                            day_of_month = "0" + i2;
+                        } else day_of_month = String.valueOf(i2);
+
+                        String date_inp = i + "-" + month_of_year + "-" + day_of_month;
+                        editDate.setText(date_inp);
+                    },
+                    year, month, day);
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+            datePickerDialog.show();
+        });
     }
 
     private void populateFields(Item item) {
@@ -131,8 +181,11 @@ public class EditItemActivity extends AppCompatActivity {
         saveButton.setEnabled(true);
         cameraButton.setEnabled(true);
         cameraButton.setOnClickListener(v -> {
-            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            cameraResultLauncher.launch(cameraIntent);
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION_CODE);
+            } else {
+                startCamera();
+            }
         });
     }
 
@@ -165,5 +218,22 @@ public class EditItemActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startCamera();
+            } else {
+                Toast.makeText(this, "Camera Permission is Required to Use Camera.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void startCamera() {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraResultLauncher.launch(cameraIntent);
     }
 }

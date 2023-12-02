@@ -1,13 +1,18 @@
 package com.team25.neety;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+
+import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
@@ -29,6 +34,7 @@ public class AddItem extends DialogFragment{
     private EditText purchaseDate;
     private EditText serialNumber;
     private EditText comments;
+    private ImageButton calendar_button;
 
     private OnFragmentInteractionListener listener;
 
@@ -99,9 +105,38 @@ public class AddItem extends DialogFragment{
         purchaseDate = view.findViewById(R.id.purchase_date_edittext);
         serialNumber = view.findViewById(R.id.serial_number_edittext);
         comments = view.findViewById(R.id.comments_edittext);
+        calendar_button = view.findViewById(R.id.calendar_button);
+
+        //Handle calendar button for getting date
+        calendar_button.setOnClickListener(view1 -> {
+            final Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    getContext(),
+                    (datePicker, i, i1, i2) -> {
+                        String month_of_year;
+                        String day_of_month;
+
+                        if (i1 + 1 < 10) {
+                            month_of_year = "0" + (i1 + 1);
+                        } else month_of_year = String.valueOf(i1 + 1);
+
+                        if (i2 < 10) {
+                            day_of_month = "0" + i2;
+                        } else day_of_month = String.valueOf(i2);
+
+                        String date_inp = i + "-" + month_of_year + "-" + day_of_month;
+                        purchaseDate.setText(date_inp);
+                    },
+                    year, month, day);
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+            datePickerDialog.show();
+        });
 
         //Init Builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogCustom);
 
         //Load arguments, if its empty, then its add, if it passes in expense it wants to edit
         Bundle args = getArguments();

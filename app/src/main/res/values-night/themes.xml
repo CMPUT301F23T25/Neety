@@ -2,15 +2,24 @@
     <!-- Base application theme. -->
     <style name="Theme.Neety" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/isabelline</item>
+        <item name="colorPrimaryVariant">@color/black</item>
+        <item name="colorOnPrimary">@color/space_cadet</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/pale_dogwood</item>
+        <item name="colorSecondaryVariant">@color/rose_quartz</item>
+        <item name="colorOnSecondary">@color/ultra_violet</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Default text color. -->
+        <item name="android:textColor">@color/isabelline</item>
         <!-- Customize your theme here. -->
+
+        <!-- Background color. -->
+        <item name="backgroundColor">@color/less_black</item>
+        <item name="colorOutline">@color/pale_dogwood</item>
+        <item name="colorPrimaryContainer">@color/rich_black</item>
+        <item name="colorSecondaryContainer">@color/ultra_violet</item>
+        <item name="colorOnSecondaryContainer">@color/isabelline</item>
     </style>
 </resources>

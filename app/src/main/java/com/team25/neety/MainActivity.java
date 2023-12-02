@@ -4,9 +4,16 @@ import static com.google.common.base.Throwables.getRootCause;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import android.text.Html;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
 
 import android.util.Log;
@@ -14,16 +21,24 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
@@ -45,15 +60,16 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
     private ActivityMainBinding binding;
     private FirebaseFirestore db;
-    private CollectionReference itemsRef;
+    private CollectionReference usersRef, itemsRef;
 
     private ListView lv;
     private ArrayList<Item> itemsList;
     private ItemsLvAdapter adapter;
 
-    private Button filterButton, addButton, del_button;
+    private ImageButton filterButton, addButton, del_button, real_filterButton, barcodeButton;
     private TextView totalValueTv;
     private Boolean is_deleting = Boolean.FALSE;
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +77,29 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        username = sharedPreferences.getString("username", "");
+
+        getSupportActionBar().setBackgroundDrawable(getDrawable(R.color.space_cadet));
+        TextView tv = new TextView(getApplicationContext());
+        ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
+                ActionBar.LayoutParams.WRAP_CONTENT, // Width of TextView
+                ActionBar.LayoutParams.WRAP_CONTENT); // Height of TextView
+        tv.setLayoutParams(lp);
+        tv.setText("  Neety.");
+        tv.setTextColor(ResourcesCompat.getColor(getResources(), R.color.pale_dogwood, null));
+        tv.setTextSize(26);
+
+        // Set the Typeface
+        Typeface tf = ResourcesCompat.getFont(this, R.font.pacifico);
+        tv.setTypeface(tf);
+
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(tv);
+
         db = FirebaseFirestore.getInstance();
-        itemsRef = db.collection("items");
+        usersRef = db.collection("users");
+        itemsRef = usersRef.document(username).collection("items");
         itemsList = new ArrayList<>();
 
         adapter = new ItemsLvAdapter(this, itemsList);
@@ -70,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         totalValueTv = findViewById(R.id.total_value_textview);
 
         //      For sorting item by specification and updating the screen according to it
+        // This filter is actually sort button
         filterButton = findViewById(R.id.filter_button);
         filterButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             startActivity(intent);
         });
 
+        // Handle Add Button
         addButton = findViewById(R.id.button_additem);
 
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -114,13 +153,29 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             }
         });
 
+        // Handle Filter Button aka Real Filter Button
+        real_filterButton = findViewById(R.id.real_filter_button);
+        real_filterButton.setOnClickListener(v -> {
+            // TODO: Implement real filter button here
+        });
+
+        // Handle Barcode button
+        barcodeButton = findViewById(R.id.button_barcode);
+        barcodeButton.setOnClickListener(v -> {
+            // TODO: Implement item lookup by barcode here
+        });
 
 
+        // Handle Delete Button
         del_button = findViewById(R.id.button_deleteitem);
 
         del_button.setOnClickListener(v -> {
             if (!is_deleting) {
-                del_button.setText("Done");
+                del_button.setImageDrawable(getDrawable(R.drawable.check_icon));
+                addButton.setVisibility(View.INVISIBLE);
+                real_filterButton.setVisibility(View.INVISIBLE);
+                filterButton.setVisibility(View.INVISIBLE);
+                barcodeButton.setVisibility(View.INVISIBLE);
                 is_deleting = Boolean.TRUE;
             } else {
                 // Count how many items are selected
@@ -148,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                     Item item = iterator.next();
                                     if (item.isSelected()) {
                                         iterator.remove();
+                                        item.deleteImagesFromStorage(username);
                                         itemsRef.document(item.getIdString()).delete();
                                     }
 
@@ -158,7 +214,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 }
-                del_button.setText("Delete");
+                del_button.setImageDrawable(getDrawable(R.drawable.trash));
+                addButton.setVisibility(View.VISIBLE);
+                real_filterButton.setVisibility(View.VISIBLE);
+                filterButton.setVisibility(View.VISIBLE);
+                barcodeButton.setVisibility(View.VISIBLE);
                 is_deleting = Boolean.FALSE;
             }
 
@@ -305,5 +365,44 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_button) {
+            itemsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        int itemCount = task.getResult().size();
+                        new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogCustom)
+                                .setTitle("User Profile")
+                                .setIcon(R.drawable.profile_ic)
+                                .setMessage(Html.fromHtml("You are logging in as " + "<b>" + username + "</b>" + ".<br>"
+                                        +"Your total number of items is " + itemCount + ".", Html.FROM_HTML_MODE_LEGACY))
+                                .setPositiveButton("Back", null)
+                                .setNegativeButton("Log Out", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Finish the activity
+                                        MainActivity.this.finish();
+                                    }
+                                })
+                                .show();
+                    } else {
+                        Log.d("Firestore", "Error getting documents: ", task.getException());
+                    }
+                }
+            });
+
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
 

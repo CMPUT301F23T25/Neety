@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AlertDialogCustom" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/isabelline</item> <!-- Button color -->
+        <item name="android:textColorPrimary">@color/isabelline</item> <!-- Title and message color -->
+        <item name="colorOnPrimary">@color/isabelline</item>
+        <item name="android:background">@color/ultra_violet</item> <!-- Background color -->
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+    </style>
+</resources>
