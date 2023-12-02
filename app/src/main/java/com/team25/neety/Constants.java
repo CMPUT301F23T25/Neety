@@ -1,5 +1,7 @@
 package com.team25.neety;
 
+import java.util.Locale;
+
 public final class Constants {
     public static final int NO_SERIAL = -1;
 
@@ -13,6 +15,8 @@ public final class Constants {
     public static final int REQUEST_IMAGE_CAPTURE = 10;
 
     public static final int REQUEST_CAMERA_PERMISSION_CODE = 1010;
+
+    public static final Locale locale = Locale.US;
 
     // Private constructor because you should never instantiate this class
     private Constants() {}
