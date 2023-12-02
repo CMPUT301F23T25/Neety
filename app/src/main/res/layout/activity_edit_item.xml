@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -46,21 +48,10 @@
         android:minHeight="48dp" />
 
     <EditText
-        android:id="@+id/edit_serial"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/edit_description"
-        android:layout_marginTop="8dp"
-        android:editable="true"
-        android:hint="Serial"
-        android:inputType="text"
-        android:minHeight="48dp" />
-
-    <EditText
         android:id="@+id/edit_comments"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/edit_serial"
+        android:layout_below="@+id/serial_layout"
         android:layout_marginTop="8dp"
         android:hint="Comments"
         android:inputType="text"
@@ -83,4 +74,36 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:text="Save" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/serial_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edit_description"
+        android:layout_marginTop="8dp">
+
+        <EditText
+            android:id="@+id/edit_serial"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:editable="true"
+            android:hint="Serial"
+            android:inputType="text"
+            android:minHeight="48dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/camera_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/camera_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/camera_text"
+            android:src="@android:drawable/ic_menu_camera"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </RelativeLayout>
