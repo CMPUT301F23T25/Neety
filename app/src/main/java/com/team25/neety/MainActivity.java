@@ -5,7 +5,6 @@ import static com.google.common.base.Throwables.getRootCause;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -28,8 +27,6 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -112,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         filterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final View mView = LayoutInflater.from(MainActivity.this).inflate(R.layout.filter_layout, null, false);
+                final View mView = LayoutInflater.from(MainActivity.this).inflate(R.layout.sorting_layout, null, false);
                 final PopupWindow popUp = new PopupWindow(mView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, false);
                 popUp.setTouchable(true);
                 popUp.setFocusable(true);
