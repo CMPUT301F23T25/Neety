@@ -154,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         real_filterButton = findViewById(R.id.real_filter_button);
         real_filterButton.setOnClickListener(v -> {
             // TODO: Implement real filter button here
+//            HELLO MAN
         });
 
         // Handle Barcode button
