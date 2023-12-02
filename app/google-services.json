@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "293708481733",
-    "project_id": "neety-9c07c",
-    "storage_bucket": "neety-9c07c.appspot.com"
+    "project_number": "708622187336",
+    "project_id": "neety-be2a5",
+    "storage_bucket": "neety-be2a5.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:293708481733:android:6722c208ed40e978519cac",
+        "mobilesdk_app_id": "1:708622187336:android:ac681eeb0ac87122a0517d",
         "android_client_info": {
           "package_name": "com.team25.neety"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "708622187336-h5500e4k64ie4knkj3voeprh452m3mpa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAO1N1u_MEl5YuE05Nl0S7tJ5K0IRnm7yg"
+          "current_key": "AIzaSyBuGu7U_cv121pkRxo7Gqph0U7CD66MJ4g"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "708622187336-h5500e4k64ie4knkj3voeprh452m3mpa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
