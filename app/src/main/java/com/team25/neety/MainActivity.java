@@ -54,6 +54,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -69,7 +70,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private ArrayList<Item> originalItemsList;
     private ItemsLvAdapter adapter;
 
-
+    private List<Tag> tagList;
+    private TagAdapter tagAdapter;
 
     private ImageButton sortButton, addButton, del_button, filterButton, barcodeButton, selectButton;
     private TextView totalValueTv;
@@ -115,10 +117,14 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
         totalValueTv = findViewById(R.id.total_value_textview);
 
+        tagList  = new ArrayList<Tag>(); // Replace this with your method to fetch tags
+        tagAdapter = new TagAdapter(MainActivity.this, tagList);
+
+
+
         //      For sorting item by specification and updating the screen according to it
         // This filter is actually sort button
         sortButton = findViewById(R.id.filter_button);
-        System.out.println(itemsList);
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -283,9 +289,12 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 is_selecting = Boolean.TRUE;
             } else {
                 // Count how many items are selected
+                ArrayList<Item> selectedItems = new ArrayList<Item>();
                 int selectedCount = 0;
                 for (Item item : itemsList) {
                     if (item.isSelected()) {
+                        System.out.println(1);
+                        selectedItems.add(item);
                         selectedCount++;
                     }
                 }
@@ -301,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                 dialog.cancel();
                             }))
                             .setPositiveButton("Yes", ((dialog, which) -> {
-                                showTagDialog();
+                                showTagDialog(selectedItems);
                                 adapter.notifyDataSetChanged();
                             }));
                     adapter.resetCheckboxes();
@@ -435,7 +444,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
     }
 
-    private void showTagDialog() {
+    private void showTagDialog(ArrayList<Item> selectedItems) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         View customView = getLayoutInflater().inflate(R.layout.dialog_select_tags, null);
         builder.setView(customView);
@@ -443,7 +452,17 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         // Set up your custom view components here
         ListView listViewTags = customView.findViewById(R.id.listview_tags);
         // Set up the adapter and data for the ListView, handle button clicks, etc.
+        listViewTags.setAdapter(tagAdapter);
 
+        listViewTags.setOnItemClickListener((parent, view, position, id) -> {
+            // Handle item click
+            Tag clickedTag = tagAdapter.getItem(position);
+            if (clickedTag != null) {
+                clickedTag.setSelected(!clickedTag.isSelected());
+                tagAdapter.notifyDataSetChanged();
+                System.out.println(clickedTag.getItemsList());
+            }
+        });
 
         Button createTagBtn = customView.findViewById(R.id.btn_create_tag);
         // create the tag by specifying to user
@@ -454,9 +473,40 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             }
         });
 
+        final AlertDialog customDialog = builder.create();
 
-        // Create and show the second dialog
-        AlertDialog customDialog = builder.create();
+
+        Button confirmTagBtn = customView.findViewById(R.id.btn_confirm_tag);
+        confirmTagBtn.setOnClickListener(v -> {
+            // Create a list to store the selected tags
+            List<Tag> selectedTags = new ArrayList<>();
+
+            // Iterate through the tags and find the selected ones
+            for (Tag tag : tagList) {
+                if (tag.isSelected()) {
+                    selectedTags.add(tag);
+                }
+            }
+
+            // Iterate through the selected items and add them to the selected tags
+            for (Item item : selectedItems) {
+                for (Tag tag : selectedTags) {
+                    tag.addItem(item);
+                }
+            }
+
+            // Clear the selection
+            for (Tag tag : selectedTags) {
+                tag.setSelected(false);
+            }
+
+            // Update the adapter and notify data changes
+            tagAdapter.notifyDataSetChanged();
+
+
+            customDialog.dismiss();
+        });
+
         customDialog.show();
     }
 
@@ -470,7 +520,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         builder.setPositiveButton("Create", (dialog, which) -> {
             String tagName = tagNameEditText.getText().toString();
             Tag newTag = new Tag(tagName);
-
+            tagList.add(newTag);
+            tagAdapter.notifyDataSetChanged();
             dialog.dismiss();
         });
 
@@ -599,8 +650,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         // Clear the existing items in the adapter
         lv.clear();
 
-
-        System.out.println(originalItemsList);
         // Add the original items to the adapter
         lv.addAll(originalItemsList);
 
@@ -677,15 +726,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             // Notify the adapter that the data has changed
             lv.notifyDataSetChanged();
         }
-
-    }
-
-
-
-    public void filterByDate(){
-
-    }
-    public void filterByDescription(){
 
     }
 

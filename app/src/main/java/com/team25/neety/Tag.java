@@ -8,6 +8,8 @@ public class Tag {
 
     private String name;
 
+    private boolean isSelected;
+
 
     public Tag(String name, ArrayList<Item> items) {
         itemsList.addAll(items);
@@ -21,6 +23,14 @@ public class Tag {
 
     public void addItem(Item item){
         itemsList.add(item);
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 
     public ArrayList<Item> getItemsList() {
