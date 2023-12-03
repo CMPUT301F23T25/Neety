@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,6 +44,8 @@ public class Item implements Serializable {
     private boolean isSelected;
     private List<String> imageUrls;
 
+    private List<String> tags;
+
     public Item(UUID id, Date purchaseDate, String make, String model, String description, String serial, float estimatedValue, String comments) {
         this.id = id;
         this.purchaseDate = purchaseDate;
@@ -54,8 +57,24 @@ public class Item implements Serializable {
         this.serial = serial;
     }
 
+    public Item(UUID id, Date purchaseDate, String make, String model, String description, String serial, float estimatedValue, String comments, List<String> tags) {
+        this.id = id;
+        this.purchaseDate = purchaseDate;
+        this.make = make;
+        this.model = model;
+        this.description = description;
+        this.estimatedValue = estimatedValue;
+        this.comments = comments;
+        this.serial = serial;
+        this.tags = tags;
+    }
+
     public Item(String make, String model, float estimatedValue) {
-        this(UUID.randomUUID(), new Date(), make, model, null, null, estimatedValue, null);
+        this(UUID.randomUUID(), new Date(), make, model, null, null, estimatedValue, null, null);
+    }
+
+    public void addTag(Tag tag){
+        tags.add(tag.getName());
     }
 
 
