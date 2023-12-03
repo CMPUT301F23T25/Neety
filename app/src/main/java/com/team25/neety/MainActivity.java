@@ -72,9 +72,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
 
 
-    private ImageButton sortButton, addButton, del_button, filterButton, barcodeButton;
+    private ImageButton sortButton, addButton, del_button, filterButton, barcodeButton, selectButton;
     private TextView totalValueTv;
     private Boolean is_deleting = Boolean.FALSE;
+    private Boolean is_selecting = Boolean.FALSE;
+
     private String username;
 
 
@@ -270,6 +272,57 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         });
 
 
+        selectButton = findViewById(R.id.button_selectitems);
+        selectButton.setOnClickListener(v -> {
+            if (!is_selecting) {
+                selectButton.setImageDrawable(getDrawable(R.drawable.check_icon));
+                addButton.setVisibility(View.INVISIBLE);
+                filterButton.setVisibility(View.INVISIBLE);
+                sortButton.setVisibility(View.INVISIBLE);
+                barcodeButton.setVisibility(View.INVISIBLE);
+                del_button.setVisibility(View.INVISIBLE);
+                is_selecting = Boolean.TRUE;
+            } else {
+                // Count how many items are selected
+                int selectedCount = 0;
+                for (Item item : itemsList) {
+                    if (item.isSelected()) {
+                        selectedCount++;
+                    }
+                }
+
+                // If any items are selected, show the AlertDialog
+                if (selectedCount > 0) {
+                    String Msg = String.format("Do you want to select these %d item(s)?", selectedCount);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder
+                            .setMessage(Msg)
+                            .setTitle("Selecting items")
+                            .setNegativeButton("No", ((dialog, which) -> {
+                                dialog.cancel();
+                            }))
+                            .setPositiveButton("Yes", ((dialog, which) -> {
+                                showCustomDialog();
+                                adapter.notifyDataSetChanged();
+                            }));
+                    adapter.resetCheckboxes();
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                }
+                selectButton.setImageDrawable(getDrawable(R.drawable.plus_ic));
+                addButton.setVisibility(View.VISIBLE);
+                filterButton.setVisibility(View.VISIBLE);
+                sortButton.setVisibility(View.VISIBLE);
+                barcodeButton.setVisibility(View.VISIBLE);
+                del_button.setVisibility(View.VISIBLE);
+                is_selecting = Boolean.FALSE;
+            }
+
+            // Update the flag in the adapter and notify it that the data has changed
+            adapter.setSelecting(is_selecting);
+            adapter.notifyDataSetChanged();
+        });
+
         // Handle Delete Button
         del_button = findViewById(R.id.button_deleteitem);
 
@@ -280,6 +333,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 filterButton.setVisibility(View.INVISIBLE);
                 sortButton.setVisibility(View.INVISIBLE);
                 barcodeButton.setVisibility(View.INVISIBLE);
+                selectButton.setVisibility(View.INVISIBLE);
                 is_deleting = Boolean.TRUE;
             } else {
                 // Count how many items are selected
@@ -312,9 +366,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                     }
 
                                 }
+
                                 // Notify the adapter that the data has changed
                                 adapter.notifyDataSetChanged();
                             }));
+                    adapter.resetCheckboxes();
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 }
@@ -323,6 +379,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 filterButton.setVisibility(View.VISIBLE);
                 sortButton.setVisibility(View.VISIBLE);
                 barcodeButton.setVisibility(View.VISIBLE);
+                selectButton.setVisibility(View.VISIBLE);
                 is_deleting = Boolean.FALSE;
             }
 
@@ -330,7 +387,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             adapter.setDeleting(is_deleting);
             adapter.notifyDataSetChanged();
         });
-
         itemsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot querySnapshots, @Nullable FirebaseFirestoreException error) {
@@ -378,6 +434,20 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         });
 
 
+    }
+
+    private void showCustomDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        View customView = getLayoutInflater().inflate(R.layout.dialog_select_tags, null);
+        builder.setView(customView);
+
+        // Set up your custom view components here
+        ListView listViewTags = customView.findViewById(R.id.listview_tags);
+        // Set up the adapter and data for the ListView, handle button clicks, etc.
+
+        // Create and show the second dialog
+        AlertDialog customDialog = builder.create();
+        customDialog.show();
     }
 
     public void sort_by_make(View view,ItemsLvAdapter lv){

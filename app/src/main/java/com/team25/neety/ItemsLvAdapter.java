@@ -15,6 +15,7 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
     private final Activity context;
     private final ArrayList<Item> itemList;
     private boolean isDeleting;
+    private boolean isSelecting;
 
     public ItemsLvAdapter(Activity context, ArrayList<Item> list) {
         super(context, R.layout.listitem, list);
@@ -47,6 +48,10 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
             checkBox.setVisibility(View.VISIBLE);
             estimatedText.setVisibility(View.INVISIBLE);
             checkBox.setChecked(itemList.get(position).isSelected());
+        } else if (isSelecting){
+            checkBox.setVisibility(View.VISIBLE);
+            estimatedText.setVisibility(View.INVISIBLE);
+            checkBox.setChecked(itemList.get(position).isSelected());
         } else {
             checkBox.setVisibility(View.GONE);
             estimatedText.setVisibility(View.VISIBLE);
@@ -56,6 +61,15 @@ public class ItemsLvAdapter extends ArrayAdapter<Item> {
     };
     public void setDeleting(boolean isDeleting) {
         this.isDeleting = isDeleting;
+    }
+    public void setSelecting(boolean isSelecting) {
+        this.isSelecting = isSelecting;
+    }
+    public void resetCheckboxes(){
+        for (Item item : itemList){
+            item.setSelected(false);
+        }
+        notifyDataSetChanged();
     }
 
 }
