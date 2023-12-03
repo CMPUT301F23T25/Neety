@@ -2,6 +2,7 @@ package com.team25.neety;
 
 import static com.google.common.base.Throwables.getRootCause;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -48,6 +49,7 @@ import com.google.rpc.Help;
 import com.team25.neety.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -200,6 +202,64 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     }
                 });
                 popUp.showAsDropDown(findViewById(R.id.real_filter_button));
+
+                ImageButton calendar_button1 = mView.findViewById(R.id.calendar_button);
+                calendar_button1.setOnClickListener(v1 -> {
+                    final Calendar calendar = Calendar.getInstance();
+                    int year = calendar.get(Calendar.YEAR);
+                    int month = calendar.get(Calendar.MONTH);
+                    int day = calendar.get(Calendar.DAY_OF_MONTH);
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(
+                            v1.getContext(),
+                            (datePicker, i, i1, i2) -> {
+                                String month_of_year;
+                                String day_of_month;
+
+                                if (i1 + 1 < 10) {
+                                    month_of_year = "0" + (i1 + 1);
+                                } else month_of_year = String.valueOf(i1 + 1);
+
+                                if (i2 < 10) {
+                                    day_of_month = "0" + i2;
+                                } else day_of_month = String.valueOf(i2);
+
+                                String date_inp = i + "-" + month_of_year + "-" + day_of_month;
+                                EditText start = mView.findViewById(R.id.edit_date);
+                                start.setText(date_inp);
+                            },
+                            year, month, day);
+                    datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+                    datePickerDialog.show();
+                });
+
+                ImageButton calendar_button2 = mView.findViewById(R.id.calendar_button2);
+                calendar_button2.setOnClickListener(v2 -> {
+                    final Calendar calendar = Calendar.getInstance();
+                    int year = calendar.get(Calendar.YEAR);
+                    int month = calendar.get(Calendar.MONTH);
+                    int day = calendar.get(Calendar.DAY_OF_MONTH);
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(
+                            v2.getContext(),
+                            (datePicker, i, i1, i2) -> {
+                                String month_of_year;
+                                String day_of_month;
+
+                                if (i1 + 1 < 10) {
+                                    month_of_year = "0" + (i1 + 1);
+                                } else month_of_year = String.valueOf(i1 + 1);
+
+                                if (i2 < 10) {
+                                    day_of_month = "0" + i2;
+                                } else day_of_month = String.valueOf(i2);
+
+                                String date_inp = i + "-" + month_of_year + "-" + day_of_month;
+                                EditText end = mView.findViewById(R.id.edit_date2);
+                                end.setText(date_inp);
+                            },
+                            year, month, day);
+                    datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+                    datePickerDialog.show();
+                });
             }
         });
 
