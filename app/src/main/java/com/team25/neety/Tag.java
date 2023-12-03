@@ -9,10 +9,16 @@ public class Tag {
     private String name;
 
 
-    public Tag(String name, Item item) {
-        itemsList.add(item);
+    public Tag(String name, ArrayList<Item> items) {
+        itemsList.addAll(items);
         this.name = name;
     }
+
+    public Tag(String name){
+        this.itemsList = new ArrayList<Item>();
+        this.name = name;
+    }
+
     public void addItem(Item item){
         itemsList.add(item);
     }

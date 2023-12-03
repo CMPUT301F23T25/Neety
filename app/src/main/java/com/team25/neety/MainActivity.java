@@ -45,7 +45,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.rpc.Help;
 import com.team25.neety.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
@@ -302,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                 dialog.cancel();
                             }))
                             .setPositiveButton("Yes", ((dialog, which) -> {
-                                showCustomDialog();
+                                showTagDialog();
                                 adapter.notifyDataSetChanged();
                             }));
                     adapter.resetCheckboxes();
@@ -436,7 +435,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
     }
 
-    private void showCustomDialog() {
+    private void showTagDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         View customView = getLayoutInflater().inflate(R.layout.dialog_select_tags, null);
         builder.setView(customView);
@@ -445,10 +444,42 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         ListView listViewTags = customView.findViewById(R.id.listview_tags);
         // Set up the adapter and data for the ListView, handle button clicks, etc.
 
+
+        Button createTagBtn = customView.findViewById(R.id.btn_create_tag);
+        // create the tag by specifying to user
+        createTagBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCreateTagDialog();
+            }
+        });
+
+
         // Create and show the second dialog
         AlertDialog customDialog = builder.create();
         customDialog.show();
     }
+
+    private void showCreateTagDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        View createTagView = getLayoutInflater().inflate(R.layout.dialog_create_tag, null);
+        builder.setView(createTagView);
+
+        EditText tagNameEditText = createTagView.findViewById(R.id.editTextTagName);
+
+        builder.setPositiveButton("Create", (dialog, which) -> {
+            String tagName = tagNameEditText.getText().toString();
+            Tag newTag = new Tag(tagName);
+
+            dialog.dismiss();
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog createTagDialog = builder.create();
+        createTagDialog.show();
+    }
+
 
     public void sort_by_make(View view,ItemsLvAdapter lv){
         Chip sort_make_A_Z = view.findViewById(R.id.cg_make_ascending);
