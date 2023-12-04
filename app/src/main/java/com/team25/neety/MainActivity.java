@@ -2,10 +2,10 @@ package com.team25.neety;
 
 import static com.google.common.base.Throwables.getRootCause;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
@@ -28,8 +29,6 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -46,11 +45,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.rpc.Help;
 import com.team25.neety.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -64,12 +66,18 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
     private ListView lv;
     private ArrayList<Item> itemsList;
+
+    private ArrayList<Item> originalItemsList;
     private ItemsLvAdapter adapter;
 
-    private ImageButton filterButton, addButton, del_button, real_filterButton, barcodeButton;
+
+
+    private ImageButton sortButton, addButton, del_button, filterButton, barcodeButton;
     private TextView totalValueTv;
     private Boolean is_deleting = Boolean.FALSE;
     private String username;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,18 +109,19 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         usersRef = db.collection("users");
         itemsRef = usersRef.document(username).collection("items");
         itemsList = new ArrayList<>();
-
+        originalItemsList = new ArrayList<>();
         adapter = new ItemsLvAdapter(this, itemsList);
 
         totalValueTv = findViewById(R.id.total_value_textview);
 
         //      For sorting item by specification and updating the screen according to it
         // This filter is actually sort button
-        filterButton = findViewById(R.id.filter_button);
-        filterButton.setOnClickListener(new View.OnClickListener() {
+        sortButton = findViewById(R.id.filter_button);
+        System.out.println(itemsList);
+        sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final View mView = LayoutInflater.from(MainActivity.this).inflate(R.layout.filter_layout, null, false);
+                final View mView = LayoutInflater.from(MainActivity.this).inflate(R.layout.sorting_layout, null, false);
                 final PopupWindow popUp = new PopupWindow(mView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, false);
                 popUp.setTouchable(true);
                 popUp.setFocusable(true);
@@ -154,9 +163,104 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         });
 
         // Handle Filter Button aka Real Filter Button
-        real_filterButton = findViewById(R.id.real_filter_button);
-        real_filterButton.setOnClickListener(v -> {
-            // TODO: Implement real filter button here
+        filterButton = findViewById(R.id.real_filter_button);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final View mView = LayoutInflater.from(MainActivity.this).inflate(R.layout.filtering_layout, null, false);
+                final PopupWindow popUp = new PopupWindow(mView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, false);
+                popUp.setTouchable(true);
+                popUp.setFocusable(true);
+                popUp.setOutsideTouchable(true);
+                popUp.showAtLocation(v, Gravity.BOTTOM,0,500);// location of pop ip
+//                popUp.showAsDropDown(findViewById(R.id.filter_button)
+                // This code is for clicking apply button
+                Button applyButton=mView.findViewById(R.id.filter_confirm_button);
+                applyButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EditText selectMake = mView.findViewById(R.id.edit_make2);
+                        EditText selectDesc = mView.findViewById(R.id.edit_description);
+                        resetAdapter(adapter);
+                        EditText start = mView.findViewById(R.id.edit_date);
+                        EditText end = mView.findViewById(R.id.edit_date2);
+                        String startDate = start.getText().toString();
+                        String endDate = end.getText().toString();
+                        filter_by_date_range(adapter, startDate, endDate);
+                        filter_by_description(adapter, selectDesc.getText().toString());
+                        filter_by_make(adapter, selectMake.getText().toString());
+                        popUp.dismiss(); // Close the popup when the close button is clicked
+                    }
+                });
+
+                Button resetButton = mView.findViewById(R.id.filter_reset_button);
+                resetButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        resetAdapter(adapter);
+                        popUp.dismiss();
+                    }
+                });
+                popUp.showAsDropDown(findViewById(R.id.real_filter_button));
+
+                ImageButton calendar_button1 = mView.findViewById(R.id.calendar_button);
+                calendar_button1.setOnClickListener(v1 -> {
+                    final Calendar calendar = Calendar.getInstance();
+                    int year = calendar.get(Calendar.YEAR);
+                    int month = calendar.get(Calendar.MONTH);
+                    int day = calendar.get(Calendar.DAY_OF_MONTH);
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(
+                            v1.getContext(),
+                            (datePicker, i, i1, i2) -> {
+                                String month_of_year;
+                                String day_of_month;
+
+                                if (i1 + 1 < 10) {
+                                    month_of_year = "0" + (i1 + 1);
+                                } else month_of_year = String.valueOf(i1 + 1);
+
+                                if (i2 < 10) {
+                                    day_of_month = "0" + i2;
+                                } else day_of_month = String.valueOf(i2);
+
+                                String date_inp = i + "-" + month_of_year + "-" + day_of_month;
+                                EditText start = mView.findViewById(R.id.edit_date);
+                                start.setText(date_inp);
+                            },
+                            year, month, day);
+                    datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+                    datePickerDialog.show();
+                });
+
+                ImageButton calendar_button2 = mView.findViewById(R.id.calendar_button2);
+                calendar_button2.setOnClickListener(v2 -> {
+                    final Calendar calendar = Calendar.getInstance();
+                    int year = calendar.get(Calendar.YEAR);
+                    int month = calendar.get(Calendar.MONTH);
+                    int day = calendar.get(Calendar.DAY_OF_MONTH);
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(
+                            v2.getContext(),
+                            (datePicker, i, i1, i2) -> {
+                                String month_of_year;
+                                String day_of_month;
+
+                                if (i1 + 1 < 10) {
+                                    month_of_year = "0" + (i1 + 1);
+                                } else month_of_year = String.valueOf(i1 + 1);
+
+                                if (i2 < 10) {
+                                    day_of_month = "0" + i2;
+                                } else day_of_month = String.valueOf(i2);
+
+                                String date_inp = i + "-" + month_of_year + "-" + day_of_month;
+                                EditText end = mView.findViewById(R.id.edit_date2);
+                                end.setText(date_inp);
+                            },
+                            year, month, day);
+                    datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+                    datePickerDialog.show();
+                });
+            }
         });
 
         // Handle Barcode button
@@ -173,8 +277,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             if (!is_deleting) {
                 del_button.setImageDrawable(getDrawable(R.drawable.check_icon));
                 addButton.setVisibility(View.INVISIBLE);
-                real_filterButton.setVisibility(View.INVISIBLE);
                 filterButton.setVisibility(View.INVISIBLE);
+                sortButton.setVisibility(View.INVISIBLE);
                 barcodeButton.setVisibility(View.INVISIBLE);
                 is_deleting = Boolean.TRUE;
             } else {
@@ -216,8 +320,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 }
                 del_button.setImageDrawable(getDrawable(R.drawable.trash));
                 addButton.setVisibility(View.VISIBLE);
-                real_filterButton.setVisibility(View.VISIBLE);
                 filterButton.setVisibility(View.VISIBLE);
+                sortButton.setVisibility(View.VISIBLE);
                 barcodeButton.setVisibility(View.VISIBLE);
                 is_deleting = Boolean.FALSE;
             }
@@ -236,12 +340,14 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 }
                 if (querySnapshots != null){
                     itemsList.clear();
+                    originalItemsList.clear();
                     float total = 0;
                     for (QueryDocumentSnapshot doc: querySnapshots){
                         Log.d("D", doc.toString());
                         try {
                             Item i = Item.getItemFromDocument(doc);
                             itemsList.add(i);
+                            originalItemsList.add(i);
                             total += i.getEstimatedValue();
                         } catch (Exception e) {
                             Drawable dr = getResources().getDrawable(android.R.drawable.ic_dialog_info);
@@ -348,6 +454,138 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             // Notify the adapter that the dataset has changed
             lv.notifyDataSetChanged();
         }
+    }
+
+
+    public void filter_by_make(ItemsLvAdapter lv, String selectedMake) {
+
+        if (!selectedMake.matches("")){
+            // Create a new list to store the filtered items
+            ArrayList<Item> filteredList = new ArrayList<>();
+
+            // Iterate through the original list of items
+            for (Item item : itemsList) {
+                // Check if the make of the item matches the selected make
+                if (item.getMake().equalsIgnoreCase(selectedMake)) {
+                    // Add the item to the filtered list
+                    filteredList.add(item);
+                }
+            }
+
+            // Clear the existing items in the adapter
+            lv.clear();
+
+            // Add the filtered items to the adapter
+            lv.addAll(filteredList);
+
+            // Update the total value based on the filtered list
+            float total = calculateTotalValue(filteredList);
+            totalValueTv.setText(Helpers.floatToPriceString(total));
+
+            // Notify the adapter that the data has changed
+            lv.notifyDataSetChanged();
+        }
+    }
+
+    private float calculateTotalValue(ArrayList<Item> itemList) {
+        float total = 0;
+        for (Item item : itemList) {
+            total += item.getEstimatedValue();
+        }
+        return total;
+    }
+    public void resetAdapter(ItemsLvAdapter lv) {
+        // Clear the existing items in the adapter
+        lv.clear();
+
+
+        System.out.println(originalItemsList);
+        // Add the original items to the adapter
+        lv.addAll(originalItemsList);
+
+        // Update the total value based on the original items list
+        float total = calculateTotalValue(originalItemsList);
+        totalValueTv.setText(Helpers.floatToPriceString(total));
+
+        // Notify the adapter that the data has changed
+        lv.notifyDataSetChanged();
+    }
+
+    public void filter_by_description(ItemsLvAdapter lv, String keywords) {
+        // Create a new list to store the filtered items
+
+        if (!keywords.matches("")){
+            ArrayList<Item> filteredList = new ArrayList<>();
+
+            // Iterate through the original list of items
+            for (Item item : itemsList) {
+                // Check if the description of the item contains the specified keywords (case-insensitive)
+                if (item.getDescription()!= null && item.getDescription().toLowerCase().contains(keywords.toLowerCase()) && !keywords.matches("")) {
+                    filteredList.add(item);
+                }
+            }
+
+            // Clear the existing items in the adapter
+            lv.clear();
+
+            // Add the filtered items to the adapter
+            lv.addAll(filteredList);
+
+            // Update the total value based on the filtered list
+            float total = calculateTotalValue(filteredList);
+            totalValueTv.setText(Helpers.floatToPriceString(total));
+
+            // Notify the adapter that the data has changed
+            lv.notifyDataSetChanged();
+        }
+
+    }
+
+    public void filter_by_date_range(ItemsLvAdapter lv, String start, String end) {
+
+        if (!(start.matches("") || end.matches(""))){
+            Date startDate = Helpers.getDateFromString(start);
+            Date endDate = Helpers.getDateFromString(end);
+
+
+            // Create a new list to store the filtered items
+            ArrayList<Item> filteredList = new ArrayList<>();
+
+            // Iterate through the original list of items
+            for (Item item : itemsList) {
+                Date purchaseDate = item.getPurchaseDate();
+
+                // Check if the purchase date of the item is within the specified range
+                if (purchaseDate != null && (purchaseDate.after(startDate) || purchaseDate.equals(startDate))
+                        && (purchaseDate.before(endDate) || purchaseDate.equals(endDate))) {
+                    // Add the item to the filtered list
+                    filteredList.add(item);
+                }
+            }
+
+            // Clear the existing items in the adapter
+            lv.clear();
+
+            // Add the filtered items to the adapter
+            lv.addAll(filteredList);
+
+            // Update the total value based on the filtered list
+            float total = calculateTotalValue(filteredList);
+            totalValueTv.setText(Helpers.floatToPriceString(total));
+
+            // Notify the adapter that the data has changed
+            lv.notifyDataSetChanged();
+        }
+
+    }
+
+
+
+    public void filterByDate(){
+
+    }
+    public void filterByDescription(){
+
     }
 
     public void onOKPressed(Item item) {

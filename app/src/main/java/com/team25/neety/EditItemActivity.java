@@ -18,10 +18,14 @@ import androidx.core.content.ContextCompat;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -38,21 +42,24 @@ import com.google.mlkit.vision.barcode.BarcodeScanner;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.common.InputImage;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 public class EditItemActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
-    private CollectionReference itemsRef;
+    private CollectionReference itemsRef, usersRef;
 
     private UUID itemId;
     private EditText editMake, editModel, editValue, editDescription, editSerial, editComments, editDate;
     private Button saveButton;
     private ImageButton calendar_button;
     private ImageButton cameraButton;
-
+    private String username;
     private ActivityResultLauncher<Intent> cameraResultLauncher;
 
     @Override
@@ -102,8 +109,12 @@ public class EditItemActivity extends AppCompatActivity {
             }
         });
 
+        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        username = sharedPreferences.getString("username", "");
+
         db = FirebaseFirestore.getInstance();
-        itemsRef = db.collection("items");
+        usersRef = db.collection("users");
+        itemsRef = usersRef.document(username).collection("items");
 
         itemId = getIntent().getSerializableExtra(Constants.INTENT_ITEM_ID_KEY, UUID.class);
 
@@ -124,14 +135,58 @@ public class EditItemActivity extends AppCompatActivity {
                 }
             }
         });
+    }
 
+    private void populateFields(Item item) {
+        // Set existing item details in EditText fields
+        editMake.setText(item.getMake());
+        editMake.setEnabled(true);
+        editModel.setText(item.getModel());
+        editModel.setEnabled(true);
+        editValue.setText(String.valueOf(item.getEstimatedValue()));
+        editValue.setEnabled(true);
+        editDescription.setText(item.getDescription());
+        editDescription.setEnabled(true);
+        editSerial.setText(item.getSerial());
+        editSerial.setEnabled(true);
+        editComments.setText(item.getComments());
+        editComments.setEnabled(true);
+        editDate.setText(item.getPurchaseDateString());
+        editDate.setEnabled(true);
+
+        editDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // Perform click on calendar button
+                    calendar_button.performClick();
+                }
+            }
+        });
+
+        editDate.setFocusable(false);
+        editDate.setKeyListener(null);
+        editDate.setOnClickListener(v -> {
+            calendar_button.performClick();
+        });
 
         //Handle calendar button for getting date
         calendar_button.setOnClickListener(view1 -> {
             final Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            try {
+                Date date = sdf.parse(editDate.getText().toString());
+                if (date != null) {
+                    calendar.setTime(date);
+                }
+            } catch (ParseException e) {
+                // Invalid date format, use current date
+            }
+
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
+
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     this, // or getActivity() if you're in a Fragment
                     (datePicker, i, i1, i2) -> {
@@ -153,24 +208,6 @@ public class EditItemActivity extends AppCompatActivity {
             datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
             datePickerDialog.show();
         });
-    }
-
-    private void populateFields(Item item) {
-        // Set existing item details in EditText fields
-        editMake.setText(item.getMake());
-        editMake.setEnabled(true);
-        editModel.setText(item.getModel());
-        editModel.setEnabled(true);
-        editValue.setText(String.valueOf(item.getEstimatedValue()));
-        editValue.setEnabled(true);
-        editDescription.setText(item.getDescription());
-        editDescription.setEnabled(true);
-        editSerial.setText(item.getSerial());
-        editSerial.setEnabled(true);
-        editComments.setText(item.getComments());
-        editComments.setEnabled(true);
-        editDate.setText(item.getPurchaseDateString());
-        editDate.setEnabled(true);
 
         saveButton.setOnClickListener(v -> saveEditedItem());
         saveButton.setEnabled(true);
