@@ -27,11 +27,14 @@
         android:id="@+id/container"
         android:layout_width="407dp"
         android:layout_height="346dp"
+        android:layout_marginStart="1dp"
         android:layout_marginTop="44dp"
+        android:layout_marginEnd="3dp"
         android:orientation="horizontal"
         android:weightSum="3"
-        app:layout_constraintTop_toTopOf="@+id/textView3"
-        tools:layout_editor_absoluteX="1dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView3">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -130,14 +133,21 @@
                 android:layout_height="43dp"
                 android:orientation="horizontal">
 
-                <MultiAutoCompleteTextView
-                    android:id="@+id/multiAutoCompleteTextView"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="65dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Select Items" />
+                    android:layout_height="match_parent"
+                    tools:context=".MainActivity">
 
+                    <TextView
+                        android:id="@+id/textViewTag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:background="@android:drawable/editbox_background"
+                        android:drawableRight="@android:drawable/arrow_down_float"
+                        android:hint="Select Tags" />
+
+                </RelativeLayout>
             </LinearLayout>
 
             <Button

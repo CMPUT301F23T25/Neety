@@ -14,7 +14,6 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import android.util.Log;
@@ -27,7 +26,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import android.widget.ListView;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -50,14 +48,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.team25.neety.databinding.ActivityMainBinding;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -85,6 +82,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private Boolean is_selecting = Boolean.FALSE;
 
     private String username;
+
+    private TextView test;
+    private boolean[] selectedTags;
+    private ArrayList<Integer> intTagList = new ArrayList<>();
+
 
 
 
@@ -126,21 +128,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         tagList  = new ArrayList<Tag>(); // Replace this with your method to fetch tags
         tagAdapter = new TagAdapter(MainActivity.this, tagList);
 
-//        spinner_dropdown = findViewById(R.id.spinner_tag);
-//        List<String> tagNames = new ArrayList<>();
-//        for (Tag tag : tagList) {
-//            tagNames.add(tag.getName());
-//        }
-//
-//        ArrayAdapter<String> tag_adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, tagNames);
-//
-//        tag_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//
-//        spinner_dropdown.setAdapter(tag_adapter);
-
-
-
-
         //      For sorting item by specification and updating the screen according to it
         // This filter is actually sort button
         sortButton = findViewById(R.id.filter_button);
@@ -156,25 +143,107 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 //                popUp.showAsDropDown(findViewById(R.id.filter_button)
                 // This code is for clicking apply button
                 Button applyButton=mView.findViewById(R.id.btnApply);
+                test = mView.findViewById(R.id.textViewTag);
 
-                ArrayList<String> tagNames = new ArrayList<>();
-                    for (Tag tag : tagList) {
-                        tagNames.add(tag.getName());
+// Initialize selected tags array
+                selectedTags = new boolean[tagList.size()];
+
+                test.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        // Initialize alert dialog
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                        // set title
+                        builder.setTitle("Select Tags");
+
+                        // set dialog non cancelable
+                        builder.setCancelable(false);
+
+                        // Convert tagList to an array of tag names
+                        String[] tagArray = new String[tagList.size()];
+                        for (int i = 0; i < tagList.size(); i++) {
+                            tagArray[i] = tagList.get(i).getName();
+                        }
+
+                        // Initialize selected tags array with original state
+                        selectedTags = new boolean[tagList.size()];
+                        // Copy the original state to intTagList
+                        intTagList.clear();
+
+                        builder.setMultiChoiceItems(tagArray, selectedTags, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+                                // check condition
+                                if (b) {
+                                    // when checkbox selected
+                                    // Add position in tag list
+                                    intTagList.add(i);
+                                    // Sort array list
+                                    Collections.sort(intTagList);
+                                } else {
+                                    // when checkbox unselected
+                                    // Remove position from tagList
+                                    intTagList.remove(Integer.valueOf(i));
+                                }
+                            }
+                        });
+
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // Initialize string builder
+                                StringBuilder stringBuilder = new StringBuilder();
+                                // use for loop
+                                for (int j = 0; j < intTagList.size(); j++) {
+                                    // concat array value
+                                    stringBuilder.append(tagArray[intTagList.get(j)]);
+                                    // check condition
+                                    if (j != intTagList.size() - 1) {
+                                        // When j value not equal
+                                        // to tag list size - 1
+                                        // add comma
+                                        stringBuilder.append(", ");
+                                    }
+                                }
+                                // set text on textView
+                                test.setText(stringBuilder.toString());
+                            }
+                        });
+
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // dismiss dialog
+                                dialogInterface.dismiss();
+                            }
+                        });
+                        builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // Reset to the original state
+                                selectedTags = new boolean[tagList.size()];
+                                intTagList.clear();
+                                test.setText("");
+                            }
+                        });
+                        // show dialog
+                        builder.show();
                     }
+                });
 
-                // Create a custom adapter and set it to the MultiAutoCompleteTextView
-                MultiAutoAdapter multiAdapter = new MultiAutoAdapter(MainActivity.this, android.R.layout.simple_dropdown_item_1line, tagNames);
 
-                MultiAutoCompleteTextView multiAutoCompleteTextView = mView.findViewById(R.id.multiAutoCompleteTextView);
-                multiAutoCompleteTextView.setAdapter(multiAdapter);
-                multiAutoCompleteTextView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+
+
+
                 applyButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         sort_by_make(mView, adapter);// sorts by make if chosen
                         sort_by_date(mView, adapter);// sorts by date if chosen
                         sort_by_estimated_value(mView, adapter);// sorts by est. value if chosen
-                        sort_by_tag(mView, adapter);
+                        sort_by_tag(mView, adapter, intTagList);
                         popUp.dismiss(); // Close the popup when the close button is clicked
                     }
                 });
@@ -325,7 +394,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 int selectedCount = 0;
                 for (Item item : itemsList) {
                     if (item.isSelected()) {
-                        System.out.println(1);
                         selectedItems.add(item);
                         selectedCount++;
                     }
@@ -564,6 +632,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     }
 
 
+
     public void sort_by_make(View view,ItemsLvAdapter lv){
         Chip sort_make_A_Z = view.findViewById(R.id.cg_make_ascending);
         Chip sort_make_Z_A = view.findViewById(R.id.cg_make_descending);
@@ -640,6 +709,55 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
+    public void sort_by_tag(View view, ItemsLvAdapter lv,  List<Integer> selectedTagIndices){
+        List<Tag> selectedTags = new ArrayList<>();
+        for (Integer index : selectedTagIndices) {
+            selectedTags.add(tagList.get(index));
+        }
+
+        HashSet<Item> seenItems = new HashSet<>();
+        ArrayList<Item> filteredList = new ArrayList<>();
+
+        for (Tag tag : selectedTags) {
+            for (Item item : tag.getItemsList()) {
+                if (!seenItems.contains(item)) {
+                    // Add the item if it hasn't been seen yet
+                    filteredList.add(item);
+                    seenItems.add(item);
+                }
+            }
+        }
+
+        lv.clear();
+
+        lv.addAll(filteredList);
+
+        float total = calculateTotalValue(filteredList);
+        totalValueTv.setText(Helpers.floatToPriceString(total));
+
+        // Notify the adapter that the data has changed
+        lv.notifyDataSetChanged();
+    }
+
+
+    public void filter_by_tag(View view, ItemsLvAdapter lv, CharSequence selectedText){
+        ArrayList<String> selectedTags = new ArrayList<>();
+        for (int i = 0; i < selectedText.length(); i++) {
+            selectedTags.add(String.valueOf(selectedText.charAt(i)));
+        }
+
+        ArrayList<Item> filteredList = new ArrayList<>();
+//
+//        for (String tag: selectedTags){
+//            for (Item item : itemsList){
+//                if
+//            }
+//        }
+
+
+
+    }
+
 
     public void filter_by_make(ItemsLvAdapter lv, String selectedMake) {
 
@@ -679,9 +797,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         return total;
     }
 
-    public void sort_by_tag(View view, ItemsLvAdapter lv){
 
-    }
 
 
     public void resetAdapter(ItemsLvAdapter lv) {
