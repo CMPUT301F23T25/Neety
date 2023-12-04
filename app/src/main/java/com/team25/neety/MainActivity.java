@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private TagAdapter tagAdapter;
 
     private ImageButton sortButton, addButton, del_button, filterButton, barcodeButton, selectButton;
-    private Spinner spinner_dropdown;
     private TextView totalValueTv;
     private Boolean is_deleting = Boolean.FALSE;
     private Boolean is_selecting = Boolean.FALSE;
@@ -145,11 +144,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 //                popUp.showAsDropDown(findViewById(R.id.filter_button)
                 // This code is for clicking apply button
                 Button applyButton=mView.findViewById(R.id.btnApply);
-
-
-
-
-
 
                 applyButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -645,18 +639,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         AlertDialog createTagDialog = builder.create();
         createTagDialog.show();
     }
-
-//    public class TagSorter {
-//        public void sortTagListAlphabetically(List<Tag> tagList, boolean ascending) {
-//            Comparator<Tag> comparator = Comparator.comparing(Tag::getName, String.CASE_INSENSITIVE_ORDER);
-//
-//            if (!ascending) {
-//                comparator = comparator.reversed();
-//            }
-//
-//            // Sort tagList based on the comparator
-//            tagList.sort(comparator);
-//        }
     public void sort_by_tag(View view, ItemsLvAdapter lv) {
         Chip sort_tag_A_Z = view.findViewById(R.id.cg_tag_ascending);
         Chip sort_tag_Z_A = view.findViewById(R.id.cg_tag_descending);

@@ -17,6 +17,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.rpc.Help;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -76,6 +77,7 @@ public class Item implements Serializable {
     public void addTag(Tag tag){
         tags.add(tag.getName());
     }
+
 
     public List<String> getTags() {
         return tags;
@@ -275,6 +277,7 @@ public class Item implements Serializable {
         Date purchaseDate = Helpers.getDateFromString(doc.getString("PurchaseDate"));
         String serial = doc.getString("Serial");
         String comments = doc.getString("Comments");
+        String tags = doc.getString("Tags");
         Log.d("Firestore", String.format("Model(%s, %s) fetched",
                 model, make));
 
@@ -283,7 +286,7 @@ public class Item implements Serializable {
         Log.d("FIRESTORE", value);
 
 
-        return new Item(UUID.fromString(id), purchaseDate, make, model, description, serial, valueNumber, comments);
+        return new Item(UUID.fromString(id), purchaseDate, make, model, description, serial, valueNumber, comments, Helpers.convertStringToTags(tags));
     }
 
     public static HashMap<String, String> getFirestoreDataFromItem(Item item) {
@@ -295,6 +298,7 @@ public class Item implements Serializable {
         data.put("PurchaseDate", item.getPurchaseDateString());
         data.put("Serial", item.getSerial());
         data.put("Comments", item.getComments());
+        data.put("Tags", Helpers.getPrintableTags(item.getTags()));
 
         return data;
     }

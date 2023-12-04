@@ -52,7 +52,7 @@ public class ViewItemActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference usersRef, itemsRef;
     private UUID itemId;
-    private TextView tvMake, tvModel, tvEstimatedValue, tvDescription, tvPurchaseDate, tvSerial, tvComments;
+    private TextView tvMake, tvModel, tvEstimatedValue, tvDescription, tvPurchaseDate, tvSerial, tvComments, tvTags;
     private RecyclerView rvImages;
     private Button del_button, take_photo_button;
     private Button edit_button;
@@ -97,6 +97,7 @@ public class ViewItemActivity extends AppCompatActivity {
         tvSerial = findViewById(R.id.serial_textview);
         tvComments = findViewById(R.id.comments_textview);
         rvImages = findViewById(R.id.images_recyclerView);
+        tvTags = findViewById(R.id.tags_textview);
 
         SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         username = sharedPreferences.getString("username", "");
@@ -212,7 +213,13 @@ public class ViewItemActivity extends AppCompatActivity {
         tvPurchaseDate.setText(item.getPurchaseDateString());
         tvSerial.setText((item.getSerial() != null) ? item.getSerial() : "No serial");
         tvComments.setText((item.getComments() != null) ? item.getComments() : "No comments");
+        List<String> empty_array = new ArrayList<String>();
+        tvTags.setText(!(item.getTags().equals(empty_array)) ? Helpers.getPrintableTags(item.getTags()) : "No tags");
     }
+
+
+
+
     private void populateImages(List<String> imageUrls) {
         TextView noti = findViewById(R.id.no_images_textview);
         RecyclerView images = findViewById(R.id.images_recyclerView);
