@@ -6,6 +6,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
@@ -23,6 +25,7 @@ import androidx.fragment.app.DialogFragment;
 
 
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.UUID;
 
 public class AddItem extends DialogFragment{
@@ -120,14 +123,42 @@ public class AddItem extends DialogFragment{
             serialNumber.setText(barcode);
         }
 
+        purchaseDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // Perform click on calendar button
+                    calendar_button.performClick();
+                }
+            }
+        });
+
+        purchaseDate.setFocusable(false);
+        purchaseDate.setKeyListener(null);
+        purchaseDate.setOnClickListener(v -> {
+            calendar_button.performClick();
+        });
+
+
         //Handle calendar button for getting date
         calendar_button.setOnClickListener(view1 -> {
             final Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            try {
+                Date date = sdf.parse(purchaseDate.getText().toString());
+                if (date != null) {
+                    calendar.setTime(date);
+                }
+            } catch (ParseException e) {
+                // Invalid date format, use current date
+            }
+
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
+
             DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    getContext(),
+                    getActivity(), // or getActivity() if you're in a Fragment
                     (datePicker, i, i1, i2) -> {
                         String month_of_year;
                         String day_of_month;
