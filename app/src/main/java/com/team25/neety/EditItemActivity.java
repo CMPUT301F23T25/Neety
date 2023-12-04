@@ -118,23 +118,33 @@ public class EditItemActivity extends AppCompatActivity {
 
         itemId = getIntent().getSerializableExtra(Constants.INTENT_ITEM_ID_KEY, UUID.class);
 
-        itemsRef.document(itemId.toString()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        populateFields(Item.getItemFromDocument(document));
+        Intent intent = getIntent();
+        Item item = (Item) intent.getSerializableExtra(Constants.ITEM_MAIN_TO_EDIT, Item.class);
+
+        if (itemId != null) {
+            itemsRef.document(itemId.toString()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            populateFields(Item.getItemFromDocument(document));
+                        } else {
+                            Log.d("ViewItemActivity", "No such document");
+                            finish();
+                        }
                     } else {
-                        Log.d("ViewItemActivity", "No such document");
+                        Log.d("ViewItemActivity", "get failed with ", task.getException());
                         finish();
                     }
-                } else {
-                    Log.d("ViewItemActivity", "get failed with ", task.getException());
-                    finish();
                 }
-            }
-        });
+            });
+        }
+
+        if (item != null) {
+            populateFields(item);
+            itemId = item.getId();
+        }
     }
 
     private void populateFields(Item item) {
