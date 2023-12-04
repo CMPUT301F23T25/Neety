@@ -44,7 +44,7 @@ public class Item implements Serializable {
     private boolean isSelected;
     private List<String> imageUrls;
 
-    private List<String> tags;
+    private List<String> tags = new ArrayList<>();
 
     public Item(UUID id, Date purchaseDate, String make, String model, String description, String serial, float estimatedValue, String comments) {
         this.id = id;
@@ -77,6 +77,9 @@ public class Item implements Serializable {
         tags.add(tag.getName());
     }
 
+    public List<String> getTags() {
+        return tags;
+    }
 
     public Date getPurchaseDate() {
         return purchaseDate;

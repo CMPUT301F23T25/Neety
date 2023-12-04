@@ -134,6 +134,31 @@
                 android:orientation="horizontal">
 
 
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/cg_sort_tag"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    app:selectionRequired="false"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/cg_tag_ascending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checkable="true"
+                        android:text="A-Z"
+                        tools:checked="true" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/cg_tag_descending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checkable="true"
+                        android:text="Z-A"
+                        tools:checked="true" />
+
+                </com.google.android.material.chip.ChipGroup>
             </LinearLayout>
 
             <Button

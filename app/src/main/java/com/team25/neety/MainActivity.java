@@ -1,5 +1,6 @@
 package com.team25.neety;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
 import static com.google.common.base.Throwables.getRootCause;
 
 import android.app.DatePickerDialog;
@@ -29,6 +30,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -155,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                         sort_by_make(mView, adapter);// sorts by make if chosen
                         sort_by_date(mView, adapter);// sorts by date if chosen
                         sort_by_estimated_value(mView, adapter);// sorts by est. value if chosen
+                        sort_by_tag(mView, adapter);
+                        sort_by_tag(mView, adapter);
                         popUp.dismiss(); // Close the popup when the close button is clicked
                     }
                 });
@@ -593,6 +597,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             for (Item item : selectedItems) {
                 for (Tag tag : selectedTags) {
                     tag.addItem(item);
+                    item.addTag(tag);
                 }
             }
 
@@ -620,10 +625,19 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
         builder.setPositiveButton("Create", (dialog, which) -> {
             String tagName = tagNameEditText.getText().toString();
-            Tag newTag = new Tag(tagName);
-            tagList.add(newTag);
-            tagAdapter.notifyDataSetChanged();
-            dialog.dismiss();
+            List<String> tagNames = new ArrayList<>();
+            for (Tag tag : tagList){
+                tagNames.add(tag.getName());
+            }
+            if (!tagNames.contains(tagName)){
+                Tag newTag = new Tag(tagName);
+                tagList.add(newTag);
+                tagAdapter.notifyDataSetChanged();
+                dialog.dismiss();
+            }
+            else{
+                Toast.makeText(getApplicationContext(), "Cannot add duplicate tag!", Toast.LENGTH_SHORT).show();
+            }
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
@@ -632,6 +646,41 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         createTagDialog.show();
     }
 
+//    public class TagSorter {
+//        public void sortTagListAlphabetically(List<Tag> tagList, boolean ascending) {
+//            Comparator<Tag> comparator = Comparator.comparing(Tag::getName, String.CASE_INSENSITIVE_ORDER);
+//
+//            if (!ascending) {
+//                comparator = comparator.reversed();
+//            }
+//
+//            // Sort tagList based on the comparator
+//            tagList.sort(comparator);
+//        }
+    public void sort_by_tag(View view, ItemsLvAdapter lv) {
+        Chip sort_tag_A_Z = view.findViewById(R.id.cg_tag_ascending);
+        Chip sort_tag_Z_A = view.findViewById(R.id.cg_tag_descending);
+
+        // sort by ascending alphabet (A-Z)
+        if (sort_tag_A_Z.isChecked()) {
+            Collections.sort(itemsList, (item1, item2) -> {
+                String name1 = item1.getTags().isEmpty() ? "" : String.join(",", item1.getTags());
+                String name2 = item2.getTags().isEmpty() ? "" : String.join(",", item2.getTags());
+                return name1.compareToIgnoreCase(name2);
+            });
+            lv.notifyDataSetChanged();
+        }
+
+        // sort by descending alphabet (Z-A)
+        if (sort_tag_Z_A.isChecked()) {
+            Collections.sort(itemsList, (item1, item2) -> {
+                String name1 = item1.getTags().isEmpty() ? "" : String.join(",", item1.getTags());
+                String name2 = item2.getTags().isEmpty() ? "" : String.join(",", item2.getTags());
+                return name2.compareToIgnoreCase(name1);
+            });
+            lv.notifyDataSetChanged();
+        }
+    }
 
 
     public void sort_by_make(View view,ItemsLvAdapter lv){
@@ -740,24 +789,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         lv.notifyDataSetChanged();
     }
 
-
-    public void filter_by_tag(View view, ItemsLvAdapter lv, CharSequence selectedText){
-        ArrayList<String> selectedTags = new ArrayList<>();
-        for (int i = 0; i < selectedText.length(); i++) {
-            selectedTags.add(String.valueOf(selectedText.charAt(i)));
-        }
-
-        ArrayList<Item> filteredList = new ArrayList<>();
-//
-//        for (String tag: selectedTags){
-//            for (Item item : itemsList){
-//                if
-//            }
-//        }
-
-
-
-    }
 
 
     public void filter_by_make(ItemsLvAdapter lv, String selectedMake) {
@@ -932,8 +963,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     }
                 }
             });
-
-
             return true;
         }
         return super.onOptionsItemSelected(item);
