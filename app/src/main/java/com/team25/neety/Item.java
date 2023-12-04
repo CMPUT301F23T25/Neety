@@ -18,11 +18,21 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.Serializable;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import java.text.NumberFormat;
+import java.util.Date;
+import java.util.HashMap;
+
+import java.text.NumberFormat;
+import java.util.Date;
+import java.util.HashMap;
+
 import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
@@ -343,8 +353,12 @@ public class Item implements Serializable {
         Log.d("Firestore", String.format("Model(%s, %s) fetched",
                 model, make));
 
+        float valueNumber = Helpers.priceStringToFloat(value);
 
-        return new Item(UUID.fromString(id), purchaseDate, make, model, description, serial, Float.parseFloat(value), comments);
+        Log.d("FIRESTORE", value);
+
+
+        return new Item(UUID.fromString(id), purchaseDate, make, model, description, serial, valueNumber, comments);
     }
     /**
      * this makes a hashmap of the item data
