@@ -92,7 +92,7 @@
                     android:maxLines="7"
                     android:minLines="1"
                     android:text="@string/loading_text"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
 
                     android:paddingHorizontal="15dp"
                     android:paddingVertical="5dp"/>
@@ -146,7 +146,7 @@
                     android:maxLines="1"
                     android:minLines="1"
                     android:text="@string/loading_text"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
 
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="15dp"/>
@@ -197,7 +197,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/loading_text"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
 
                     android:paddingHorizontal="15dp"
                     android:paddingVertical="5dp"/>
@@ -250,7 +250,7 @@
                     android:maxLines="2"
                     android:minLines="1"
                     android:text="@string/loading_text"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="15dp"/>
             </LinearLayout>
@@ -303,7 +303,7 @@
                     android:maxLines="2"
                     android:minLines="1"
                     android:text="@string/loading_text"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
 
                     android:paddingHorizontal="15dp"
                     android:paddingVertical="5dp"/>
@@ -353,10 +353,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:maxLines="4"
                     android:minLines="1"
                     android:text="@string/loading_text"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
 
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="15dp"/>
@@ -409,7 +408,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/loading_text"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
 
                     android:paddingHorizontal="15dp"
                     android:paddingVertical="5dp"/>

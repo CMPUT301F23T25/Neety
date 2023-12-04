@@ -6,6 +6,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
@@ -23,8 +25,13 @@ import androidx.fragment.app.DialogFragment;
 
 
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.UUID;
-
+/**
+ * This class is the add item fragment for the app handles all logic for adding an item
+ * @version 1.0
+ *
+ */
 public class AddItem extends DialogFragment{
 
     private EditText modelName;
@@ -38,6 +45,11 @@ public class AddItem extends DialogFragment{
 
     private OnFragmentInteractionListener listener;
 
+    /**
+     * This method is called when the fragment is first attached to its context.
+     * onCreate(Bundle) will be called after this.
+     * @param context
+     */
     @Override
     //Attach on fragment listener to context(main)
     public void onAttach(@NonNull Context context) {
@@ -51,6 +63,11 @@ public class AddItem extends DialogFragment{
 
 
     }
+    /**
+     * This method is called when the fragment is first attached to its context.
+     * @param savedInstanceState
+     * @return Dialog
+     */
     static AddItem newInstance(Item item){
         Bundle args = new Bundle();
         args.putSerializable("item", item);
@@ -66,14 +83,22 @@ public class AddItem extends DialogFragment{
         void onOKPressed(Item item);
     }
 
-
+    /**
+     *  this function validates the date to make sure it is in the correct format
+     * @param string
+     * @return boolean
+     */
     private boolean validateDate(String string){
         if (string.matches("\\d{4}-\\d{2}-\\d{2}")){
             return true;
         }
         return false;
     }
-
+    /**
+     *  this function validates the price to make sure it is in the correct format
+     * @param string
+     * @return boolean
+     */
     private boolean validatePrice(EditText string){
         String input = string.getText().toString();
         try {
@@ -88,10 +113,13 @@ public class AddItem extends DialogFragment{
         }
     }
 
-
+    /**
+     *  this function creates the dialog for adding an item
+     * @param savedInstanceState
+     * @return Dialog
+     */
     @NonNull
     @Override
-    //View
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
         //Initialize View
@@ -107,14 +135,55 @@ public class AddItem extends DialogFragment{
         comments = view.findViewById(R.id.comments_edittext);
         calendar_button = view.findViewById(R.id.calendar_button);
 
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String title = bundle.getString("title");
+            String manufacturer = bundle.getString("manufacturer");
+            String description_ = bundle.getString("description");
+            String barcode = bundle.getString("barcode");
+
+            modelName.setText(title);
+            makeName.setText(manufacturer);
+            description.setText(description_);
+            serialNumber.setText(barcode);
+        }
+
+        purchaseDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // Perform click on calendar button
+                    calendar_button.performClick();
+                }
+            }
+        });
+
+        purchaseDate.setFocusable(false);
+        purchaseDate.setKeyListener(null);
+        purchaseDate.setOnClickListener(v -> {
+            calendar_button.performClick();
+        });
+
+
         //Handle calendar button for getting date
         calendar_button.setOnClickListener(view1 -> {
             final Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            try {
+                Date date = sdf.parse(purchaseDate.getText().toString());
+                if (date != null) {
+                    calendar.setTime(date);
+                }
+            } catch (ParseException e) {
+                // Invalid date format, use current date
+            }
+
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
+
             DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    getContext(),
+                    getActivity(), // or getActivity() if you're in a Fragment
                     (datePicker, i, i1, i2) -> {
                         String month_of_year;
                         String day_of_month;
@@ -149,6 +218,13 @@ public class AddItem extends DialogFragment{
                     .setNegativeButton("Cancel", null)
                     // If add pressed then return all variables newly typed in only if it passes validation
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        /**
+                         * this function handles the ok button
+                         * @param dialog
+                         * @param which
+                         * 
+                         * 
+                         */
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             String datestring = purchaseDate.getText().toString();
