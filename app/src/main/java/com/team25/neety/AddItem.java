@@ -27,7 +27,11 @@ import androidx.fragment.app.DialogFragment;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.UUID;
-
+/**
+ * This class is the add item fragment for the app handles all logic for adding an item
+ * @version 1.0
+ *
+ */
 public class AddItem extends DialogFragment{
 
     private EditText modelName;
@@ -41,6 +45,11 @@ public class AddItem extends DialogFragment{
 
     private OnFragmentInteractionListener listener;
 
+    /**
+     * This method is called when the fragment is first attached to its context.
+     * onCreate(Bundle) will be called after this.
+     * @param context
+     */
     @Override
     //Attach on fragment listener to context(main)
     public void onAttach(@NonNull Context context) {
@@ -54,6 +63,11 @@ public class AddItem extends DialogFragment{
 
 
     }
+    /**
+     * This method is called when the fragment is first attached to its context.
+     * @param savedInstanceState
+     * @return Dialog
+     */
     static AddItem newInstance(Item item){
         Bundle args = new Bundle();
         args.putSerializable("item", item);
@@ -69,14 +83,22 @@ public class AddItem extends DialogFragment{
         void onOKPressed(Item item);
     }
 
-
+    /**
+     *  this function validates the date to make sure it is in the correct format
+     * @param string
+     * @return boolean
+     */
     private boolean validateDate(String string){
         if (string.matches("\\d{4}-\\d{2}-\\d{2}")){
             return true;
         }
         return false;
     }
-
+    /**
+     *  this function validates the price to make sure it is in the correct format
+     * @param string
+     * @return boolean
+     */
     private boolean validatePrice(EditText string){
         String input = string.getText().toString();
         try {
@@ -91,10 +113,13 @@ public class AddItem extends DialogFragment{
         }
     }
 
-
+    /**
+     *  this function creates the dialog for adding an item
+     * @param savedInstanceState
+     * @return Dialog
+     */
     @NonNull
     @Override
-    //View
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
         //Initialize View
@@ -193,6 +218,13 @@ public class AddItem extends DialogFragment{
                     .setNegativeButton("Cancel", null)
                     // If add pressed then return all variables newly typed in only if it passes validation
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        /**
+                         * this function handles the ok button
+                         * @param dialog
+                         * @param which
+                         * 
+                         * 
+                         */
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             String datestring = purchaseDate.getText().toString();

@@ -22,18 +22,30 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+/**
+ * This class is the image adapter for the recycler view and handles all the logic for the image recycler view
+ */
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
     private List<String> imageUrls;
     private Context context;
     private FirebaseStorage storage = FirebaseStorage.getInstance();
-
+    /**
+     * this is the constructor for the image adapter
+     * @param context
+     * @param imageUrls
+     */
     public ImageAdapter(Context context, List<String> imageUrls) {
         this.context = context;
         Set<String> uniqueImageUrls = new HashSet<>(imageUrls);
         this.imageUrls = new ArrayList<>(uniqueImageUrls);
     }
 
+    /**
+     * this creates the view holder
+     * @param parent
+     * @param viewType
+     * @return ImageViewHolder
+     */
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -41,7 +53,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                 .inflate(R.layout.item_image, parent, false);
         return new ImageViewHolder(itemView);
     }
-
+    /**
+     * this binds the view holder
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         String imageUrl = imageUrls.get(position);
@@ -76,16 +92,24 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         });
     }
 
-
+    /**
+     * this gets the number of items in the list
+     * @return int
+     */
     @Override
     public int getItemCount() {
         return imageUrls.size();
     }
-
+    /**
+     * this is class for the image view holder
+     */
     static class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         ImageButton imageDelButton;
-
+        /**
+         * this is the constructor for the image view holder
+         * @param itemView
+         */
         ImageViewHolder(@NonNull View itemView) {
             super(itemView);
             this.imageView = itemView.findViewById(R.id.imageView);

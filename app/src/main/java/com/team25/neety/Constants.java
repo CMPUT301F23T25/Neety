@@ -1,5 +1,9 @@
 package com.team25.neety;
 
+/**
+ * This class contains all the constants used in the app
+ */
+
 import java.util.Locale;
 
 public final class Constants {

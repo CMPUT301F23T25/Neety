@@ -82,7 +82,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
-
+/**
+ * This class is the main activity for the app handles all logic for the main activity
+ * @version 1.0
+ */
 public class MainActivity extends AppCompatActivity implements AddItem.OnFragmentInteractionListener{
 
     private ActivityMainBinding binding;
@@ -158,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 // This code is for clicking apply button
                 Button applyButton=mView.findViewById(R.id.btnApply);
                 applyButton.setOnClickListener(new View.OnClickListener() {
+                    
                     @Override
                     public void onClick(View v) {
                         sort_by_make(mView,adapter);// sorts by make if chosen
@@ -383,6 +387,12 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         });
 
         itemsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            /**
+             * this function handles when the event is triggered
+             * @param querySnapshots
+             * @param error
+             * 
+             */
             @Override
             public void onEvent(@Nullable QuerySnapshot querySnapshots, @Nullable FirebaseFirestoreException error) {
                 if (error != null){
@@ -530,6 +540,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
+    /**
+     * This sorts items by make
+     * @param view
+     * @param lv
+     */
     public void sort_by_make(View view,ItemsLvAdapter lv){
         Chip sort_make_A_Z = view.findViewById(R.id.cg_make_ascending);
         Chip sort_make_Z_A = view.findViewById(R.id.cg_make_descending);
@@ -555,7 +570,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
-
+    /**
+     * this sorts by date
+     * @param view
+     * @param lv
+     */
     public void sort_by_date(View view, ItemsLvAdapter lv){
         Chip sort_by_date_latest = view.findViewById(R.id.date_new);
         Chip sort_by_date_oldest = view.findViewById(R.id.date_old);
@@ -581,6 +600,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
+    /**
+     * this sorts by estimated value
+     * @param view
+     * @param lv
+     */
     public void sort_by_estimated_value(View view, ItemsLvAdapter lv){
 
         Chip sort_by_high_low = view.findViewById(R.id.price_high_low);
@@ -605,7 +629,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             lv.notifyDataSetChanged();
         }
     }
-
 
     public void filter_by_make(ItemsLvAdapter lv, String selectedMake) {
 
@@ -738,6 +761,10 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
     }
 
+    /**
+     * this handles the on ok pressed
+     * @param item
+     */
     public void onOKPressed(Item item) {
         //Add to datalist
         HashMap<String, String> data = Item.getFirestoreDataFromItem(item);
@@ -752,7 +779,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     }
                 });
     }
-
+    /**
+     * this creates the options menu
+     * @param menu
+     * @return boolean
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -760,6 +791,9 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         return true;
     }
 
+    /**
+     * this handles the action bar
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_button) {

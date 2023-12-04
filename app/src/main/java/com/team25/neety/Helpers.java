@@ -5,8 +5,12 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
+
+/**
+ * helper class for the app (string form date, date from string)
+ *
+ */
 public class Helpers {
     public static String floatToPriceString(float f) {
         return String.format(Constants.locale, "$%,.2f", f);
@@ -20,6 +24,11 @@ public class Helpers {
         }
     }
 
+    /**
+     * this gets a date from a string
+     * @param dateString
+     * @return date
+     */
     public static Date getDateFromString(String dateString) {
         // TODO: Perhaps add locale here?
 
@@ -34,6 +43,11 @@ public class Helpers {
         }
     }
 
+    /**
+     * this gets a string from a date
+     * @param date
+     * @return string
+     */
     public static String getStringFromDate(Date date) {
         // TODO: Perhaps add locale here?
 

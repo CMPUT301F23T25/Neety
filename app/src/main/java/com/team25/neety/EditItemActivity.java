@@ -49,6 +49,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
+/**
+ * This class is the edit item activity for the app handles all logic for editing an item
+ * @version 1.0
+ *
+ */
 public class EditItemActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
@@ -88,6 +93,10 @@ public class EditItemActivity extends AppCompatActivity {
         cameraButton.setEnabled(false);
 
         cameraResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            /**
+             * this gets the result from the camera for barcode scanning
+             * @param result
+             */
             @Override
             public void onActivityResult(ActivityResult result) {
                 if (result.getResultCode() == RESULT_OK) {
@@ -147,6 +156,10 @@ public class EditItemActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * this populates the fields for the edit item activity by getting the item from the database
+     * @param item
+     */
     private void populateFields(Item item) {
         // Set existing item details in EditText fields
         editMake.setText(item.getMake());
@@ -219,6 +232,7 @@ public class EditItemActivity extends AppCompatActivity {
             datePickerDialog.show();
         });
 
+
         saveButton.setOnClickListener(v -> saveEditedItem());
         saveButton.setEnabled(true);
         cameraButton.setEnabled(true);
@@ -231,6 +245,9 @@ public class EditItemActivity extends AppCompatActivity {
         });
     }
 
+    /**
+    * this saves the edited item to firebase
+    */
     private void saveEditedItem() {
         String make = editMake.getText().toString();
         String model = editModel.getText().toString();
@@ -255,13 +272,20 @@ public class EditItemActivity extends AppCompatActivity {
                     }
                 });
     }
-
+    /*
+     * 
+     */
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
-
+    /**
+    * this checks if the camera permission is granted
+    * @param requestCode
+    * @param permissions
+    * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -273,7 +297,9 @@ public class EditItemActivity extends AppCompatActivity {
             }
         }
     }
-
+    /**
+    * this function starts the camera
+    */  
     private void startCamera() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         cameraResultLauncher.launch(cameraIntent);
