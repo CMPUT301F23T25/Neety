@@ -1,10 +1,15 @@
 package com.team25.neety;
 
+import static com.team25.neety.Constants.REQUEST_CAMERA_PERMISSION_CODE;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -45,8 +50,18 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import com.google.android.material.chip.Chip;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -73,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     // Barcode scanning components
     private ActivityResultLauncher<Intent> cameraResultLauncher;
     private EditText editSerial;
+    private TextView tvDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -261,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 }
             }
         });
-
+// From here begins the code for the barcode scannning.
         // Initialize barcode scanning components
         editSerial = findViewById(R.id.edit_serial);
 
@@ -281,7 +297,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                 Log.i("Scanned Barcodes", barcodes.toString());
                                 if (barcodes.size() > 0) {
                                     String scannedValue = barcodes.get(0).getRawValue();
-                                    editSerial.setText(scannedValue);
                                     retrieveProductDescription(scannedValue);
                                 }
                             });
@@ -289,11 +304,97 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             }
         });
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            } else {
+                Toast.makeText(this, "Camera Permission is Required to Use Camera.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     private void openCamera() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         cameraResultLauncher.launch(cameraIntent);
     }
+
+    private void retrieveProductDescription(String barcode) {
+        getProductDetailsApiCall(barcode);
+    }
+
+    private void getProductDetailsApiCall(String barcode) {
+        String apiKey = "AIzaSyBuGu7U_cv121pkRxo7Gqph0U7CD66MJ4g";
+        String apiUrl = "https://api.barcodelookup.com/v2/products?barcode=" + barcode + "&formatted=y&key=" + apiKey;
+
+        new Thread(() -> {
+            try {
+                String response = makeApiCall(apiUrl);
+                String productDescription = parseApiResponse(response);
+                updateProductDescription(productDescription);
+            } catch (Exception e) {
+                e.printStackTrace();
+                handleError("Error retrieving product information.");
+            }
+        }).start();
+    }
+
+    private String makeApiCall(String apiUrl) throws IOException {
+        URL url = new URL(apiUrl);
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        try {
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            return readStream(in);
+        } finally {
+            urlConnection.disconnect();
+        }
+    }
+
+    private String readStream(InputStream is) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line).append('\n');
+        }
+        return stringBuilder.toString();
+    }
+
+    private String parseApiResponse(String response) {
+        try {
+            JSONObject jsonResponse = new JSONObject(response);
+            JSONArray productsArray = jsonResponse.getJSONArray("products");
+
+            if (productsArray.length() > 0) {
+                JSONObject productObject = productsArray.getJSONObject(0);
+                return productObject.getString("description");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Product information not available";
+    }
+
+    private void updateProductDescription(String productDescription) {
+        tvDescription = findViewById(R.id.description_textview);
+        new Handler(Looper.getMainLooper()).post(() -> {
+            tvDescription.setText(productDescription);
+        });
+    }
+
+    private void handleError(String errorMessage) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Error")
+                    .setMessage(errorMessage)
+                    .setPositiveButton("OK", null)
+                    .show();
+        });
+    }
+    //barcode scanning ends here
+
 
     private void sort_by_make(View view, ItemsLvAdapter lv) {
         Chip sort_make_A_Z = view.findViewById(R.id.cg_make_ascending);
@@ -317,7 +418,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             lv.notifyDataSetChanged();
         }
     }
-
 
     private void sort_by_date(View view, ItemsLvAdapter lv) {
         Chip sort_by_date_latest = view.findViewById(R.id.date_new);
@@ -344,7 +444,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
-
     private void sort_by_estimated_value(View view, ItemsLvAdapter lv) {
         Chip sort_by_high_low = view.findViewById(R.id.price_high_low);
         Chip sort_by_low_high = view.findViewById(R.id.price_low_high);
@@ -366,46 +465,14 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
-    private void retrieveProductDescription(String barcode) {
-        // TODO: Implement logic to retrieve product description based on the scanned barcode
-        Item foundItem = findItemByBarcode(barcode);
 
-        // Display item information in a dialog
-        if (foundItem != null) {
-            String itemDetails = "Make: " + foundItem.getMake() + "\n" +
-                    "Purchase Date: " + foundItem.getPurchaseDate() + "\n" +
-                    "Estimated Value: $" + foundItem.getEstimatedValue();
-
-            new AlertDialog.Builder(MainActivity.this)
-                    .setTitle("Product Description")
-                    .setMessage("Scanned Barcode: " + barcode + "\n" + itemDetails)
-                    .setPositiveButton("OK", null)
-                    .show();
-        } else {
-            // Handle the case where the item with the scanned barcode is not found
-            new AlertDialog.Builder(MainActivity.this)
-                    .setTitle("Product Not Found")
-                    .setMessage("No information found for scanned barcode: " + barcode)
-                    .setPositiveButton("OK", null)
-                    .show();
-        }
-    }
-
-    private Item findItemByBarcode(String barcode) {
-        // Iterate through the list of items to find the one with the scanned barcode
-        for (Item item : itemsList) {
-            if (barcode.equals(item.getSerial())) {
-                return item;
-            }
-        }
-        return null; // Return null if the item is not found
-    }
 
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
