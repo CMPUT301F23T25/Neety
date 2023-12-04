@@ -1,6 +1,14 @@
 package com.team25.neety;
 
+import android.util.Log;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class Tag {
 
@@ -48,6 +56,7 @@ public class Tag {
     public void setName(String name) {
         this.name = name;
     }
+
 
     @Override
     public String toString() {

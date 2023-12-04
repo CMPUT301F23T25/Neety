@@ -592,6 +592,19 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 for (Tag tag : selectedTags) {
                     tag.addItem(item);
                     item.addTag(tag);
+
+
+                    itemsRef
+                            .document(item.getIdString())
+                            .set(Item.getFirestoreDataFromItem(item))
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d("Firestore", "DocumentSnapshot successfully written!");
+                                }
+                            });
+
+
                 }
             }
 
