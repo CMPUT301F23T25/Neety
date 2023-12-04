@@ -11,9 +11,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TagAdapter extends ArrayAdapter<String> {
+
+    private List<Integer> selectedPositions = new ArrayList<>();
 
     public TagAdapter(Context context, List<String> tags) {
         super(context, 0, tags);
@@ -37,14 +40,32 @@ public class TagAdapter extends ArrayAdapter<String> {
         tvName.setText(tag);
 
 
-        // Set the background color based on the isSelected attribute
-//        if (getItem(position)) {
-//            convertView.setBackgroundColor(getContext().getResources().getColor(R.color.white)); // Replace with your color resource
-//        } else {
-//            convertView.setBackgroundColor(Color.TRANSPARENT);
-//        }
+//         Set the background color based on the isSelected attribute
+        if (selectedPositions.contains(position)) {
+            convertView.setBackgroundColor(getContext().getResources().getColor(R.color.white)); // Replace with your color resource
+        } else {
+            convertView.setBackgroundColor(Color.TRANSPARENT);
+        }
 
         // Return the completed view to render on screen
         return convertView;
+    }
+
+
+
+    // Add a method to toggle the selection state of an item
+    public void toggleSelection(int position) {
+        if (selectedPositions.contains(position)) {
+            selectedPositions.remove(Integer.valueOf(position));
+        } else {
+            selectedPositions.add(position);
+        }
+
+        // Notify the adapter that the dataset has changed
+        notifyDataSetChanged();
+    }
+
+    public void clearSelection(){
+        selectedPositions.clear();
     }
 }

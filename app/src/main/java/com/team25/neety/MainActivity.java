@@ -629,6 +629,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             String clickedTag = tagAdapter.getItem(position);
             if (clickedTag != null) {
                 selectedTags.add(clickedTag);
+                tagAdapter.toggleSelection(position);
                 tagAdapter.notifyDataSetChanged();
 //                System.out.println(clickedTag.getItemsList());
             }
@@ -654,22 +655,33 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 for (String tag : selectedTags) {
                     Log.d("TAGS", tag);
 
-                    item.addTag(tag);
+                    if (!item.getTags().contains(tag)){
+                        item.addTag(tag);
 
-                    itemsRef
-                            .document(item.getIdString())
-                            .set(Item.getFirestoreDataFromItem(item))
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d("Firestore", "DocumentSnapshot successfully written!");
-                                }
-                            });
-                }
+                        itemsRef
+                                .document(item.getIdString())
+                                .set(Item.getFirestoreDataFromItem(item))
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("Firestore", "DocumentSnapshot successfully written!");
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Item already has tag", Toast.LENGTH_SHORT).show();
+                    }
+
+
+
+                    }
+
+
             }
 
             // Clear the selection
             selectedTags.clear();
+            tagAdapter.clearSelection();
+
 
             // Update the adapter and notify data changes
             tagAdapter.notifyDataSetChanged();
@@ -679,6 +691,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         });
 
         customDialog.show();
+        tagAdapter.clearSelection();
     }
 
     private void showCreateTagDialog(){
