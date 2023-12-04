@@ -4,7 +4,11 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -53,6 +57,23 @@ public class Helpers {
 
         DateFormat df = new SimpleDateFormat(Constants.DATE_FORMAT_PATTERN, Constants.locale);
         return df.format(date);
+    }
+
+    public static String getPrintableTags(List<String> tagList){
+
+        String result = String.join(", ", tagList);
+
+        return result;
+    }
+
+    public static List<String> convertStringToTags(String tagsString) {
+        if (tagsString == null || tagsString.equals("No tags")) {
+            return new ArrayList<>(); // Return an empty list for "No tags" or null
+        }
+
+        // Assuming the delimiter is ", "
+        String[] tagsArray = tagsString.split(", ");
+        return Arrays.asList(tagsArray);
     }
 
     // Private constructor because you should never instantiate this class

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -16,6 +17,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.rpc.Help;
 
 import java.io.Serializable;
 
@@ -63,6 +65,8 @@ public class Item implements Serializable {
     private String comments;
     private boolean isSelected;
     private List<String> imageUrls;
+    private List<String> tags = new ArrayList<>();
+
     /**
      * This is the constructor for the item class
      */
@@ -77,8 +81,29 @@ public class Item implements Serializable {
         this.serial = serial;
     }
 
+    public Item(UUID id, Date purchaseDate, String make, String model, String description, String serial, float estimatedValue, String comments, List<String> tags) {
+        this.id = id;
+        this.purchaseDate = purchaseDate;
+        this.make = make;
+        this.model = model;
+        this.description = description;
+        this.estimatedValue = estimatedValue;
+        this.comments = comments;
+        this.serial = serial;
+        this.tags = tags;
+    }
+
     public Item(String make, String model, float estimatedValue) {
-        this(UUID.randomUUID(), new Date(), make, model, null, null, estimatedValue, null);
+        this(UUID.randomUUID(), new Date(), make, model, null, null, estimatedValue, null, null);
+    }
+
+    public void addTag(Tag tag){
+        tags.add(tag.getName());
+    }
+
+
+    public List<String> getTags() {
+        return tags;
     }
 
     /**
@@ -350,6 +375,7 @@ public class Item implements Serializable {
         Date purchaseDate = Helpers.getDateFromString(doc.getString("PurchaseDate"));
         String serial = doc.getString("Serial");
         String comments = doc.getString("Comments");
+        String tags = doc.getString("Tags");
         Log.d("Firestore", String.format("Model(%s, %s) fetched",
                 model, make));
 
@@ -358,7 +384,7 @@ public class Item implements Serializable {
         Log.d("FIRESTORE", value);
 
 
-        return new Item(UUID.fromString(id), purchaseDate, make, model, description, serial, valueNumber, comments);
+        return new Item(UUID.fromString(id), purchaseDate, make, model, description, serial, valueNumber, comments, Helpers.convertStringToTags(tags));
     }
     /**
      * this makes a hashmap of the item data
@@ -374,6 +400,7 @@ public class Item implements Serializable {
         data.put("PurchaseDate", item.getPurchaseDateString());
         data.put("Serial", item.getSerial());
         data.put("Comments", item.getComments());
+        data.put("Tags", Helpers.getPrintableTags(item.getTags()));
 
         return data;
     }

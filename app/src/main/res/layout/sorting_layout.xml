@@ -25,13 +25,16 @@
 
     <LinearLayout
         android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="407dp"
+        android:layout_height="346dp"
+        android:layout_marginStart="1dp"
         android:layout_marginTop="44dp"
+        android:layout_marginEnd="3dp"
         android:orientation="horizontal"
         android:weightSum="3"
-        app:layout_constraintTop_toTopOf="@+id/textView3"
-        tools:layout_editor_absoluteX="1dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView3">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -77,18 +80,18 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="430dp"
+            android:layout_height="395dp"
             android:layout_weight="1"
-            android:gravity="center"
+            android:gravity="center_horizontal|top"
             android:orientation="vertical">
+
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:gravity="center"
                 android:text="Sort By Value" />
-
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/cg_sort_price"
@@ -117,6 +120,46 @@
                     android:text="Low to High"
                     tools:checked="true" />
             </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:id="@+id/sort_by_text"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:text="Sort By Tags" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:orientation="horizontal">
+
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/cg_sort_tag"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    app:selectionRequired="false"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/cg_tag_ascending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checkable="true"
+                        android:text="A-Z"
+                        tools:checked="true" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/cg_tag_descending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checkable="true"
+                        android:text="Z-A"
+                        tools:checked="true" />
+
+                </com.google.android.material.chip.ChipGroup>
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btnApply"
