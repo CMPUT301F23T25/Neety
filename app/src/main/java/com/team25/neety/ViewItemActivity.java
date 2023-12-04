@@ -78,10 +78,22 @@ public class ViewItemActivity extends AppCompatActivity {
                 }
             });
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (photoURI != null) {
+            outState.putString("photoURI", photoURI.toString());
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey("photoURI")) {
+            photoURI = Uri.parse(savedInstanceState.getString("photoURI"));
+        }
+
         setContentView(R.layout.activity_view_item);
 
         assert getSupportActionBar() != null;   // null check
@@ -148,9 +160,8 @@ public class ViewItemActivity extends AppCompatActivity {
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
                         // Handle the result here
-                        if (result.getData() != null) {
-                            item.uploadImageToFirebase(this, photoURI, username, this::refresh);
-                        }
+                        Log.d("Photo Uri before upload", photoURI.toString());
+                        item.uploadImageToFirebase(this, photoURI, username, this::refresh);
                     }
                 });
         take_photo_button = findViewById(R.id.take_photo_button);
