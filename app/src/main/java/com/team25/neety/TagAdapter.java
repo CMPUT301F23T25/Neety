@@ -13,9 +13,9 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-public class TagAdapter extends ArrayAdapter<Tag> {
+public class TagAdapter extends ArrayAdapter<String> {
 
-    public TagAdapter(Context context, List<Tag> tags) {
+    public TagAdapter(Context context, List<String> tags) {
         super(context, 0, tags);
     }
 
@@ -23,7 +23,7 @@ public class TagAdapter extends ArrayAdapter<Tag> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         // Get the data item for this position
-        Tag tag = getItem(position);
+        String tag = getItem(position);
 
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
@@ -34,15 +34,15 @@ public class TagAdapter extends ArrayAdapter<Tag> {
         TextView tvName = convertView.findViewById(android.R.id.text1);
 
         // Populate the data into the template view using the data object
-        tvName.setText(tag.getName());
+        tvName.setText(tag);
 
 
         // Set the background color based on the isSelected attribute
-        if (getItem(position).isSelected()) {
-            convertView.setBackgroundColor(getContext().getResources().getColor(R.color.white)); // Replace with your color resource
-        } else {
-            convertView.setBackgroundColor(Color.TRANSPARENT);
-        }
+//        if (getItem(position)) {
+//            convertView.setBackgroundColor(getContext().getResources().getColor(R.color.white)); // Replace with your color resource
+//        } else {
+//            convertView.setBackgroundColor(Color.TRANSPARENT);
+//        }
 
         // Return the completed view to render on screen
         return convertView;

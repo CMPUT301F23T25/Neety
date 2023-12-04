@@ -97,8 +97,8 @@ public class Item implements Serializable {
         this(UUID.randomUUID(), new Date(), make, model, null, null, estimatedValue, null, null);
     }
 
-    public void addTag(Tag tag){
-        tags.add(tag.getName());
+    public void addTag(String s) {
+        tags.add(s);
     }
 
 
