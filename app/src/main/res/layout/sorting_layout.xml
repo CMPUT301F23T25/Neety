@@ -133,21 +133,7 @@
                 android:layout_height="43dp"
                 android:orientation="horizontal">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:context=".MainActivity">
 
-                    <TextView
-                        android:id="@+id/textViewTag"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:background="@android:drawable/editbox_background"
-                        android:drawableRight="@android:drawable/arrow_down_float"
-                        android:hint="Select Tags" />
-
-                </RelativeLayout>
             </LinearLayout>
 
             <Button

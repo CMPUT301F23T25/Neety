@@ -143,6 +143,58 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 //                popUp.showAsDropDown(findViewById(R.id.filter_button)
                 // This code is for clicking apply button
                 Button applyButton=mView.findViewById(R.id.btnApply);
+
+
+
+
+
+
+                applyButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        sort_by_make(mView, adapter);// sorts by make if chosen
+                        sort_by_date(mView, adapter);// sorts by date if chosen
+                        sort_by_estimated_value(mView, adapter);// sorts by est. value if chosen
+                        popUp.dismiss(); // Close the popup when the close button is clicked
+                    }
+                });
+                popUp.showAsDropDown(findViewById(R.id.filter_button));
+            }
+        });
+
+        lv = findViewById(R.id.items_list_view);
+        lv.setAdapter(adapter);
+
+        lv.setOnItemClickListener((parent, view, position, id) -> {
+            Intent intent = new Intent(this, ViewItemActivity.class);
+            intent.putExtra(Constants.INTENT_ITEM_ID_KEY, itemsList.get(position).getId());
+            startActivity(intent);
+        });
+
+        // Handle Add Button
+        addButton = findViewById(R.id.button_additem);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AddItem().show(getSupportFragmentManager(), "add item");
+            }
+        });
+
+        // Handle Filter Button aka Real Filter Button
+        filterButton = findViewById(R.id.real_filter_button);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final View mView = LayoutInflater.from(MainActivity.this).inflate(R.layout.filtering_layout, null, false);
+                final PopupWindow popUp = new PopupWindow(mView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, false);
+                popUp.setTouchable(true);
+                popUp.setFocusable(true);
+                popUp.setOutsideTouchable(true);
+                popUp.showAtLocation(v, Gravity.BOTTOM,0,500);// location of pop ip
+//                popUp.showAsDropDown(findViewById(R.id.filter_button)
+                // This code is for clicking apply button
+                Button applyButton=mView.findViewById(R.id.filter_confirm_button);
                 test = mView.findViewById(R.id.textViewTag);
 
 // Initialize selected tags array
@@ -232,58 +284,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                         builder.show();
                     }
                 });
-
-
-
-
-
-                applyButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        sort_by_make(mView, adapter);// sorts by make if chosen
-                        sort_by_date(mView, adapter);// sorts by date if chosen
-                        sort_by_estimated_value(mView, adapter);// sorts by est. value if chosen
-                        sort_by_tag(mView, adapter, intTagList);
-                        popUp.dismiss(); // Close the popup when the close button is clicked
-                    }
-                });
-                popUp.showAsDropDown(findViewById(R.id.filter_button));
-            }
-        });
-
-        lv = findViewById(R.id.items_list_view);
-        lv.setAdapter(adapter);
-
-        lv.setOnItemClickListener((parent, view, position, id) -> {
-            Intent intent = new Intent(this, ViewItemActivity.class);
-            intent.putExtra(Constants.INTENT_ITEM_ID_KEY, itemsList.get(position).getId());
-            startActivity(intent);
-        });
-
-        // Handle Add Button
-        addButton = findViewById(R.id.button_additem);
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AddItem().show(getSupportFragmentManager(), "add item");
-            }
-        });
-
-        // Handle Filter Button aka Real Filter Button
-        filterButton = findViewById(R.id.real_filter_button);
-        filterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final View mView = LayoutInflater.from(MainActivity.this).inflate(R.layout.filtering_layout, null, false);
-                final PopupWindow popUp = new PopupWindow(mView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, false);
-                popUp.setTouchable(true);
-                popUp.setFocusable(true);
-                popUp.setOutsideTouchable(true);
-                popUp.showAtLocation(v, Gravity.BOTTOM,0,500);// location of pop ip
-//                popUp.showAsDropDown(findViewById(R.id.filter_button)
-                // This code is for clicking apply button
-                Button applyButton=mView.findViewById(R.id.filter_confirm_button);
                 applyButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -297,6 +297,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                         filter_by_date_range(adapter, startDate, endDate);
                         filter_by_description(adapter, selectDesc.getText().toString());
                         filter_by_make(adapter, selectMake.getText().toString());
+                        filter_by_tag(mView, adapter, intTagList);
                         popUp.dismiss(); // Close the popup when the close button is clicked
                     }
                 });
@@ -401,11 +402,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
                 // If any items are selected, show the AlertDialog
                 if (selectedCount > 0) {
-                    String Msg = String.format("Do you want to select these %d item(s)?", selectedCount);
+                    String Msg = String.format("Do you want to tag these %d item(s)?", selectedCount);
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder
                             .setMessage(Msg)
-                            .setTitle("Selecting items")
+                            .setTitle("Select Item(s) to Tag")
                             .setNegativeButton("No", ((dialog, which) -> {
                                 dialog.cancel();
                             }))
@@ -709,7 +710,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
-    public void sort_by_tag(View view, ItemsLvAdapter lv,  List<Integer> selectedTagIndices){
+    public void filter_by_tag(View view, ItemsLvAdapter lv,  List<Integer> selectedTagIndices){
         List<Tag> selectedTags = new ArrayList<>();
         for (Integer index : selectedTagIndices) {
             selectedTags.add(tagList.get(index));
