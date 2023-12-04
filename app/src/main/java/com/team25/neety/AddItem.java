@@ -110,6 +110,19 @@ public class AddItem extends DialogFragment{
         comments = view.findViewById(R.id.comments_edittext);
         calendar_button = view.findViewById(R.id.calendar_button);
 
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String title = bundle.getString("title");
+            String manufacturer = bundle.getString("manufacturer");
+            String description_ = bundle.getString("description");
+            String barcode = bundle.getString("barcode");
+
+            modelName.setText(title);
+            makeName.setText(manufacturer);
+            description.setText(description_);
+            serialNumber.setText(barcode);
+        }
+
         purchaseDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -125,6 +138,7 @@ public class AddItem extends DialogFragment{
         purchaseDate.setOnClickListener(v -> {
             calendar_button.performClick();
         });
+
 
         //Handle calendar button for getting date
         calendar_button.setOnClickListener(view1 -> {
