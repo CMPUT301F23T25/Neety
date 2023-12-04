@@ -14,6 +14,7 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import android.util.Log;
@@ -26,7 +27,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import android.widget.ListView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.PopupWindow;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -47,7 +50,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.team25.neety.databinding.ActivityMainBinding;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -74,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private TagAdapter tagAdapter;
 
     private ImageButton sortButton, addButton, del_button, filterButton, barcodeButton, selectButton;
+    private Spinner spinner_dropdown;
     private TextView totalValueTv;
     private Boolean is_deleting = Boolean.FALSE;
     private Boolean is_selecting = Boolean.FALSE;
@@ -120,6 +126,19 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         tagList  = new ArrayList<Tag>(); // Replace this with your method to fetch tags
         tagAdapter = new TagAdapter(MainActivity.this, tagList);
 
+//        spinner_dropdown = findViewById(R.id.spinner_tag);
+//        List<String> tagNames = new ArrayList<>();
+//        for (Tag tag : tagList) {
+//            tagNames.add(tag.getName());
+//        }
+//
+//        ArrayAdapter<String> tag_adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, tagNames);
+//
+//        tag_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//
+//        spinner_dropdown.setAdapter(tag_adapter);
+
+
 
 
         //      For sorting item by specification and updating the screen according to it
@@ -137,12 +156,25 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 //                popUp.showAsDropDown(findViewById(R.id.filter_button)
                 // This code is for clicking apply button
                 Button applyButton=mView.findViewById(R.id.btnApply);
+
+                ArrayList<String> tagNames = new ArrayList<>();
+                    for (Tag tag : tagList) {
+                        tagNames.add(tag.getName());
+                    }
+
+                // Create a custom adapter and set it to the MultiAutoCompleteTextView
+                MultiAutoAdapter multiAdapter = new MultiAutoAdapter(MainActivity.this, android.R.layout.simple_dropdown_item_1line, tagNames);
+
+                MultiAutoCompleteTextView multiAutoCompleteTextView = mView.findViewById(R.id.multiAutoCompleteTextView);
+                multiAutoCompleteTextView.setAdapter(multiAdapter);
+                multiAutoCompleteTextView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
                 applyButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sort_by_make(mView,adapter);// sorts by make if chosen
+                        sort_by_make(mView, adapter);// sorts by make if chosen
                         sort_by_date(mView, adapter);// sorts by date if chosen
                         sort_by_estimated_value(mView, adapter);// sorts by est. value if chosen
+                        sort_by_tag(mView, adapter);
                         popUp.dismiss(); // Close the popup when the close button is clicked
                     }
                 });
@@ -646,6 +678,12 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
         return total;
     }
+
+    public void sort_by_tag(View view, ItemsLvAdapter lv){
+
+    }
+
+
     public void resetAdapter(ItemsLvAdapter lv) {
         // Clear the existing items in the adapter
         lv.clear();
