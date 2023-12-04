@@ -73,7 +73,12 @@ public class Helpers {
 
         // Assuming the delimiter is ", "
         String[] tagsArray = tagsString.split(", ");
-        return Arrays.asList(tagsArray);
+
+        ArrayList<String> tags = new ArrayList<>();
+
+        for (String s : tagsArray) tags.add(s);
+
+        return tags;
     }
 
     // Private constructor because you should never instantiate this class

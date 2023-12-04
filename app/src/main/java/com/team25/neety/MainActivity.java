@@ -83,6 +83,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private ArrayList<Item> originalItemsList;
     private ItemsLvAdapter adapter;
 
-    private List<Tag> tagList;
+    private List<String> tagList;
     private TagAdapter tagAdapter;
 
     private ImageButton sortButton, addButton, del_button, filterButton, barcodeButton, selectButton;
@@ -155,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
         totalValueTv = findViewById(R.id.total_value_textview);
 
-        tagList  = new ArrayList<Tag>(); // Replace this with your method to fetch tags
+        tagList = new ArrayList<String>(); // Replace this with your method to fetch tags
         tagAdapter = new TagAdapter(MainActivity.this, tagList);
 
         //      For sorting item by specification and updating the screen according to it
@@ -241,18 +242,15 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                         // set dialog non cancelable
                         builder.setCancelable(false);
 
-                        // Convert tagList to an array of tag names
-                        String[] tagArray = new String[tagList.size()];
-                        for (int i = 0; i < tagList.size(); i++) {
-                            tagArray[i] = tagList.get(i).getName();
-                        }
 
                         // Initialize selected tags array with original state
                         selectedTags = new boolean[tagList.size()];
                         // Copy the original state to intTagList
                         intTagList.clear();
 
-                        builder.setMultiChoiceItems(tagArray, selectedTags, new DialogInterface.OnMultiChoiceClickListener() {
+                        String[] tagListArray = (String[]) tagList.toArray();
+
+                        builder.setMultiChoiceItems( tagListArray , selectedTags, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i, boolean b) {
                                 // check condition
@@ -278,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                 // use for loop
                                 for (int j = 0; j < intTagList.size(); j++) {
                                     // concat array value
-                                    stringBuilder.append(tagArray[intTagList.get(j)]);
+                                    stringBuilder.append(tagListArray[intTagList.get(j)]);
                                     // check condition
                                     if (j != intTagList.size() - 1) {
                                         // When j value not equal
@@ -598,6 +596,17 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                         }
                     }
 
+                    Set<String> st = new HashSet<String>();
+                    for (Item i : itemsList) {
+                        for (String tag : i.getTags()) {
+                            st.add(tag);
+                        }
+                    }
+
+                    tagList.clear();
+                    tagList.addAll(st);
+                    tagAdapter.notifyDataSetChanged();
+
                     totalValueTv.setText(Helpers.floatToPriceString(total));
                     adapter.notifyDataSetChanged();
                 }
@@ -617,13 +626,16 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         // Set up the adapter and data for the ListView, handle button clicks, etc.
         listViewTags.setAdapter(tagAdapter);
 
+        List<String> selectedTags = new ArrayList<>();
+
         listViewTags.setOnItemClickListener((parent, view, position, id) -> {
             // Handle item click
-            Tag clickedTag = tagAdapter.getItem(position);
+            String clickedTag = tagAdapter.getItem(position);
             if (clickedTag != null) {
-                clickedTag.setSelected(!clickedTag.isSelected());
+                selectedTags.add(clickedTag);
+                tagAdapter.toggleSelection(position);
                 tagAdapter.notifyDataSetChanged();
-                System.out.println(clickedTag.getItemsList());
+//                System.out.println(clickedTag.getItemsList());
             }
         });
 
@@ -641,28 +653,39 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
         Button confirmTagBtn = customView.findViewById(R.id.btn_confirm_tag);
         confirmTagBtn.setOnClickListener(v -> {
-            // Create a list to store the selected tags
-            List<Tag> selectedTags = new ArrayList<>();
-
-            // Iterate through the tags and find the selected ones
-            for (Tag tag : tagList) {
-                if (tag.isSelected()) {
-                    selectedTags.add(tag);
-                }
-            }
 
             // Iterate through the selected items and add them to the selected tags
             for (Item item : selectedItems) {
-                for (Tag tag : selectedTags) {
-                    tag.addItem(item);
-                    item.addTag(tag);
-                }
+                for (String tag : selectedTags) {
+                    Log.d("TAGS", tag);
+
+                    if (!item.getTags().contains(tag)){
+                        item.addTag(tag);
+
+                        itemsRef
+                                .document(item.getIdString())
+                                .set(Item.getFirestoreDataFromItem(item))
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("Firestore", "DocumentSnapshot successfully written!");
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Item already has tag", Toast.LENGTH_SHORT).show();
+                    }
+
+
+
+                    }
+
+
             }
 
             // Clear the selection
-            for (Tag tag : selectedTags) {
-                tag.setSelected(false);
-            }
+            selectedTags.clear();
+            tagAdapter.clearSelection();
+
 
             // Update the adapter and notify data changes
             tagAdapter.notifyDataSetChanged();
@@ -672,6 +695,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         });
 
         customDialog.show();
+        tagAdapter.clearSelection();
     }
 
     private void showCreateTagDialog(){
@@ -683,13 +707,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
         builder.setPositiveButton("Create", (dialog, which) -> {
             String tagName = tagNameEditText.getText().toString();
-            List<String> tagNames = new ArrayList<>();
-            for (Tag tag : tagList){
-                tagNames.add(tag.getName());
-            }
-            if (!tagNames.contains(tagName)){
-                Tag newTag = new Tag(tagName);
-                tagList.add(newTag);
+            if (!tagList.contains(tagName)){
+                tagList.add(tagName);
                 tagAdapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
@@ -918,7 +937,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     }
 
     public void filter_by_tag(View view, ItemsLvAdapter lv,  List<Integer> selectedTagIndices){
-        List<Tag> selectedTags = new ArrayList<>();
+        List<String> selectedTags = new ArrayList<>();
         for (Integer index : selectedTagIndices) {
             selectedTags.add(tagList.get(index));
         }
@@ -926,12 +945,14 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         HashSet<Item> seenItems = new HashSet<>();
         ArrayList<Item> filteredList = new ArrayList<>();
 
-        for (Tag tag : selectedTags) {
-            for (Item item : tag.getItemsList()) {
-                if (!seenItems.contains(item)) {
-                    // Add the item if it hasn't been seen yet
-                    filteredList.add(item);
-                    seenItems.add(item);
+        for (Item item : itemsList) {
+            for (String tag : selectedTags) {
+                if (item.getTags().contains(tag)) {
+                    if (!seenItems.contains(item)) {
+                        // Add the item if it hasn't been seen yet
+                        filteredList.add(item);
+                        seenItems.add(item);
+                    }
                 }
             }
         }
