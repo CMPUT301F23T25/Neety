@@ -2,15 +2,21 @@ package com.team25.neety;
 
 import static androidx.core.content.ContentProviderCompat.requireContext;
 import static com.google.common.base.Throwables.getRootCause;
+import static com.team25.neety.Constants.REQUEST_CAMERA_PERMISSION_CODE;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,10 +38,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,8 +58,21 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.mlkit.vision.barcode.BarcodeScanner;
+import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.common.InputImage;
 import com.team25.neety.databinding.ActivityMainBinding;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -59,9 +82,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
-
+/**
+ * This class is the main activity for the app handles all logic for the main activity
+ * @version 1.0
+ */
 public class MainActivity extends AppCompatActivity implements AddItem.OnFragmentInteractionListener{
 
     private ActivityMainBinding binding;
@@ -88,7 +116,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private boolean[] selectedTags;
     private ArrayList<Integer> intTagList = new ArrayList<>();
 
-
+    private ActivityResultLauncher<Intent> cameraResultLauncher;
+    private Bundle bundle;
 
 
     @Override
@@ -146,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 Button applyButton=mView.findViewById(R.id.btnApply);
 
                 applyButton.setOnClickListener(new View.OnClickListener() {
+                    
                     @Override
                     public void onClick(View v) {
                         sort_by_make(mView, adapter);// sorts by make if chosen
@@ -369,11 +399,35 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 });
             }
         });
+        // Set up the result launcher for the camera activity
+        cameraResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                Bitmap b = result.getData().getExtras().getParcelable("data", Bitmap.class);
+
+                if (b == null) return;
+
+                InputImage image = InputImage.fromBitmap(b, 0);
+                BarcodeScanner scanner = BarcodeScanning.getClient();
+                scanner.process(image)
+                        .addOnSuccessListener(barcodes -> {
+                            Log.i("Scanned Barcodes", barcodes.toString());
+                            if (barcodes.size() > 0) {
+                                String scannedValue = barcodes.get(0).getRawValue();
+                                getProductDetailsApiCall(scannedValue);
+                            }
+                        });
+            }
+        });
 
         // Handle Barcode button
         barcodeButton = findViewById(R.id.button_barcode);
         barcodeButton.setOnClickListener(v -> {
             // TODO: Implement item lookup by barcode here
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION_CODE);
+            } else {
+                startCamera();
+            }
         });
 
 
@@ -495,6 +549,12 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             adapter.notifyDataSetChanged();
         });
         itemsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            /**
+             * this function handles when the event is triggered
+             * @param querySnapshots
+             * @param error
+             * 
+             */
             @Override
             public void onEvent(@Nullable QuerySnapshot querySnapshots, @Nullable FirebaseFirestoreException error) {
                 if (error != null){
@@ -677,7 +737,110 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
+    private void startCamera() {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraResultLauncher.launch(cameraIntent);
+    }
 
+    private void getProductDetailsApiCall(String barcode) {
+        String apiKey = "sdjfmpd944wq740j3vgzhpgdegkzy8";
+        String apiUrl = "https://api.barcodelookup.com/v3/products?barcode=" + barcode + "&formatted=y&key=" + apiKey;
+
+        new Thread(() -> {
+            try {
+                String response = makeApiCall(apiUrl);
+                Map<String, String> productDetails = parseApiResponse(response);
+                updateProductDetails(productDetails, barcode);
+            } catch (Exception e) {
+                e.printStackTrace();
+                handleError("Error retrieving product information.");
+            }
+        }).start();
+    }
+
+    private String makeApiCall(String apiUrl) throws IOException {
+        URL url = new URL(apiUrl);
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        try {
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            return readStream(in);
+        } finally {
+            urlConnection.disconnect();
+        }
+    }
+
+    private String readStream(InputStream is) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line).append('\n');
+        }
+        return stringBuilder.toString();
+    }
+
+    private Map<String, String> parseApiResponse(String response) {
+        Map<String, String> productDetails = new HashMap<>();
+        try {
+            JSONObject jsonResponse = new JSONObject(response);
+            JSONArray productsArray = jsonResponse.getJSONArray("products");
+
+            if (productsArray.length() > 0) {
+                JSONObject productObject = productsArray.getJSONObject(0);
+                productDetails.put("title", !productObject.isNull("title") ? productObject.getString("title") : "N/A");
+                productDetails.put("manufacturer", !productObject.isNull("manufacturer") ? productObject.getString("manufacturer") : "N/A");
+                productDetails.put("description", !productObject.isNull("description") ? productObject.getString("description") : "N/A");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return productDetails;
+    }
+
+    private void updateProductDetails(Map<String, String> productDetails, String barcode) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            Date date = new Date();
+            String make = productDetails.get("manufacturer");
+            String model = productDetails.get("title");
+            String desc = productDetails.get("description");
+            String serial = barcode;
+            String price = "0.00";
+            Item item = new Item(UUID.randomUUID(), date, make, model, desc, serial, Float.parseFloat(price), null);
+
+            Intent intent = new Intent(this, EditItemActivity.class);
+            intent.putExtra(Constants.ITEM_MAIN_TO_EDIT, item);
+            Log.d("Item Model", "updateProductDetails: " + item.getModel());
+            startActivity(intent);
+        });
+    }
+
+    private void handleError(String errorMessage) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Error")
+                    .setMessage(errorMessage)
+                    .setPositiveButton("OK", null)
+                    .show();
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startCamera();
+            } else {
+                Toast.makeText(this, "Camera Permission is Required to Use Camera.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /**
+     * This sorts items by make
+     * @param view
+     * @param lv
+     */
     public void sort_by_make(View view,ItemsLvAdapter lv){
         Chip sort_make_A_Z = view.findViewById(R.id.cg_make_ascending);
         Chip sort_make_Z_A = view.findViewById(R.id.cg_make_descending);
@@ -703,7 +866,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
-
+    /**
+     * this sorts by date
+     * @param view
+     * @param lv
+     */
     public void sort_by_date(View view, ItemsLvAdapter lv){
         Chip sort_by_date_latest = view.findViewById(R.id.date_new);
         Chip sort_by_date_oldest = view.findViewById(R.id.date_old);
@@ -729,6 +896,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
+    /**
+     * this sorts by estimated value
+     * @param view
+     * @param lv
+     */
     public void sort_by_estimated_value(View view, ItemsLvAdapter lv){
 
         Chip sort_by_high_low = view.findViewById(R.id.price_high_low);
@@ -783,7 +955,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         // Notify the adapter that the data has changed
         lv.notifyDataSetChanged();
     }
-
 
 
     public void filter_by_make(ItemsLvAdapter lv, String selectedMake) {
@@ -910,6 +1081,17 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
     }
 
+    public void filterByDate(){
+
+    }
+    public void filterByDescription(){
+
+    }
+
+    /**
+     * this handles the on ok pressed
+     * @param item
+     */
     public void onOKPressed(Item item) {
         //Add to datalist
         HashMap<String, String> data = Item.getFirestoreDataFromItem(item);
@@ -924,7 +1106,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     }
                 });
     }
-
+    /**
+     * this creates the options menu
+     * @param menu
+     * @return boolean
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -932,6 +1118,9 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         return true;
     }
 
+    /**
+     * this handles the action bar
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_button) {

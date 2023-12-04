@@ -3,9 +3,13 @@ plugins {
     id("com.google.gms.google-services")
 }
 
+
 android {
     namespace = "com.team25.neety"
     compileSdk = 34
+    testOptions {
+        animationsDisabled = true
+    }
 
     defaultConfig {
         applicationId = "com.team25.neety"
@@ -36,6 +40,9 @@ android {
 }
 
 dependencies {
+
+    compileOnly(files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"))
+
     implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
@@ -49,7 +56,21 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment:2.7.2")
     implementation("androidx.navigation:navigation-ui:2.7.2")
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
+
+    testImplementation("androidx.test:runner:1.4.0")
     testImplementation("junit:junit:4.13.2")
+    testImplementation("androidx.test:core:1.4.0")
+    testImplementation ("org.mockito:mockito-core:3.12.4")
+    testImplementation("androidx.test.ext:junit:1.1.5")
+
+    androidTestImplementation ("org.mockito:mockito-core:3.12.4")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+//    androidTestImplementation("com.android.support.test.espresso:espresso-contrib:3.0.2")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
+
+    androidTestImplementation ("androidx.test.espresso:espresso-intents:3.4.0")
 }
+//testImplementation 'androidx.test:runner:1.4.0'
+//}
+//testImplementation 'androidx.test.ext:junit:1.1.3'
