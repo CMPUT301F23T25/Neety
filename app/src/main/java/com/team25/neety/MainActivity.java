@@ -470,7 +470,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 }
-                selectButton.setImageDrawable(getDrawable(R.drawable.plus_ic));
+                selectButton.setImageDrawable(getDrawable(R.drawable.list_ic));
                 addButton.setVisibility(View.VISIBLE);
                 filterButton.setVisibility(View.VISIBLE);
                 sortButton.setVisibility(View.VISIBLE);
@@ -520,10 +520,14 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                 Iterator<Item> iterator = itemsList.iterator();
                                 while (iterator.hasNext()) {
                                     Item item = iterator.next();
+                                    Log.d("Item details", "onCreate: " + item.getIdString() + " "+ item.isSelected());
                                     if (item.isSelected()) {
+                                        Log.d("Item details", "onCreate: " + item.getIdString());
                                         iterator.remove();
                                         item.deleteImagesFromStorage(username);
-                                        itemsRef.document(item.getIdString()).delete();
+                                        itemsRef.document(item.getIdString()).delete()
+                                                .addOnSuccessListener(aVoid -> Log.d("Firestore", "DocumentSnapshot successfully deleted!"))
+                                                .addOnFailureListener(e -> Log.w("Firestore", "Error deleting document", e));
                                     }
 
                                 }
@@ -531,7 +535,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                 // Notify the adapter that the data has changed
                                 adapter.notifyDataSetChanged();
                             }));
-                    adapter.resetCheckboxes();
+
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 }
