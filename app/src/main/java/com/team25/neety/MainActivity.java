@@ -1,33 +1,25 @@
 package com.team25.neety;
 
-import static com.google.common.base.Throwables.getRootCause;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-
 import android.text.Html;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.widget.Button;
-
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -39,14 +31,21 @@ import androidx.core.content.res.ResourcesCompat;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.chip.Chip;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.mlkit.vision.barcode.BarcodeScanner;
+import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.common.InputImage;
 import com.team25.neety.databinding.ActivityMainBinding;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import com.google.android.material.chip.Chip;
+import android.view.MenuItem;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +55,7 @@ import java.util.Iterator;
 
 import javax.annotation.Nullable;
 
-public class MainActivity extends AppCompatActivity implements AddItem.OnFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements AddItem.OnFragmentInteractionListener {
 
     private ActivityMainBinding binding;
     private FirebaseFirestore db;
@@ -71,6 +70,10 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     private Boolean is_deleting = Boolean.FALSE;
     private String username;
 
+    // Barcode scanning components
+    private ActivityResultLauncher<Intent> cameraResultLauncher;
+    private EditText editSerial;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,14 +86,13 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         getSupportActionBar().setBackgroundDrawable(getDrawable(R.color.space_cadet));
         TextView tv = new TextView(getApplicationContext());
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
-                ActionBar.LayoutParams.WRAP_CONTENT, // Width of TextView
-                ActionBar.LayoutParams.WRAP_CONTENT); // Height of TextView
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                ActionBar.LayoutParams.WRAP_CONTENT);
         tv.setLayoutParams(lp);
         tv.setText("  Neety.");
         tv.setTextColor(ResourcesCompat.getColor(getResources(), R.color.pale_dogwood, null));
         tv.setTextSize(26);
 
-        // Set the Typeface
         Typeface tf = ResourcesCompat.getFont(this, R.font.pacifico);
         tv.setTypeface(tf);
 
@@ -106,9 +108,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
 
         totalValueTv = findViewById(R.id.total_value_textview);
 
-        //      For sorting item by specification and updating the screen according to it
-        // This filter is actually sort button
         filterButton = findViewById(R.id.filter_button);
+        barcodeButton = findViewById(R.id.button_barcode);
         filterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,17 +118,16 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 popUp.setTouchable(true);
                 popUp.setFocusable(true);
                 popUp.setOutsideTouchable(true);
-                popUp.showAtLocation(v, Gravity.BOTTOM,0,500);// location of pop ip
-//                popUp.showAsDropDown(findViewById(R.id.filter_button)
-                // This code is for clicking apply button
+                popUp.showAtLocation(v, Gravity.BOTTOM,0,500);
+
                 Button applyButton=mView.findViewById(R.id.btnApply);
                 applyButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sort_by_make(mView,adapter);// sorts by make if chosen
-                        sort_by_date(mView, adapter);// sorts by date if chosen
-                        sort_by_estimated_value(mView, adapter);// sorts by est. value if chosen
-                        popUp.dismiss(); // Close the popup when the close button is clicked
+                        sort_by_make(mView,adapter);
+                        sort_by_date(mView, adapter);
+                        sort_by_estimated_value(mView, adapter);
+                        popUp.dismiss();
                     }
                 });
                 popUp.showAsDropDown(findViewById(R.id.filter_button));
@@ -143,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             startActivity(intent);
         });
 
-        // Handle Add Button
         addButton = findViewById(R.id.button_additem);
 
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -153,20 +152,21 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             }
         });
 
-        // Handle Filter Button aka Real Filter Button
         real_filterButton = findViewById(R.id.real_filter_button);
         real_filterButton.setOnClickListener(v -> {
             // TODO: Implement real filter button here
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Real Filter Button Clicked")
+                    .setMessage("Implement your real filter logic here.")
+                    .setPositiveButton("OK", null)
+                    .show();
         });
 
-        // Handle Barcode button
         barcodeButton = findViewById(R.id.button_barcode);
         barcodeButton.setOnClickListener(v -> {
-            // TODO: Implement item lookup by barcode here
+            openCamera();
         });
 
-
-        // Handle Delete Button
         del_button = findViewById(R.id.button_deleteitem);
 
         del_button.setOnClickListener(v -> {
@@ -178,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 barcodeButton.setVisibility(View.INVISIBLE);
                 is_deleting = Boolean.TRUE;
             } else {
-                // Count how many items are selected
                 int selectedCount = 0;
                 for (Item item : itemsList) {
                     if (item.isSelected()) {
@@ -186,7 +185,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     }
                 }
 
-                // If any items are selected, show the AlertDialog
                 if (selectedCount > 0) {
                     String Msg = String.format("Do you want to delete %d selected item(s)?", selectedCount);
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -197,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                 dialog.cancel();
                             }))
                             .setPositiveButton("Yes", ((dialog, which) -> {
-                                // Remove all selected items
                                 Iterator<Item> iterator = itemsList.iterator();
                                 while (iterator.hasNext()) {
                                     Item item = iterator.next();
@@ -206,9 +203,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                                         item.deleteImagesFromStorage(username);
                                         itemsRef.document(item.getIdString()).delete();
                                     }
-
                                 }
-                                // Notify the adapter that the data has changed
                                 adapter.notifyDataSetChanged();
                             }));
                     AlertDialog alertDialog = builder.create();
@@ -222,7 +217,6 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                 is_deleting = Boolean.FALSE;
             }
 
-            // Update the flag in the adapter and notify it that the data has changed
             adapter.setDeleting(is_deleting);
             adapter.notifyDataSetChanged();
         });
@@ -249,17 +243,14 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                             new AlertDialog.Builder(MainActivity.this)
                                     .setTitle("Oops...")
                                     .setMessage("There was an error parsing the database data. Please try again later.\n\nError:\n" +
-                                            getRootCause(e).getClass().getCanonicalName() + "\n\nItem Id: " +
+                                            Log.getStackTraceString(e) + "\n\nItem Id: " +
                                             doc.getId())
-                                    // Specifying a listener allows you to take an action before dismissing the dialog.
-                                    // The dialog is automatically dismissed when a dialog button is clicked.
                                     .setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
                                             finishAndRemoveTask();
                                         }
                                     })
                                     .setCancelable(false)
-                                    // A null listener allows the button to dismiss the dialog and take no further action.
                                     .setIcon(android.R.drawable.ic_dialog_info)
                                     .show();
                         }
@@ -271,14 +262,43 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             }
         });
 
+        // Initialize barcode scanning components
+        editSerial = findViewById(R.id.edit_serial);
 
+        // Set up the result launcher for the camera activity
+        cameraResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == RESULT_OK) {
+                    Bitmap b = result.getData().getExtras().getParcelable("data", Bitmap.class);
+
+                    if (b == null) return;
+
+                    InputImage image = InputImage.fromBitmap(b, 0);
+                    BarcodeScanner scanner = BarcodeScanning.getClient();
+                    scanner.process(image)
+                            .addOnSuccessListener(barcodes -> {
+                                Log.i("Scanned Barcodes", barcodes.toString());
+                                if (barcodes.size() > 0) {
+                                    String scannedValue = barcodes.get(0).getRawValue();
+                                    editSerial.setText(scannedValue);
+                                    retrieveProductDescription(scannedValue);
+                                }
+                            });
+                }
+            }
+        });
     }
 
-    public void sort_by_make(View view,ItemsLvAdapter lv){
+    private void openCamera() {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraResultLauncher.launch(cameraIntent);
+    }
+
+    private void sort_by_make(View view, ItemsLvAdapter lv) {
         Chip sort_make_A_Z = view.findViewById(R.id.cg_make_ascending);
         Chip sort_make_Z_A = view.findViewById(R.id.cg_make_descending);
-        // sort by ascending alphabet (A-Z)
-        if(sort_make_A_Z.isChecked()){
+        if (sort_make_A_Z.isChecked()) {
             Collections.sort(itemsList, new Comparator<Item>() {
                 @Override
                 public int compare(Item item1, Item item2) {
@@ -287,12 +307,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             });
             lv.notifyDataSetChanged();
         }
-        // sort by descending alphabet (Z-A)
-        if(sort_make_Z_A.isChecked()){
+        if (sort_make_Z_A.isChecked()) {
             Collections.sort(itemsList, new Comparator<Item>() {
                 @Override
                 public int compare(Item item1, Item item2) {
-                        return item2.getMake().compareTo(item1.getMake());
+                    return item2.getMake().compareTo(item1.getMake());
                 }
             });
             lv.notifyDataSetChanged();
@@ -300,11 +319,11 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
     }
 
 
-    public void sort_by_date(View view, ItemsLvAdapter lv){
+    private void sort_by_date(View view, ItemsLvAdapter lv) {
         Chip sort_by_date_latest = view.findViewById(R.id.date_new);
         Chip sort_by_date_oldest = view.findViewById(R.id.date_old);
 
-        if(sort_by_date_latest.isChecked()){
+        if (sort_by_date_latest.isChecked()) {
             Collections.sort(itemsList, new Comparator<Item>() {
                 @Override
                 public int compare(Item item1, Item item2) {
@@ -314,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
             lv.notifyDataSetChanged();
         }
 
-        if (sort_by_date_oldest.isChecked()){
+        if (sort_by_date_oldest.isChecked()) {
             Collections.sort(itemsList, new Comparator<Item>() {
                 @Override
                 public int compare(Item item1, Item item2) {
@@ -325,8 +344,8 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
         }
     }
 
-    public void sort_by_estimated_value(View view, ItemsLvAdapter lv){
 
+    private void sort_by_estimated_value(View view, ItemsLvAdapter lv) {
         Chip sort_by_high_low = view.findViewById(R.id.price_high_low);
         Chip sort_by_low_high = view.findViewById(R.id.price_low_high);
         if (sort_by_high_low.isChecked() || sort_by_low_high.isChecked()) {
@@ -336,39 +355,55 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     float difference = item1.getEstimatedValue() - item2.getEstimatedValue();
 
                     if (sort_by_high_low.isChecked()) {
-                        // For low to high sorting, reverse the order
                         difference = -difference;
                     }
 
-                    // Cast the result to int or use Math.round() for rounded sorting
                     return (int) Math.round(difference);
                 }
             });
 
-            // Notify the adapter that the dataset has changed
             lv.notifyDataSetChanged();
         }
     }
 
-    public void onOKPressed(Item item) {
-        //Add to datalist
-        HashMap<String, String> data = Item.getFirestoreDataFromItem(item);
+    private void retrieveProductDescription(String barcode) {
+        // TODO: Implement logic to retrieve product description based on the scanned barcode
+        Item foundItem = findItemByBarcode(barcode);
 
-        itemsRef
-                .document(item.getIdString())
-                .set(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Firestore", "DocumentSnapshot successfully written!");
-                    }
-                });
+        // Display item information in a dialog
+        if (foundItem != null) {
+            String itemDetails = "Make: " + foundItem.getMake() + "\n" +
+                    "Purchase Date: " + foundItem.getPurchaseDate() + "\n" +
+                    "Estimated Value: $" + foundItem.getEstimatedValue();
+
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Product Description")
+                    .setMessage("Scanned Barcode: " + barcode + "\n" + itemDetails)
+                    .setPositiveButton("OK", null)
+                    .show();
+        } else {
+            // Handle the case where the item with the scanned barcode is not found
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Product Not Found")
+                    .setMessage("No information found for scanned barcode: " + barcode)
+                    .setPositiveButton("OK", null)
+                    .show();
+        }
+    }
+
+    private Item findItemByBarcode(String barcode) {
+        // Iterate through the list of items to find the one with the scanned barcode
+        for (Item item : itemsList) {
+            if (barcode.equals(item.getSerial())) {
+                return item;
+            }
+        }
+        return null; // Return null if the item is not found
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -398,11 +433,17 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                     }
                 }
             });
-
-
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-}
 
+    @Override
+    public void onOKPressed(Item item) {
+        HashMap<String, String> data = Item.getFirestoreDataFromItem(item);
+
+        itemsRef.document(item.getIdString())
+                .set(data)
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "DocumentSnapshot successfully written!"));
+    }
+}
