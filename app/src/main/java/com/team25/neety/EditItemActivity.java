@@ -145,6 +145,7 @@ public class EditItemActivity extends AppCompatActivity {
             populateFields(item);
             itemId = item.getId();
         }
+    }
 
     private void populateFields(Item item) {
         // Set existing item details in EditText fields
