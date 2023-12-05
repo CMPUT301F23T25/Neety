@@ -323,7 +323,9 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                         filter_by_date_range(adapter, startDate, endDate);
                         filter_by_description(adapter, selectDesc.getText().toString());
                         filter_by_make(adapter, selectMake.getText().toString());
-                        filter_by_tag(mView, adapter, intTagList);
+                        if (!intTagList.isEmpty()) {
+                            filter_by_tag(mView, adapter, intTagList);
+                        }
                         popUp.dismiss(); // Close the popup when the close button is clicked
                     }
                 });
