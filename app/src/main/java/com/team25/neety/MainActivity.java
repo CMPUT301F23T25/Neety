@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements AddItem.OnFragmen
                         // Copy the original state to intTagList
                         intTagList.clear();
 
-                        String[] tagListArray = (String[]) tagList.toArray();
+                        String[] tagListArray = tagList.toArray(new String[tagList.size()]);
 
                         builder.setMultiChoiceItems( tagListArray , selectedTags, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
